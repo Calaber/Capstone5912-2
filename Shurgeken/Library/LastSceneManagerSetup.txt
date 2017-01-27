@@ -1,4 +1,4 @@
 sceneSetups:
-- path: Assets/Shurgeken Main.unity
+- path: Assets/Scenes/Gooey Scene.unity
   isLoaded: 1
   isActive: 1
