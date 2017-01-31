@@ -1,4 +1,4 @@
 sceneSetups:
-- path: Assets/Scenes/Gooey Scene.unity
+- path: Assets/Scenes/Lighting_Scene.unity
   isLoaded: 1
   isActive: 1
