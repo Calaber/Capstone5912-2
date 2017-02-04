@@ -12,13 +12,10 @@ public class LightManager : MonoBehaviour {
 	void Start () {
         if (lights == null) { lights = new List<LightManager>();}
         lights.Add(this);
-
-        Debug.Log("Registered light: " +lights.Count);
     }
 
     void onDestroy() {
         lights.Remove(this);
-        Debug.Log("Registered light: " + lights.Count);
     }
 
     //Iterates through all managed lights to find the closest one that's active

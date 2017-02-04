@@ -301,7 +301,7 @@ public class PlayerController : MonoBehaviour
 		{
 			RotateTowardsMovementDir();
 		}
-		if(isStrafing && !isRelax)
+        if (isStrafing && !isRelax && target != null)
 		{
 			//make character point at target
 			Quaternion targetRotation;
