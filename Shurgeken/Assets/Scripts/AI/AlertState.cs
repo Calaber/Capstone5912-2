@@ -44,8 +44,20 @@ public class AlertState : IEnemyState {
         RaycastHit hit;
         if (Physics.Raycast(enemy.eyes.transform.position, enemy.eyes.transform.forward, out hit, enemy.sightRange) && hit.collider.CompareTag("Player"))
         {
-            enemy.chaseTarget = hit.transform;
-            ToChaseState();
+            //Light based view distance cutoff
+            GameObject player = hit.transform.gameObject;
+            GameObject lighting = LightManager.nearestLightSource(player);
+
+            float player_illumination = lighting.GetComponent<LightManager>().lightIntenstity(player);
+            float cutoff_sight_range = enemy.minimumSightRange + (enemy.sightRange - enemy.minimumSightRange) * player_illumination;
+           // Debug.Log("Enemy view distance:"cutoff_sight_range + " / 20.0");
+            Vector3 displacement = player.transform.position - enemy.transform.position;
+            if (displacement.magnitude < cutoff_sight_range)
+            {
+                enemy.chaseTarget = hit.transform;
+                ToChaseState();
+            }
+            //
         }
     }
 

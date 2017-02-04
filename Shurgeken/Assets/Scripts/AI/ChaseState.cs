@@ -44,7 +44,6 @@ public class ChaseState : IEnemyState {
         if (Physics.Raycast(enemy.eyes.transform.position, enemyToTarget, out hit, enemy.sightRange) && hit.collider.CompareTag("Player"))
         {
             enemy.chaseTarget = hit.transform;
-
         }
         else
         {
