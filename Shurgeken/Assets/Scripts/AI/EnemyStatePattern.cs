@@ -17,6 +17,7 @@ public class EnemyStatePattern : MonoBehaviour {
     [HideInInspector] public ChaseState chaseState;
     [HideInInspector] public AlertState alertState;
     [HideInInspector] public PatrolState patrolState;
+    [HideInInspector] public FlagPickUp pickUp;
     [HideInInspector] public NavMeshAgent navMeshAgent;
 
     private void Awake()
@@ -24,6 +25,7 @@ public class EnemyStatePattern : MonoBehaviour {
         patrolState = new PatrolState(this);
         alertState = new AlertState(this);
         chaseState = new ChaseState(this);
+        pickUp = new FlagPickUp(this);
 
         navMeshAgent = GetComponent<NavMeshAgent>();
         navMeshAgent.stoppingDistance = 0.5f;
