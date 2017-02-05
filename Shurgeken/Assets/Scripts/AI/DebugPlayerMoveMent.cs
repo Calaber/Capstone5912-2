@@ -13,7 +13,7 @@ public class DebugPlayerMoveMent : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
         
-        float fowardSpeed = -(Input.GetAxis("Vertical")*movementSpeed);
+        float fowardSpeed = (Input.GetAxis("Vertical")*movementSpeed);
         float sideSpeed = Input.GetAxis("Horizontal") * movementSpeed;
         float leftRight = Input.GetAxis("Mouse X")* mouseSen;
 
