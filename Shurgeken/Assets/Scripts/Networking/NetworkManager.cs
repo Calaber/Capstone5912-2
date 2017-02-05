@@ -32,6 +32,10 @@ public class NetworkManager : MonoBehaviour
 
     void Update()
     {
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            Application.Quit();
+        }
         connectionText.text = PhotonNetwork.connectionStateDetailed.ToString();
     }
 
