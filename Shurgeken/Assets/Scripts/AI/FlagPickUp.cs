@@ -1,18 +1,19 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ChaseState : IEnemyState {
+public class FlagPickUp : IEnemyState
+{
     private readonly EnemyStatePattern enemy;
 
-    public ChaseState(EnemyStatePattern statePatternEnemy)
+    public FlagPickUp(EnemyStatePattern enemyStatePattern)
     {
-        enemy = statePatternEnemy;
+        enemy = enemyStatePattern;
     }
 
     public void UpdateState()
     {
-        LookForFlag();
         Look();
         Chase();
     }
@@ -24,8 +25,7 @@ public class ChaseState : IEnemyState {
 
     public void ToPatrolState()
     {
-        Debug.Log("The enemy is still around I won't Patrol yet Dummy");
-
+        Debug.Log("I refuse to do anything but chase the flag");
     }
 
     public void ToAlertState()
@@ -35,30 +35,19 @@ public class ChaseState : IEnemyState {
 
     public void ToChaseState()
     {
-        Debug.Log("I'm Already Chasing Dummy");
+        Debug.Log("I refuse to do anything but chase the flag");
     }
 
     public void ToFlagPickUpState()
     {
-        enemy.currentState = enemy.pickUp;
-    }
-
-    private void LookForFlag()
-    {
-        RaycastHit hit;
-        if (Physics.Raycast(enemy.eyes.transform.position, enemy.eyes.transform.forward, out hit, enemy.sightRange) && hit.collider.CompareTag("Flag"))
-        {
-            enemy.chaseTarget = hit.transform;
-            Debug.Log("You");
-            ToFlagPickUpState();
-        }
+        Debug.Log("I'm Already PickingUp the Flag");
     }
 
     private void Look()
     {
         RaycastHit hit;
         Vector3 enemyToTarget = (enemy.chaseTarget.position + enemy.offset) - enemy.eyes.transform.position;
-        if (Physics.Raycast(enemy.eyes.transform.position, enemyToTarget, out hit, enemy.sightRange) && hit.collider.CompareTag("Player"))
+        if (Physics.Raycast(enemy.eyes.transform.position, enemyToTarget, out hit, enemy.sightRange) && hit.collider.CompareTag("Flag"))
         {
             enemy.chaseTarget = hit.transform;
 
@@ -72,7 +61,7 @@ public class ChaseState : IEnemyState {
 
     private void Chase()
     {
-        enemy.meshRendererFlag.material.color = Color.red;
+        enemy.meshRendererFlag.material.color = Color.blue;
         enemy.navMeshAgent.destination = enemy.chaseTarget.position;
         enemy.navMeshAgent.Resume();
     }
