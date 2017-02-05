@@ -24,6 +24,8 @@ public class PlayerNetworkMover : Photon.MonoBehaviour
                 cam.enabled = true;
             foreach (AudioListener audio in GetComponentsInChildren<AudioListener>())
                 audio.enabled = true;
+            //Enable disable head
+            //transform.Find("Head Joint/First Person Camera/GunCamera/Candy-Cane").gameObject.layer = 8;
         }
         else
         {
