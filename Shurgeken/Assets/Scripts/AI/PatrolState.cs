@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -13,6 +14,7 @@ public class PatrolState : IEnemyState {
 
     public void UpdateState()
     {
+        LookForFlag();
         Look();
         Patrol();
     }
@@ -40,6 +42,21 @@ public class PatrolState : IEnemyState {
         enemy.currentState = enemy.chaseState;
     }
 
+    public void ToFlagPickUpState()
+    {
+        enemy.currentState = enemy.pickUp;
+    }
+
+    private void LookForFlag()
+    {
+        RaycastHit hit;
+        if (Physics.Raycast(enemy.eyes.transform.position, enemy.eyes.transform.forward, out hit, enemy.sightRange) && hit.collider.CompareTag("Flag"))
+        {
+            enemy.chaseTarget = hit.transform;
+            ToFlagPickUpState();
+        }
+    }
+
     private void Look()
     {
         RaycastHit hit;
@@ -60,4 +77,5 @@ public class PatrolState : IEnemyState {
             nextWayPoint = (nextWayPoint + 1) % enemy.wayPoints.Length;
         }
     }
+
 }

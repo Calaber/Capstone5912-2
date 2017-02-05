@@ -13,4 +13,6 @@ public interface IEnemyState
     void ToAlertState();
 
     void ToChaseState();
+
+    void ToFlagPickUpState();
 }

@@ -13,6 +13,7 @@ public class AlertState : IEnemyState {
 
     public void UpdateState()
     {
+        LookForFlag();
         Look();
         Search();
     }
@@ -37,6 +38,22 @@ public class AlertState : IEnemyState {
     {
         searchTimer = 0f;
         enemy.currentState = enemy.chaseState;
+    }
+
+    public void ToFlagPickUpState()
+    {
+        enemy.currentState = enemy.pickUp;
+    }
+
+    private void LookForFlag()
+    {
+        RaycastHit hit;
+        if (Physics.Raycast(enemy.eyes.transform.position, enemy.eyes.transform.forward, out hit, enemy.sightRange) && hit.collider.CompareTag("Flag"))
+        {
+            enemy.chaseTarget = hit.transform;
+            Debug.Log("You");
+            ToFlagPickUpState();
+        }
     }
 
     private void Look()
