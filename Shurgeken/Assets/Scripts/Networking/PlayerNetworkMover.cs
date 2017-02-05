@@ -18,7 +18,8 @@ public class PlayerNetworkMover : Photon.MonoBehaviour
 
         if (photonView.isMine)
         {
-            GetComponent<DebugPlayerMoveMent>().enabled = true;
+            GetComponent<Rigidbody>().useGravity = true;
+            GetComponent<PlayerController>().enabled = true;
             foreach (Camera cam in GetComponentsInChildren<Camera>())
                 cam.enabled = true;
             foreach (AudioListener audio in GetComponentsInChildren<AudioListener>())

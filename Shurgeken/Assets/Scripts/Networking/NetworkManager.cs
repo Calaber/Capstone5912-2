@@ -26,7 +26,7 @@ public class NetworkManager : MonoBehaviour
     {
 
         PhotonNetwork.logLevel = PhotonLogLevel.Full;
-        PhotonNetwork.ConnectUsingSettings("0.1");
+        PhotonNetwork.ConnectUsingSettings("0.2");
 
     }
 
@@ -57,7 +57,7 @@ public class NetworkManager : MonoBehaviour
         yield return new WaitForSeconds(respawnTime);
 
         int index = Random.Range(0, spawnPoints.Length);
-        player = PhotonNetwork.Instantiate("Player",
+        player = PhotonNetwork.Instantiate("FirstPersonNinja",
                                            spawnPoints[index].position,
                                            spawnPoints[index].rotation,
                                            0);
