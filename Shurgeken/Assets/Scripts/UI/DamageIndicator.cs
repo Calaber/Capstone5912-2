@@ -7,33 +7,28 @@ public class DamageIndicator : MonoBehaviour {
 
     //Get Damage flash Image
     public Image myPanel;
+    //color of the image, Used to get and set the alpha value
     Color imageColor;
 
-    //Damage Flash should suddenly appear then fade out
-    private int fadeTime;
-    private int totalFadeTime;
+    //Damage Flash should suddenly appear then fade out. The lower the value the slower the fade out.
     private float fadeRate;
 
     //Damage flash image alpha value going from max to no alpha should adjust the transparency
     private float alpha;
-    private float maxAlpha;
 
 
 	// Use this for initialization
 	void Start () {
 
-        totalFadeTime = 200;
-        fadeTime = 0;
         alpha = 0f;
-        maxAlpha = 255f;
-        fadeRate = 5;
+        fadeRate = 2;
         imageColor = myPanel.color;
     }
-	
+
+    //Starts a Damage flash. Call this to initiate a damage flash	
     public void DamageFlash()
     {
-        fadeTime = totalFadeTime;
-
+        //set image alpha to 1(opaque)
         imageColor.a = 1f;
         myPanel.color = imageColor;
         
@@ -42,18 +37,21 @@ public class DamageIndicator : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 
+        //Debug Key
         if (Input.GetKeyDown(KeyCode.M))
         {
-            Debug.Log("Pressed");
             DamageFlash();
         }
+        //get image colors
         imageColor = myPanel.color;
+
+        //find the alpha Differential
         float alphaDiff = Mathf.Abs(imageColor.a - alpha);
+        //if there are alpha differences decrease the alpha.
         if (alphaDiff > 0.0001f)
         {
             imageColor.a = Mathf.Lerp(imageColor.a, alpha, fadeRate * Time.deltaTime);
             myPanel.color = imageColor;
-            Debug.Log(myPanel.color);
         }
     }
 }
