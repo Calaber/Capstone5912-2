@@ -72,6 +72,7 @@ public class PlayerController : MonoBehaviour
 	bool canAction = true;
 	bool isStrafing = false;
 	bool isDead = false;
+    public bool Alive = true;
 	bool isBlocking = false;
 	public float knockbackMultiplier = 1f;
 	bool isKnockback;
@@ -108,17 +109,19 @@ public class PlayerController : MonoBehaviour
 			{
 				GetHit();
 			}
-			if(Input.GetButtonDown("Death") && canAction && isGrounded && !isBlocking)
+            */
+			if(!Alive && canAction && isGrounded && !isBlocking)
 			{
 				if(!isDead)
 				{
 					StartCoroutine(_Death());
 				} 
-				else
-				{
-					StartCoroutine(_Revive());
-				}
+				//else
+				//{
+				//	StartCoroutine(_Revive());
+				//}
 			}
+            /*
 			if(Input.GetButtonDown("AttackL") && canAction && isGrounded && !isBlocking)
 			{
 				Attack(1);
