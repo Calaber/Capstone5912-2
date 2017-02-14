@@ -23,7 +23,7 @@ public enum Player_Animation {
 }
 
 public class DataController : MonoBehaviour {
-
+    //Synched data
     public int animation_id;
     public Vector3 position;
     public Quaternion rotation;
@@ -32,6 +32,8 @@ public class DataController : MonoBehaviour {
     public int hp = 100;
     public int max_hp = 100;
     public bool alive = true;
+    
+    //Not synched
     public bool local = false;
 
     void Start()
@@ -43,11 +45,18 @@ public class DataController : MonoBehaviour {
     }
 
     void FixedUpdate() {
-        if (local) {
-            //animation, hp, alive managed by their respective controllers
-            velocity = gameObject.transform.position;
+        if (local)
+        {   //Write position data to be synched
+            position = gameObject.transform.position;
             rotation = gameObject.transform.rotation;
             velocity = GetComponent<Rigidbody>().velocity;
+            //animation, hp, alive managed by their respective controllers
+        }
+        else {
+            //synch the local gameobject copy to network's data.
+            //gameObject.transform.position = position;
+            //gameObject.transform.rotation = rotation;
+            //GetComponent<Rigidbody>().velocity = velocity;
         }
     }
 

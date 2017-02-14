@@ -57,7 +57,7 @@ public class NetworkManager : MonoBehaviour
         yield return new WaitForSeconds(respawnTime);
 
         int index = Random.Range(0, spawnPoints.Length);
-        player = PhotonNetwork.Instantiate("FirstPersonNinja",
+        player = PhotonNetwork.Instantiate("Player",
                                            spawnPoints[index].position,
                                            spawnPoints[index].rotation,
                                            0);

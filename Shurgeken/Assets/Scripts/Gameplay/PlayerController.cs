@@ -190,9 +190,9 @@ public class PlayerController : MonoBehaviour
             GameObject obj = hit.transform.gameObject;
             while(obj.transform.parent != null) { obj = obj.transform.parent.gameObject; }
             HealthController hp_controller = obj.GetComponent<HealthController>();
-            if (hp_controller) {
+            if (hp_controller && hp_controller.enabled) {
                 hp_controller.TakeDamage(damage);
-                print("Bang!");
+                //print("Bang!");
             }
         }
     }
