@@ -3,39 +3,41 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class HealthController : MonoBehaviour {
-    
 
+    DataController data;
+    private int respawn_wait;
 
-    public int max_hp;
-    int hp;
+    void Start()
+    {
+        data = GetComponent<DataController>();
+        respawn_wait = -1;
+    }
 
-
-	// Use this for initialization
-	void Start () {
-        hp = max_hp;
-	}
-	
+    	
 	// Update is called once per frame
 	void Update () {
         if (Input.GetKeyDown(KeyCode.M))
         {
             TakeDamage(1);
         }
-
+        if (respawn_wait >= 0) {
+            if (respawn_wait == 0) {
+                PhotonNetwork.Destroy(gameObject);
+                //if (RespawnMe != null)
+                //    RespawnMe(3f);
+            }
+            respawn_wait--;
+        }
     }
 
-    void TakeDamage(int dmg) {
-        if (hp >= dmg)
+    public void TakeDamage(int dmg) {
+        data.hp -= dmg;
+        if (data.local) { DamageIndicator.DamageFlash(); }
+        
+        if (data.hp <= 0)
         {
-            hp -= dmg;
-            PlayerController pc = gameObject.GetComponent<PlayerController>();
-            if (pc)
-            {
-                DamageIndicator.DamageFlash();
-                if (hp <= 0) {
-                    pc.Alive = false;
-                }
-            }
-        }
+            data.alive = false;
+            respawn_wait = 200;
+        }   
     }
 }

@@ -32,10 +32,6 @@ public class NetworkManager : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Escape))
-        {
-            Application.Quit();
-        }
         connectionText.text = PhotonNetwork.connectionStateDetailed.ToString();
     }
 
@@ -65,7 +61,7 @@ public class NetworkManager : MonoBehaviour
                                            spawnPoints[index].position,
                                            spawnPoints[index].rotation,
                                            0);
-        player.GetComponent<PlayerNetworkMover>().RespawnMe += StartSpawnProcess;
+        player.GetComponent<NetworkController>().RespawnMe += StartSpawnProcess;
         sceneCamera.enabled = false;
         sceneListener.enabled = false;
     }
