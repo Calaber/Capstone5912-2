@@ -18,8 +18,16 @@ public enum Player_Animation {
     LANDING=8,
     DAMAGED=9,
     DYING=10,
-    DEATH=11,
-    MELEE_1=12
+    MELEE_1=11
+}
+
+public enum Guard_Animation
+{
+    IDLE = 0,
+    RUN_FORWARDS = 1,
+    DAMAGED = 2,
+    DEATH = 3,
+    MELEE_1 = 4
 }
 
 public class DataController : MonoBehaviour {
@@ -51,12 +59,6 @@ public class DataController : MonoBehaviour {
             rotation = gameObject.transform.rotation;
             velocity = GetComponent<Rigidbody>().velocity;
             //animation, hp, alive managed by their respective controllers
-        }
-        else {
-            //synch the local gameobject copy to network's data.
-            //gameObject.transform.position = position;
-            //gameObject.transform.rotation = rotation;
-            //GetComponent<Rigidbody>().velocity = velocity;
         }
     }
 

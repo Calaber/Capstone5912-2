@@ -4,40 +4,44 @@ using UnityEngine;
 
 public class HealthController : MonoBehaviour {
 
+    public delegate void onDamage(int dmg);
+    public delegate void onDeath();
+    public onDamage onHit;
+    public onDeath  onDie;
+    private int cached_hp;
+
     DataController data;
-    private int respawn_wait;
 
     void Start()
     {
         data = GetComponent<DataController>();
-        respawn_wait = -1;
+        cached_hp = data.hp;
     }
 
-    	
-	// Update is called once per frame
-	void Update () {
-        if (Input.GetKeyDown(KeyCode.M))
-        {
-            TakeDamage(1);
-        }
-        if (respawn_wait >= 0) {
-            if (respawn_wait == 0) {
-                PhotonNetwork.Destroy(gameObject);
-                //if (RespawnMe != null)
-                //    RespawnMe(3f);
+    void Update() {
+        if (cached_hp != data.hp) {
+            if (cached_hp < data.hp) {
+                onHit(cached_hp-data.hp);
+
+                if (data.hp <= 0)
+                {
+                    data.alive = false;
+                    onDie();
+                }
             }
-            respawn_wait--;
+            cached_hp = data.hp;
         }
     }
+
 
     public void TakeDamage(int dmg) {
         data.hp -= dmg;
-        if (data.local) { DamageIndicator.DamageFlash(); }
+        onHit(dmg);
         
         if (data.hp <= 0)
         {
             data.alive = false;
-            respawn_wait = 200;
+            onDie();
         }   
     }
 }

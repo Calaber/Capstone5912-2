@@ -59,7 +59,7 @@ public class NetworkController : Photon.MonoBehaviour
         }
         else
         {
-            data.animation_id = (int)stream.ReceiveNext();
+            data.animation_id = (int)stream.ReceiveNext();//TODO: Fix NullPtr occasionally popping up here. [Adam]
             data.position = (Vector3)stream.ReceiveNext();
             data.rotation = (Quaternion)stream.ReceiveNext();
             data.velocity = (Vector3)stream.ReceiveNext();

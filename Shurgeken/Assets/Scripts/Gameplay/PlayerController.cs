@@ -16,8 +16,9 @@ public class PlayerController : MonoBehaviour
     bool            crouching = false;
     bool            dead = false;
     public bool     attack_enabled = true;
-    bool            attacking = false;
-    int             attack_frames = 0;
+    bool            busy = false;
+    int             busy_frames = 0;
+    public int      respawn_timer;
     float           falling_velocity = -1f;
     float           max_airstrafe_velocity = 10.0f;
     float           jump_speed = 12.0f;
@@ -33,7 +34,24 @@ public class PlayerController : MonoBehaviour
     {
         data = GetComponent<DataController>();
         rigidbody = GetComponent<Rigidbody>();
+
+        //Set Damage handlers
+        HealthController hp = GetComponent<HealthController>();
+        hp.onHit = this.OnDamage;
+        hp.onDie = this.OnDie;
+
         Cursor.lockState = CursorLockMode.Locked;
+        respawn_timer = -1;
+    }
+
+    void Update() {
+        //Handle respawning after death
+        if (respawn_timer > 0) { respawn_timer--;
+            if (respawn_timer == 0) {
+                GameObject.Find("NetworkManager").GetComponent<NetworkManager>().StartSpawnProcess(0);
+                PhotonNetwork.Destroy(gameObject);
+            }
+        }
     }
 
     void FixedUpdate()
@@ -46,21 +64,21 @@ public class PlayerController : MonoBehaviour
         FirstPersonCamera();
         CheckIfGrounded();
         //Attack logic: Stand still and cast a damage ray in the middle of the animation.
-        if (attack_frames > 0)
+        if (busy_frames > 0)
         {
-            attack_frames--;
+            busy_frames--;
             rigidbody.velocity = Vector3.zero;
-            if (attack_frames == 30) {
+            if (busy_frames == 30) {
                 CastDamageRay(1.0f, 1);
             }
         }
         else {
-            attacking = false;
+            busy = false;
         }
         if (data.alive)
         {
             UpdateJumping();
-            if (!midair && !attacking) { UpdateMovement(); }
+            if (!midair && !busy) { UpdateMovement(); }
             if (midair) { AirControl(); }
         }
         else if (!dead) {
@@ -106,7 +124,7 @@ public class PlayerController : MonoBehaviour
 
     void UpdateJumping()
     {
-        if (!attacking && can_jump && Input.GetButtonDown("Jump"))
+        if (!busy && can_jump && Input.GetButtonDown("Jump"))
         {
             midair = true;
             rigidbody.velocity += jump_speed * Vector3.up;
@@ -131,11 +149,16 @@ public class PlayerController : MonoBehaviour
     }
 
     void UpdateActions() {
-        if (Input.GetMouseButtonDown(0) && attack_enabled && !attacking && !midair){
-            if (attacking || midair) return;//Dont perform if we're doing something else.
+        if (Input.GetMouseButtonDown(0) && attack_enabled && !busy && !midair){
+            if (busy || midair) return;//Dont perform if we're doing something else.
             data.SetAnimation(Player_Animation.MELEE_1);
-            attacking = true;
-            attack_frames = 40;
+            busy = true;
+            busy_frames = 40;
+        }
+        if (Input.GetKeyDown(KeyCode.M)&& !busy && !dead)
+        {
+            GetComponent<HealthController>().TakeDamage(1);
+
         }
     }
 
@@ -206,4 +229,17 @@ public class PlayerController : MonoBehaviour
             rigidbody.velocity += motion*airstrafe_speed;
         }
     }
+
+    public void OnDamage(int dmg) {
+        data.SetAnimation(Player_Animation.DAMAGED);
+        if (data.local) { DamageIndicator.DamageFlash(); }
+        busy = true;
+        busy_frames = 30;
+    }
+
+    public void OnDie() {
+        respawn_timer = 200;
+    }
+
+
 }
