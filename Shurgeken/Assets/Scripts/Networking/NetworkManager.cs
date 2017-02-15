@@ -32,10 +32,6 @@ public class NetworkManager : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Escape))
-        {
-            Application.Quit();
-        }
         connectionText.text = PhotonNetwork.connectionStateDetailed.ToString();
     }
 
@@ -50,22 +46,22 @@ public class NetworkManager : MonoBehaviour
         StartSpawnProcess(0f);
     }
 
-    void StartSpawnProcess(float respawnTime)
+    public void StartSpawnProcess(float respawnTime)
     {
         sceneCamera.enabled = true;
         StartCoroutine("SpawnPlayer", respawnTime);
     }
 
-    IEnumerator SpawnPlayer(float respawnTime)
+    public IEnumerator SpawnPlayer(float respawnTime)
     {
         yield return new WaitForSeconds(respawnTime);
 
         int index = Random.Range(0, spawnPoints.Length);
-        player = PhotonNetwork.Instantiate("FirstPersonNinja",
+        player = PhotonNetwork.Instantiate("Player",
                                            spawnPoints[index].position,
                                            spawnPoints[index].rotation,
                                            0);
-        player.GetComponent<PlayerNetworkMover>().RespawnMe += StartSpawnProcess;
+        player.GetComponent<NetworkController>().RespawnMe += StartSpawnProcess;
         sceneCamera.enabled = false;
         sceneListener.enabled = false;
     }
