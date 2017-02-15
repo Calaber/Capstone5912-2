@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -56,16 +57,31 @@ public class ChaseState : IEnemyState {
 
     private void Look()
     {
-        RaycastHit hit;
-        Vector3 enemyToTarget = (enemy.chaseTarget.position + enemy.offset) - enemy.eyes.transform.position;
-        if (Physics.Raycast(enemy.eyes.transform.position, enemyToTarget, out hit, enemy.sightRange) && hit.collider.CompareTag("Player"))
+        Collider[] targetsInViewRadius = Physics.OverlapSphere(enemy.transform.position, enemy.enemyViewRadius, enemy.playerLayerMasks);
+
+        for (int i = 0; i < targetsInViewRadius.Length; i++)
         {
-            enemy.chaseTarget = hit.transform;
+            Transform target = targetsInViewRadius[i].transform;
+            Vector3 dirToTarget = (target.transform.position - enemy.transform.position).normalized;
+            if (Vector3.Angle(enemy.eyes.transform.forward, dirToTarget) < enemy.enemyViewAngle / 2)
+            {
+                float dstToTarget = Vector3.Distance(enemy.transform.position, target.position);
+
+                if (!Physics.Raycast(enemy.eyes.transform.position, dirToTarget, dstToTarget, enemy.obstacleLayerMasks))
+                {
+                    enemy.chaseTarget = target.transform;
+                    if (dstToTarget <= enemy.attackDistance)
+                    {
+                        ToAttackState();
+                    }
+                }
+                else
+                {
+                    ToAlertState();
+                }
+            }
         }
-        else
-        {
-            ToAlertState();
-        }
+        
 
     }
 
@@ -74,5 +90,10 @@ public class ChaseState : IEnemyState {
         enemy.meshRendererFlag.material.color = Color.red;
         enemy.navMeshAgent.destination = enemy.chaseTarget.position;
         enemy.navMeshAgent.Resume();
+    }
+
+    public void ToAttackState()
+    {
+        enemy.currentState = enemy.attackState;
     }
 }

@@ -50,7 +50,6 @@ public class FlagPickUp : IEnemyState
         if (Physics.Raycast(enemy.eyes.transform.position, enemyToTarget, out hit, enemy.sightRange) && hit.collider.CompareTag("Flag"))
         {
             enemy.chaseTarget = hit.transform;
-
         }
         else
         {
@@ -64,5 +63,10 @@ public class FlagPickUp : IEnemyState
         enemy.meshRendererFlag.material.color = Color.blue;
         enemy.navMeshAgent.destination = enemy.chaseTarget.position;
         enemy.navMeshAgent.Resume();
+    }
+
+    public void ToAttackState()
+    {
+        Debug.Log("Not gonna attack while I'm chasing the flag");
     }
 }

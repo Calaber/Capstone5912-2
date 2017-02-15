@@ -59,9 +59,26 @@ public class PatrolState : IEnemyState {
 
     private void Look()
     {
-        RaycastHit hit;
-        if (Physics.Raycast(enemy.eyes.transform.position, enemy.eyes.transform.forward, out hit, enemy.sightRange)&&hit.collider.CompareTag("Player")){
+        Collider[] targetsInViewRadius = Physics.OverlapSphere(enemy.transform.position, enemy.enemyViewRadius, enemy.playerLayerMasks);
 
+        for(int i=0; i < targetsInViewRadius.Length; i++)
+        {
+            Transform target = targetsInViewRadius[i].transform;
+            Vector3 dirToTarget = (target.transform.position - enemy.transform.position).normalized;
+            if (Vector3.Angle(enemy.eyes.transform.forward, dirToTarget) < enemy.enemyViewAngle / 2)
+            {
+                float dstToTarget = Vector3.Distance(enemy.transform.position, target.position);
+
+                if (!Physics.Raycast(enemy.eyes.transform.position, dirToTarget, dstToTarget, enemy.obstacleLayerMasks))
+                {
+                    enemy.chaseTarget = target.transform;
+                    ToChaseState();
+                }
+            }
+        }
+       /* RaycastHit hit; //Old Code Keeping here for time being
+        if (Physics.Raycast(enemy.eyes.transform.position, enemy.eyes.transform.forward, out hit, enemy.sightRange)&&hit.collider.CompareTag("Player")){
+            
             //Light based view distance cutoff
             GameObject player = hit.transform.gameObject;
             GameObject lighting = LightManager.nearestLightSource(player);
@@ -75,19 +92,23 @@ public class PatrolState : IEnemyState {
             }
             //
 
-        }
+        }*/
     }
 
     private void Patrol()
     {
         enemy.meshRendererFlag.material.color = Color.green;
-        enemy.navMeshAgent.destination = enemy.wayPoints[nextWayPoint].position;
+        enemy.navMeshAgent.destination = enemy.patrolPath.getPath()[nextWayPoint].position;
         enemy.navMeshAgent.Resume();
         
         if (enemy.navMeshAgent.remainingDistance <= enemy.navMeshAgent.stoppingDistance && !enemy.navMeshAgent.pathPending)
         {
-            nextWayPoint = (nextWayPoint + 1) % enemy.wayPoints.Length;
+            nextWayPoint = (nextWayPoint + 1) % enemy.patrolPath.getPath().Length;
         }
     }
 
+    public void ToAttackState()
+    {
+        Debug.Log("I can't attack if I'm not in range");
+    }
 }
