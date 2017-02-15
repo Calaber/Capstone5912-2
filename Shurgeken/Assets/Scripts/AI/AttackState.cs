@@ -3,10 +3,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ChaseState : IEnemyState {
+public class AttackState : IEnemyState {
+
     private readonly EnemyStatePattern enemy;
 
-    public ChaseState(EnemyStatePattern statePatternEnemy)
+    public AttackState(EnemyStatePattern statePatternEnemy)
     {
         enemy = statePatternEnemy;
     }
@@ -15,7 +16,7 @@ public class ChaseState : IEnemyState {
     {
         LookForFlag();
         Look();
-        Chase();
+        Attack();
     }
 
     public void OnTriggerEnter(Collider other)
@@ -36,7 +37,7 @@ public class ChaseState : IEnemyState {
 
     public void ToChaseState()
     {
-        Debug.Log("I'm Already Chasing Dummy");
+        Debug.Log("I'm Already Attacking Dummy");
     }
 
     public void ToFlagPickUpState()
@@ -50,7 +51,6 @@ public class ChaseState : IEnemyState {
         if (Physics.Raycast(enemy.eyes.transform.position, enemy.eyes.transform.forward, out hit, enemy.sightRange) && hit.collider.CompareTag("Flag"))
         {
             enemy.chaseTarget = hit.transform;
-            Debug.Log("You");
             ToFlagPickUpState();
         }
     }
@@ -69,10 +69,10 @@ public class ChaseState : IEnemyState {
 
                 if (!Physics.Raycast(enemy.eyes.transform.position, dirToTarget, dstToTarget, enemy.obstacleLayerMasks))
                 {
-                    enemy.chaseTarget = target.transform;
-                    if (dstToTarget <= enemy.attackDistance)
+                    if (dstToTarget > enemy.attackDistance)
                     {
-                        ToAttackState();
+                        enemy.chaseTarget = target.transform;
+                        ToChaseState();
                     }
                 }
                 else
@@ -81,19 +81,18 @@ public class ChaseState : IEnemyState {
                 }
             }
         }
-        
+
 
     }
 
-    private void Chase()
+    private void Attack()
     {
-        enemy.meshRendererFlag.material.color = Color.red;
-        enemy.navMeshAgent.destination = enemy.chaseTarget.position;
-        enemy.navMeshAgent.Resume();
+        enemy.meshRendererFlag.material.color = Color.magenta;
+        //The is where the enemy will attack the player, need player contoller code, animation to be added
     }
 
     public void ToAttackState()
     {
-        enemy.currentState = enemy.attackState;
+        Debug.Log("Already Attacking Dummy");
     }
 }
