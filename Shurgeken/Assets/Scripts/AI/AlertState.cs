@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -51,30 +52,28 @@ public class AlertState : IEnemyState {
         if (Physics.Raycast(enemy.eyes.transform.position, enemy.eyes.transform.forward, out hit, enemy.sightRange) && hit.collider.CompareTag("Flag"))
         {
             enemy.chaseTarget = hit.transform;
-            Debug.Log("You");
             ToFlagPickUpState();
         }
     }
 
     private void Look()
     {
-        RaycastHit hit;
-        if (Physics.Raycast(enemy.eyes.transform.position, enemy.eyes.transform.forward, out hit, enemy.sightRange) && hit.collider.CompareTag("Player"))
-        {
-            //Light based view distance cutoff
-            GameObject player = hit.transform.gameObject;
-            GameObject lighting = LightManager.nearestLightSource(player);
+        Collider[] targetsInViewRadius = Physics.OverlapSphere(enemy.transform.position, enemy.enemyViewRadius, enemy.playerLayerMasks);
 
-            float player_illumination = lighting.GetComponent<LightManager>().lightIntenstity(player);
-            float cutoff_sight_range = enemy.minimumSightRange + (enemy.sightRange - enemy.minimumSightRange) * player_illumination;
-           // Debug.Log("Enemy view distance:"cutoff_sight_range + " / 20.0");
-            Vector3 displacement = player.transform.position - enemy.transform.position;
-            if (displacement.magnitude < cutoff_sight_range)
+        for (int i = 0; i < targetsInViewRadius.Length; i++)
+        {
+            Transform target = targetsInViewRadius[i].transform;
+            Vector3 dirToTarget = (target.transform.position - enemy.transform.position).normalized;
+            if (Vector3.Angle(enemy.eyes.transform.forward, dirToTarget) < enemy.enemyViewAngle / 2)
             {
-                enemy.chaseTarget = hit.transform;
-                ToChaseState();
+                float dstToTarget = Vector3.Distance(enemy.transform.position, target.position);
+
+                if (!Physics.Raycast(enemy.eyes.transform.position, dirToTarget, dstToTarget, enemy.obstacleLayerMasks))
+                {
+                    enemy.chaseTarget = target.transform;
+                    ToChaseState();
+                }
             }
-            //
         }
     }
 
@@ -87,5 +86,10 @@ public class AlertState : IEnemyState {
 
         if (searchTimer >= enemy.searchingDuration)
             ToPatrolState();
+    }
+
+    public void ToAttackState()
+    {
+        Debug.Log("I can't attack if I'm not in range");
     }
 }
