@@ -22,7 +22,8 @@ public class PlayerSettings : MonoBehaviour {
     // Use this for initialization
     void Start () {
         DontDestroyOnLoad(this);
-        AudioListener.volume = _volume;
+        _volume = 0.2f;
+
 
     }
 	
