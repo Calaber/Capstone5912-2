@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class NetworkController : Photon.MonoBehaviour
+public class PlayerNetworkController  : Photon.MonoBehaviour
 {
 
     public delegate void Respawn(float time);
@@ -23,7 +23,7 @@ public class NetworkController : Photon.MonoBehaviour
             GetComponent<PlayerController>().enabled = true;
             GetComponent<HealthController>().enabled = true;
             foreach (Camera cam in GetComponentsInChildren<Camera>()) { cam.enabled = true; }
-                
+
             foreach (AudioListener audio in GetComponentsInChildren<AudioListener>())
                 audio.enabled = true;
             transform.Find("Head").gameObject.SetActive(false);
@@ -72,3 +72,4 @@ public class NetworkController : Photon.MonoBehaviour
 
 
 }
+
