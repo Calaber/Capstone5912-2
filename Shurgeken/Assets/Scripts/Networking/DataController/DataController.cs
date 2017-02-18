@@ -30,7 +30,7 @@ public enum Guard_Animation
     MELEE_1 = 4
 }
 
-public class DataController : MonoBehaviour {
+public class DataController : MonoBehaviour, DataControllerInter {
     //Synched data
     public int animation_id;
     public Vector3 position;

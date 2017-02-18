@@ -69,7 +69,11 @@ public class PlayerNetworkController  : Photon.MonoBehaviour
         }
     }
 
-
+    [PunRPC]
+    public void TakeDamage(int damage)
+    {
+        data.hp -= damage;
+    }
 
 }
 
