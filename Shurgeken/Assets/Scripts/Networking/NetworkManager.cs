@@ -85,6 +85,11 @@ public class NetworkManager : MonoBehaviour
         PhotonNetwork.LoadLevel(levelName);
     }
 
+    void OnJoinedLobby()
+    {
+        createRoom("TestLevel", GameType.PVP);
+    }
+
     public void joinRoom(string gameName)
     {
         PhotonNetwork.JoinRoom(gameName);

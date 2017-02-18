@@ -67,7 +67,19 @@ public class AttackState : IEnemyState {
             {
                 float dstToTarget = Vector3.Distance(enemy.transform.position, target.position);
 
-                if (!Physics.Raycast(enemy.eyes.transform.position, dirToTarget, dstToTarget, enemy.obstacleLayerMasks))
+                float light_cutoff_view_distance = enemy.enemyViewRadius * 0.5f;/*[Adam] TODO: constant for how much light cuts vision, for now it's half*/
+
+                GameObject lightObject = LightManager.nearestLightSource(target.gameObject);
+                if (lightObject != null)
+                {
+                    Light light = lightObject.GetComponent<LightManager>().LightSource.GetComponent<Light>();
+
+                    float light_factor = 1.0f - (target.position - light.transform.position).magnitude / light.range;//[Adam] TODO: factor in light intensity. Some kind of parabolic function?
+                    if (light_factor > 0) { light_cutoff_view_distance += (enemy.enemyViewRadius * 0.5f) * light_factor; }
+                }
+
+
+                if (!Physics.Raycast(enemy.eyes.transform.position, dirToTarget, light_cutoff_view_distance, enemy.obstacleLayerMasks))
                 {
                     if (dstToTarget > enemy.attackDistance)
                     {
