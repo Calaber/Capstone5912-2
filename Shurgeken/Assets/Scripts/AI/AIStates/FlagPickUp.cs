@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class FlagPickUp : IEnemyState
 {
-    private readonly EnemyStatePattern enemy;
+    private EnemyStatePattern enemy;
 
     public FlagPickUp(EnemyStatePattern enemyStatePattern)
     {
