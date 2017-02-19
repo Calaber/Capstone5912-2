@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
@@ -15,23 +16,30 @@ public class EnemyStatePattern : MonoBehaviour {
     public float enemyViewAngle = 110f;
     public LayerMask playerLayerMasks;
     public LayerMask obstacleLayerMasks;
-
-    //Gonna be replaced soonish
-    public Transform[] wayPoints;
-
     public Transform eyes;
     public Vector3 offset = new Vector3(0, .5f, 0);
-    public MeshRenderer meshRendererFlag;
 
+    //Indicator
+    public MeshRenderer meshRendererFlag;
+    
     [HideInInspector] public Transform chaseTarget;
     [HideInInspector] public IEnemyState currentState;
+
+    //States that are gonna be refactored in next timebox or I'm gonna kill myself so much
     [HideInInspector] public ChaseState chaseState;
     [HideInInspector] public AlertState alertState;
     [HideInInspector] public PatrolState patrolState;
     [HideInInspector] public FlagPickUp pickUp;
     [HideInInspector] public AttackState attackState;
+    [HideInInspector] public AttackState deathState;
+    [HideInInspector] public AttackState damageState;
+
+    //Pathing
+    public Transform[] wayPoints;
     [HideInInspector] public NavMeshAgent navMeshAgent;
     [HideInInspector] public IPatrolPath patrolPath;
+
+    //Attack
     [HideInInspector] public float attackDistance = 2f;
 
     private void Awake()
@@ -43,17 +51,20 @@ public class EnemyStatePattern : MonoBehaviour {
         pickUp = new FlagPickUp(this);
         attackState = new AttackState(this);
 
+        //Set Damage handlers
+        HealthController hp = GetComponent<HealthController>();
+        hp.onHit = this.OnDamage;
+        hp.onDie = this.OnDie;
+
         navMeshAgent = GetComponent<NavMeshAgent>();
         navMeshAgent.stoppingDistance = 0.5f;
         InvokeRepeating("randomizePath", 180, 180);
     }
 
-    // Use this for initialization
     void Start () {
         currentState = patrolState;
     }
 	
-	// Update is called once per frame
 	void Update ()
     {
         currentState.UpdateState();
@@ -75,5 +86,15 @@ public class EnemyStatePattern : MonoBehaviour {
     private void randomizePath()
     {
         patrolPath.randamizePath();
+    }
+
+    private void OnDie()
+    {
+        currentState = deathState;
+    }
+
+    private void OnDamage(int dmg)
+    {
+        currentState = damageState;
     }
 }
