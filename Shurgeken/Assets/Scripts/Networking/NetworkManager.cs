@@ -152,11 +152,17 @@ public class NetworkManager : MonoBehaviour
 
     public GameObject spawnSceneObject(string objectName, Vector3 pos, Quaternion rot, int group, Object[] data)
     {
-        return PhotonNetwork.InstantiateSceneObject(objectName,
-                                              pos,
-                                              rot,
-                                              group,
-                                              data);
+        if (isMaster()) {
+            return PhotonNetwork.InstantiateSceneObject(objectName,
+                                                  pos,
+                                                  rot,
+                                                  group,
+                                                  data);
+        }
+        else
+        {
+            return null;
+        }
     }
 
     public GameObject spawnObject(string objectName, Transform trans, Object[] data)
@@ -196,7 +202,7 @@ public class NetworkManager : MonoBehaviour
         yield return new WaitForSeconds(respawnTime);
 
         int index = Random.Range(0, spawnPoints.Length);
-        player = spawnSceneObject("Player", spawnPoints[index], null);
+        player = spawnObject("Player", spawnPoints[index], null);
 
         player.GetComponent<PlayerNetworkController>().RespawnMe += StartSpawnProcess;
         sceneCamera.enabled = false;
@@ -209,7 +215,8 @@ public class NetworkManager : MonoBehaviour
         GameObject guard;
         int index = Random.Range(0, aiSpawnPoints.Length);
         guard = spawnSceneObject("Guard", aiSpawnPoints[index], null);
-        guard.GetComponent<EnemyStatePattern>().wayPoints = aiWayPoints;
+        if (guard)
+            guard.GetComponent<EnemyStatePattern>().patrolPath = new TestPath(aiWayPoints);
         yield return null;
     }
 

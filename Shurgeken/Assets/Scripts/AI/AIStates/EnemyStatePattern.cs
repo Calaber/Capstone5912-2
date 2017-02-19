@@ -31,8 +31,8 @@ public class EnemyStatePattern : MonoBehaviour {
     [HideInInspector] public PatrolState patrolState;
     [HideInInspector] public FlagPickUp pickUp;
     [HideInInspector] public AttackState attackState;
-    [HideInInspector] public AttackState deathState;
-    [HideInInspector] public AttackState damageState;
+    [HideInInspector] public DeathState deathState;
+    [HideInInspector] public DamageState damageState;
 
     //Pathing
     public Transform[] wayPoints;
@@ -50,6 +50,8 @@ public class EnemyStatePattern : MonoBehaviour {
         chaseState = new ChaseState(this);
         pickUp = new FlagPickUp(this);
         attackState = new AttackState(this);
+        damageState = new DamageState(this);
+        deathState = new DeathState(this);
 
         //Set Damage handlers
         HealthController hp = GetComponent<HealthController>();

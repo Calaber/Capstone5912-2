@@ -5,13 +5,14 @@ using UnityEngine;
 public class LightManager : MonoBehaviour {
 
     private static List<LightManager> lights;
-    public bool Active = true;
+    public LightDataController ldc;
     public bool Extinguishable = true;
     public GameObject LightSource;
 
 	void Start () {
         if (lights == null) { lights = new List<LightManager>();}
         lights.Add(this);
+        ldc = ldc.GetComponent<LightDataController>();
     }
 
     void onDestroy() {
@@ -24,7 +25,7 @@ public class LightManager : MonoBehaviour {
         float distance = float.MaxValue;
         foreach (LightManager light in lights) {
             Vector3 displacement = target.transform.position - light.transform.position;
-            if (displacement.sqrMagnitude < distance && light.Active) {
+            if (displacement.sqrMagnitude < distance && light.ldc.active) {
                 distance = displacement.sqrMagnitude;
                 closest = light.gameObject;
             }
@@ -64,8 +65,8 @@ public class LightManager : MonoBehaviour {
     //Turns the light on and off
     public void toggleLight() {
         if (Extinguishable) {
-            Active = !Active;
-            LightSource.SetActive(Active);
+            ldc.active = !ldc.active;
+            LightSource.SetActive(ldc.active);
         }
     }
 

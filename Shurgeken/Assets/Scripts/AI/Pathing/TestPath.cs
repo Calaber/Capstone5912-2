@@ -13,7 +13,7 @@ public class TestPath : IPatrolPath
     public TestPath(Transform[] waypoints)
     {
         rand = new System.Random();
-        numWaypoints = waypoints.Length / 2;
+        numWaypoints = waypoints.Length;
         allWaypoints = new List<Transform>(waypoints);
         randamizePath();
     }

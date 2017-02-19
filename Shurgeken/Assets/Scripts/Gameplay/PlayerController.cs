@@ -155,6 +155,10 @@ public class PlayerController : MonoBehaviour
             busy = true;
             busy_frames = 40;
         }
+        if (Input.GetMouseButtonDown(1))
+        {
+            
+        }
         if (Input.GetKeyDown(KeyCode.M)&& !busy && !dead)
         {
             GetComponent<HealthController>().TakeDamage(1);

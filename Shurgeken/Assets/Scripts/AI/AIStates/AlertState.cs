@@ -67,7 +67,7 @@ public class AlertState : IEnemyState {
             if (Vector3.Angle(enemy.eyes.transform.forward, dirToTarget) < enemy.enemyViewAngle / 2)
             {
                 float light_cutoff_view_distance = enemy.enemyViewRadius * 0.5f;/*[Adam] TODO: constant for how much light cuts vision, for now it's half*/
-
+                
                 GameObject lightObject = LightManager.nearestLightSource(target.gameObject);
                 if (lightObject != null)
                 {

@@ -37,7 +37,7 @@ public class AttackState : IEnemyState {
 
     public void ToChaseState()
     {
-        Debug.Log("I'm Already Attacking Dummy");
+        enemy.currentState = enemy.chaseState;
     }
 
     public void ToFlagPickUpState()
@@ -91,6 +91,10 @@ public class AttackState : IEnemyState {
                 {
                     ToAlertState();
                 }
+            }
+            else
+            {
+                ToAlertState();
             }
         }
 
