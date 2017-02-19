@@ -12,6 +12,7 @@ public class OKSettings : MonoBehaviour {
     
     void setScreenStyle()
     {
+        //ScreenStyle.ScreenStyle.value
         if (ScreenStyle.captionText.text == "FullScreen")
         {
             pSet.fullscreen = true;
@@ -28,7 +29,7 @@ public class OKSettings : MonoBehaviour {
 
         setScreenStyle();
 
-        Screen.SetResolution(Screen.width, Screen.height, pSet);
+        Screen.SetResolution(Screen.width, Screen.height, pSet.fullscreen);
         menu.toMainMenu();
     }
 
@@ -36,6 +37,6 @@ public class OKSettings : MonoBehaviour {
     {
         setScreenStyle();
 
-        Screen.SetResolution(Screen.width, Screen.height, pSet);
+        Screen.SetResolution(Screen.width, Screen.height, pSet.fullscreen);
     }
 }
