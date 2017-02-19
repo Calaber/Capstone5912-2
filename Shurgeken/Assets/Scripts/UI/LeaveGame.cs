@@ -17,13 +17,14 @@ public class LeaveGame : MonoBehaviour {
 
     public void QuitGame()
     {
+        NetworkManager.networkManager.leaveRoom();
         NetworkManager.networkManager.leaveLobby();
         Application.Quit();
     }
 
     public void BackToMenuScene()
     {
-        NetworkManager.networkManager.leaveLobby();
+        NetworkManager.networkManager.leaveRoom();
         SceneManager.LoadScene("MainMenu");
     }
 }

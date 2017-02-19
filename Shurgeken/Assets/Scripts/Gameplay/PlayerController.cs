@@ -48,7 +48,7 @@ public class PlayerController : MonoBehaviour
         //Handle respawning after death
         if (respawn_timer > 0) { respawn_timer--;
             if (respawn_timer == 0) {
-                GameObject.Find("NetworkManager").GetComponent<NetworkManager>().StartSpawnProcess(0);
+                GameInitScript.gis.StartSpawnProcess(0);
                 PhotonNetwork.Destroy(gameObject);
             }
         }

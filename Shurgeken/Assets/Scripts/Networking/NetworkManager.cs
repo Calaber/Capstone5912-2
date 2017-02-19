@@ -1,6 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
-using UnityEngine.UI;
 
 public class NetworkManager : MonoBehaviour
 {
@@ -11,29 +9,6 @@ public class NetworkManager : MonoBehaviour
         PVE,
         PVP
     }
-
-    [SerializeField]
-    Text connectionText;
-
-    [SerializeField]
-    Transform[] spawnPoints;
-
-    [SerializeField]
-    Transform[] aiSpawnPoints;
-
-    [SerializeField]
-    Transform[] aiWayPoints;
-
-    [SerializeField]
-    Transform[] flagSpawns;
-
-    [SerializeField]
-    Camera sceneCamera;
-
-    [SerializeField]
-    AudioListener sceneListener;
-
-    GameObject player;
 
     /// <summary>
     /// Static version of this. Allows abstract calls from anywhere
@@ -50,7 +25,7 @@ public class NetworkManager : MonoBehaviour
         // Already assigned, destroy this one.
         else if (networkManager != this)
         {
-            Destroy(this.gameObject);
+            GameObject.Destroy(this.gameObject);
         }
     }
 
@@ -71,12 +46,6 @@ public class NetworkManager : MonoBehaviour
         PhotonNetwork.LeaveLobby();
     }
 
-    void Update()
-    {
-        if (connectionText)
-            connectionText.text = PhotonNetwork.connectionStateDetailed.ToString();
-    }
-
     public RoomInfo[] getRoomList()
     {
         return PhotonNetwork.GetRoomList();
@@ -95,6 +64,11 @@ public class NetworkManager : MonoBehaviour
     public void joinRoom(string gameName)
     {
         PhotonNetwork.JoinRoom(gameName);
+    }
+
+    public void leaveRoom()
+    {
+        PhotonNetwork.LeaveRoom();
     }
 
     /// <summary>
@@ -129,11 +103,6 @@ public class NetworkManager : MonoBehaviour
         }
         RoomOptions ro = new RoomOptions() { IsVisible = true, MaxPlayers = players };
         PhotonNetwork.JoinOrCreateRoom(gameName, ro, TypedLobby.Default);
-    }
-
-    void OnJoinedRoom()
-    {
-        StartSpawnProcess(0f);
     }
 
     public GameObject spawnSceneObject(string objectName, Transform trans, Object[] data)
@@ -180,48 +149,8 @@ public class NetworkManager : MonoBehaviour
                                               data);
     }
 
-    public void StartSpawnProcess(float respawnTime)
-    {
-        sceneCamera.enabled = true;
-        StartCoroutine("SpawnPlayer", respawnTime);
-        StartCoroutine("SpawnAI");
-        StartCoroutine("SpawnFlag");
-    }
-
     public bool isMaster()
     {
         return PhotonNetwork.isMasterClient;
-    }
-
-    public IEnumerator SpawnPlayer(float respawnTime)
-    {
-        yield return new WaitForSeconds(respawnTime);
-
-        int index = Random.Range(0, spawnPoints.Length);
-        player = spawnObject("Player", spawnPoints[index], null);
-
-        player.GetComponent<PlayerNetworkController>().RespawnMe += StartSpawnProcess;
-        sceneCamera.enabled = false;
-        sceneListener.enabled = false;
-    }
-
-    public IEnumerator SpawnAI()
-    {
-
-        GameObject guard;
-        int index = Random.Range(0, aiSpawnPoints.Length);
-        guard = spawnSceneObject("Guard", aiSpawnPoints[index], null);
-        if (guard)
-            guard.GetComponent<EnemyStatePattern>().patrolPath = new TestPath(aiWayPoints);
-        yield return null;
-    }
-
-    public IEnumerator SpawnFlag()
-    {
-
-        GameObject flag;
-        int index = Random.Range(0, flagSpawns.Length);
-        flag = spawnSceneObject("Red Flag 1", flagSpawns[index], null);
-        yield return null;
     }
 }
