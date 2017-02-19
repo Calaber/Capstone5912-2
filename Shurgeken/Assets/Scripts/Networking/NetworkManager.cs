@@ -22,6 +22,12 @@ public class NetworkManager : MonoBehaviour
     Transform[] aiSpawnPoints;
 
     [SerializeField]
+    Transform[] aiWayPoints;
+
+    [SerializeField]
+    Transform[] flagSpawns;
+
+    [SerializeField]
     Camera sceneCamera;
 
     [SerializeField]
@@ -134,10 +140,50 @@ public class NetworkManager : MonoBehaviour
         StartSpawnProcess(0f);
     }
 
+    public GameObject spawnSceneObject(string objectName, Transform trans, Object[] data)
+    {
+        return spawnSceneObject(objectName, trans.position, trans.rotation, data);
+    }
+
+    public GameObject spawnSceneObject(string objectName, Vector3 pos, Quaternion rot, Object[] data)
+    {
+        return spawnSceneObject(objectName, pos, rot, 0, data);
+    }
+
+    public GameObject spawnSceneObject(string objectName, Vector3 pos, Quaternion rot, int group, Object[] data)
+    {
+        return PhotonNetwork.InstantiateSceneObject(objectName,
+                                              pos,
+                                              rot,
+                                              group,
+                                              data);
+    }
+
+    public GameObject spawnObject(string objectName, Transform trans, Object[] data)
+    {
+        return spawnObject(objectName, trans.position, trans.rotation, data);
+    }
+
+    public GameObject spawnObject(string objectName, Vector3 pos, Quaternion rot, Object[] data)
+    {
+        return spawnObject(objectName, pos, rot, 0, data);
+    }
+
+    public GameObject spawnObject(string objectName, Vector3 pos, Quaternion rot, int group, Object[] data)
+    {
+        return PhotonNetwork.Instantiate(objectName,
+                                              pos,
+                                              rot,
+                                              group,
+                                              data);
+    }
+
     public void StartSpawnProcess(float respawnTime)
     {
         sceneCamera.enabled = true;
         StartCoroutine("SpawnPlayer", respawnTime);
+        StartCoroutine("SpawnAI");
+        StartCoroutine("SpawnFlag");
     }
 
     public bool isMaster()
@@ -150,10 +196,8 @@ public class NetworkManager : MonoBehaviour
         yield return new WaitForSeconds(respawnTime);
 
         int index = Random.Range(0, spawnPoints.Length);
-        player = PhotonNetwork.Instantiate("Player",
-                                           spawnPoints[index].position,
-                                           spawnPoints[index].rotation,
-                                           0);
+        player = spawnSceneObject("Player", spawnPoints[index], null);
+
         player.GetComponent<PlayerNetworkController>().RespawnMe += StartSpawnProcess;
         sceneCamera.enabled = false;
         sceneListener.enabled = false;
@@ -162,11 +206,19 @@ public class NetworkManager : MonoBehaviour
     public IEnumerator SpawnAI()
     {
 
-        int index = Random.Range(0, spawnPoints.Length);
-        player = PhotonNetwork.Instantiate("Guard",
-                                           spawnPoints[index].position,
-                                           spawnPoints[index].rotation,
-                                           0);
+        GameObject guard;
+        int index = Random.Range(0, aiSpawnPoints.Length);
+        guard = spawnSceneObject("Guard", aiSpawnPoints[index], null);
+        guard.GetComponent<EnemyStatePattern>().wayPoints = aiWayPoints;
+        yield return null;
+    }
+
+    public IEnumerator SpawnFlag()
+    {
+
+        GameObject flag;
+        int index = Random.Range(0, flagSpawns.Length);
+        flag = spawnSceneObject("Red Flag 1", flagSpawns[index], null);
         yield return null;
     }
 }

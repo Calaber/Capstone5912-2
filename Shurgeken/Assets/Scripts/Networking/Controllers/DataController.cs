@@ -57,7 +57,8 @@ public class DataController : MonoBehaviour {
         {   //Write position data to be synched
             position = gameObject.transform.position;
             rotation = gameObject.transform.rotation;
-            velocity = GetComponent<Rigidbody>().velocity;
+            if (GetComponent<Rigidbody>() != null)
+                velocity = GetComponent<Rigidbody>().velocity;
             //animation, hp, alive managed by their respective controllers
         }
     }
