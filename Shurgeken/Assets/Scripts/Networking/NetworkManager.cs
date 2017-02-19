@@ -73,7 +73,8 @@ public class NetworkManager : MonoBehaviour
 
     void Update()
     {
-        connectionText.text = PhotonNetwork.connectionStateDetailed.ToString();
+        if (connectionText)
+            connectionText.text = PhotonNetwork.connectionStateDetailed.ToString();
     }
 
     public RoomInfo[] getRoomList()
@@ -89,11 +90,6 @@ public class NetworkManager : MonoBehaviour
     public void loadLevel(string levelName)
     {
         PhotonNetwork.LoadLevel(levelName);
-    }
-
-    void OnJoinedLobby()
-    {
-        createRoom("TestLevel", GameType.PVP);
     }
 
     public void joinRoom(string gameName)
