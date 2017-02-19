@@ -12,10 +12,11 @@ public class OKSettings : MonoBehaviour {
     
     void setScreenStyle()
     {
-        //ScreenStyle.ScreenStyle.value
-        if (ScreenStyle.captionText.text == "FullScreen")
+
+        if (ScreenStyle.captionText.text == "Fullscreen")
         {
             pSet.fullscreen = true;
+
         }
         else
         {
