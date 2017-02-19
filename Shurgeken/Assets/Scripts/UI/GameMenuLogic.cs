@@ -11,6 +11,16 @@ public class GameMenuLogic : MonoBehaviour {
     void toOptions()
     {
         Options.SetActive(!Options.activeSelf);
+        if (!Options.activeSelf)
+        {
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+        }
+        else
+        {
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+        }
     }
 
     void Update()
