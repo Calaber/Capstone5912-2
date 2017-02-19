@@ -9,13 +9,21 @@ public class HealthScript : MonoBehaviour {
     public Slider health;
 	// Use this for initialization
 	void Start () {
-        health.maxValue = hp.max_hp;
-        health.value = hp.max_hp;
-
-	}
+        hp = GameObject.FindObjectOfType<DataController>();
+        if (hp)
+        {
+            health.maxValue = hp.max_hp;
+            health.value = hp.hp;
+        }
+    }
 	
 	// Update is called once per frame
 	void Update () {
-        health.value = hp.hp;
-	}
+        hp = GameObject.FindObjectOfType<DataController>();
+        if (hp)
+        {
+            health.maxValue = hp.max_hp;
+            health.value = hp.hp;
+        }
+    }
 }
