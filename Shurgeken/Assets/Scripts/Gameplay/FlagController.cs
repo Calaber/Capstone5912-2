@@ -13,6 +13,7 @@ public class FlagController : MonoBehaviour {
     float distance;
     float pass_speed = 10.0f;
     float pass_dampening = 1.1f;
+    public bool local = false;
 
 
 	// Use this for initialization
@@ -22,21 +23,23 @@ public class FlagController : MonoBehaviour {
         rigidbody = GetComponent<Rigidbody>();
 
     }
-	
-	// Update is called once per frame
-	void FixedUpdate () {
-        angle+= 0.05f;
-        if(owner_timer > 0) { owner_timer--; }
+
+    // Update is called once per frame
+    void FixedUpdate()
+    {
+        angle += 0.05f;
+        if (owner_timer > 0) { owner_timer--; }
         if (owner)
         {
-            this.transform.position = owner.transform.position + new Vector3(1.5f * Mathf.Sin(angle), 2f+ (0.3f*Mathf.Sin(2*angle)), 1.5f * Mathf.Cos(angle));
+            this.transform.position = owner.transform.position + new Vector3(1.5f * Mathf.Sin(angle), 2f + (0.3f * Mathf.Sin(2 * angle)), 1.5f * Mathf.Cos(angle));
             this.transform.rotation = Quaternion.Euler(0, angle, 0);
             if (Input.GetMouseButtonDown(1))
             {
                 HandleFlagPass();
             }
         }
-        else {
+        else
+        {
             if (rigidbody.velocity.sqrMagnitude > 0.0) { rigidbody.velocity /= pass_dampening; }
         }
 
