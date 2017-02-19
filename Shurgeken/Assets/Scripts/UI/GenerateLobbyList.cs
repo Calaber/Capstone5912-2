@@ -64,7 +64,7 @@ public class GenerateLobbyList : MonoBehaviour {
     void GenerateList()
     {
         roomArray = NetworkManager.networkManager.getRoomList();
-
+        Debug.Log(roomArray.Length);
         for (int i = 0; i < pageListMax; i++)
         {
             string buttonName = buttonList.transform.GetChild(i).name;
@@ -75,6 +75,7 @@ public class GenerateLobbyList : MonoBehaviour {
                 int maxP = roomArray[i].MaxPlayers;
                 int curP = roomArray[i].PlayerCount;
                 buttonList.transform.GetChild(i).GetChild(1).GetComponent<Text>().text = curP.ToString() + " / " + maxP.ToString();
+                Debug.Log(roomArray[i].Name);
             }
             else
             {
@@ -101,11 +102,12 @@ public class GenerateLobbyList : MonoBehaviour {
     {
         SetMaxPage();
         GenerateList();
+        Debug.Log("roomCheck");
     }
     void Awake()
     {
 
-        Invoke("RoomCheck", 1);
+        Invoke("RoomCheck", 2);
         InvokeRepeating("RoomCheck", 0f, 10.0f);
     }
 	// Update is called once per frame
