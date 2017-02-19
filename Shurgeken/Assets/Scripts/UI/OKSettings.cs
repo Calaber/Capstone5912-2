@@ -5,17 +5,37 @@ using UnityEngine.UI;
 
 public class OKSettings : MonoBehaviour {
 
-    public Button OK;
+    public PlayerSettings pSet;
+    public Dropdown ScreenStyle;
     public MenuLogic menu;
-    // Use this for initialization
-    void Start()
+
+    
+    void setScreenStyle()
     {
-        OK.onClick.AddListener(TaskOnClick);
+        if (ScreenStyle.captionText.text == "FullScreen")
+        {
+            pSet.fullscreen = true;
+        }
+        else
+        {
+            pSet.fullscreen = false;
+        }
     }
 
 
-    void TaskOnClick()
+    public void okClick()
     {
+
+        setScreenStyle();
+
+        Screen.SetResolution(Screen.width, Screen.height, pSet);
         menu.toMainMenu();
+    }
+
+    public void applyClick()
+    {
+        setScreenStyle();
+
+        Screen.SetResolution(Screen.width, Screen.height, pSet);
     }
 }
