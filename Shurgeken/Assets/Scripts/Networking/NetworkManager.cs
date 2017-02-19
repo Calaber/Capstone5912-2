@@ -209,7 +209,7 @@ public class NetworkManager : MonoBehaviour
         GameObject guard;
         int index = Random.Range(0, aiSpawnPoints.Length);
         guard = spawnSceneObject("Guard", aiSpawnPoints[index], null);
-        guard.GetComponent<EnemyStatePattern>().wayPoints = aiWayPoints;
+        guard.GetComponent<EnemyStatePattern>().patrolPath = new TestPath(aiWayPoints);
         yield return null;
     }
 
