@@ -11,6 +11,7 @@ public class AiNetworkController : Photon.MonoBehaviour
     DataController data;
     NavMeshAgent nav;
     EnemyStatePattern enemy;
+    SphereCollider sc;
     float smoothing = 10f;
 
 
@@ -19,10 +20,12 @@ public class AiNetworkController : Photon.MonoBehaviour
         data = GetComponent<DataController>();
         nav = GetComponent<NavMeshAgent>();
         enemy = GetComponent<EnemyStatePattern>();
+        sc = GetComponent<SphereCollider>();
         if (photonView.isMine)
         {
             GetComponent<DataController>().local = true;
             GetComponent<HealthController>().enabled = true;
+            sc.enabled = true;
             nav.enabled = true;
             enemy.enabled = true;
         }
@@ -49,11 +52,13 @@ public class AiNetworkController : Photon.MonoBehaviour
         {
             enemy.enabled = true;
             nav.enabled = true;
+            sc.enabled = true;
         }
         else
         {
             enemy.enabled = false;
             nav.enabled = false;
+            sc.enabled = false;
         }
 
         if (stream.isWriting)

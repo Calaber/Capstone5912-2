@@ -33,10 +33,7 @@ public class FlagController : MonoBehaviour {
         {
             this.transform.position = owner.transform.position + new Vector3(1.5f * Mathf.Sin(angle), 2f + (0.3f * Mathf.Sin(2 * angle)), 1.5f * Mathf.Cos(angle));
             this.transform.rotation = Quaternion.Euler(0, angle, 0);
-            if (Input.GetMouseButtonDown(1))
-            {
-                HandleFlagPass();
-            }
+            
         }
         else
         {
@@ -56,14 +53,15 @@ public class FlagController : MonoBehaviour {
             }
 
         }
-        if (other.tag == "Goal") {
-            GameObject.Destroy(gameObject);
+        if (other.tag == "Goal")
+        {
             if (owner) { owner.GetComponent<PlayerController>().attack_enabled = true; }
+            NetworkManager.networkManager.Destroy(gameObject);
             //print("score");
         }
     }
 
-    void HandleFlagPass() {
+    public void HandleFlagPass() {
 
         owner.GetComponent<PlayerController>().attack_enabled = true;
         this.transform.position = owner.transform.position + (owner.transform.TransformDirection(Vector3.forward) * 1.5f) + new Vector3(0, 1.5f, 0);

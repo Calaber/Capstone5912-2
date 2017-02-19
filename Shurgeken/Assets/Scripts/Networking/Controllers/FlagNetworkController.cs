@@ -5,11 +5,9 @@ using UnityEngine;
 public class FlagNetworkController : Photon.MonoBehaviour
 {
 
-    public delegate void Respawn(float time);
-    public event Respawn RespawnMe;
-
     FlagDataController data;
     FlagController flagController;
+    Rigidbody rb;
     float smoothing = 10f;
 
 
@@ -17,6 +15,7 @@ public class FlagNetworkController : Photon.MonoBehaviour
     {
         data = GetComponent<FlagDataController>();
         flagController = GetComponent<FlagController>();
+        rb = GetComponent<Rigidbody>();
         if (photonView.isMine)
         {
             data.local = true;
@@ -33,6 +32,7 @@ public class FlagNetworkController : Photon.MonoBehaviour
         {
             transform.position = Vector3.Lerp(transform.position, data.position, Time.deltaTime * smoothing);
             transform.rotation = Quaternion.Lerp(transform.rotation, data.rotation, Time.deltaTime * smoothing);
+            rb.velocity = Vector3.Lerp(rb.velocity, data.velocity, Time.deltaTime * smoothing);
             yield return null;
         }
     }
@@ -51,11 +51,19 @@ public class FlagNetworkController : Photon.MonoBehaviour
         {
             stream.SendNext(data.position);
             stream.SendNext(data.rotation);
+            stream.SendNext(rb.velocity);
         }
         else
         {
             data.position = (Vector3)stream.ReceiveNext();
             data.rotation = (Quaternion)stream.ReceiveNext();
+            data.velocity = (Vector3)stream.ReceiveNext();
         }
+    }
+
+    [PunRPC]
+    public void ThrowFlag()
+    {
+        flagController.HandleFlagPass();
     }
 }
