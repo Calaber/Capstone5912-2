@@ -30,7 +30,7 @@ public enum Guard_Animation
     MELEE_1 = 4
 }
 
-public class DataController : MonoBehaviour, DataControllerInter {
+public class DataController : MonoBehaviour {
     //Synched data
     public int animation_id;
     public Vector3 position;
@@ -57,7 +57,8 @@ public class DataController : MonoBehaviour, DataControllerInter {
         {   //Write position data to be synched
             position = gameObject.transform.position;
             rotation = gameObject.transform.rotation;
-            velocity = GetComponent<Rigidbody>().velocity;
+            if (GetComponent<Rigidbody>() != null)
+                velocity = GetComponent<Rigidbody>().velocity;
             //animation, hp, alive managed by their respective controllers
         }
     }
