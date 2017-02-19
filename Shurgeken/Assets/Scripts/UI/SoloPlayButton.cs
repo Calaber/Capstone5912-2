@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
+
 public class SoloPlayButton : MonoBehaviour {
 
     /// <summary>
@@ -25,10 +26,8 @@ public class SoloPlayButton : MonoBehaviour {
     /// </summary>
     void TaskOnClick()
     {
-        //Debug.Log("To Main");
-        Time.timeScale = 1;
-        Cursor.visible = true;
-        SceneManager.LoadScene("MainGame");
+        NetworkManager.networkManager.createRoom("myRoom", NetworkManager.GameType.SINGLE);
+        NetworkManager.networkManager.loadLevel("Demo 5");
 
     }
 }
