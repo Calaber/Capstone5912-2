@@ -1,72 +1,156 @@
 ﻿using UnityEngine;
-using System.Collections;
-using UnityEngine.UI;
 
 public class NetworkManager : MonoBehaviour
 {
 
-    [SerializeField]
-    Text connectionText;
+    public enum GameType
+    {
+        SINGLE,
+        PVE,
+        PVP
+    }
 
-    [SerializeField]
-    Transform[] spawnPoints;
+    /// <summary>
+    /// Static version of this. Allows abstract calls from anywhere
+    /// </summary>
+    public static NetworkManager networkManager;
 
-    [SerializeField]
-    Transform[] aiSpawnPoints;
-
-    [SerializeField]
-    Camera sceneCamera;
-
-    [SerializeField]
-    AudioListener sceneListener;
-
-    GameObject player;
+    void Awake()
+    {
+        if (networkManager == null)
+        {
+            DontDestroyOnLoad(gameObject);
+            networkManager = this;
+        }
+        // Already assigned, destroy this one.
+        else if (networkManager != this)
+        {
+            GameObject.Destroy(this.gameObject);
+        }
+    }
 
     void Start()
     {
-
         PhotonNetwork.logLevel = PhotonLogLevel.Full;
         PhotonNetwork.ConnectUsingSettings("0.2");
-
+        PhotonNetwork.automaticallySyncScene = true;
     }
 
-    void Update()
+    public void joinLobby()
     {
-        if (Input.GetKeyDown(KeyCode.Escape))
+        PhotonNetwork.JoinLobby();
+    }
+
+    public void leaveLobby()
+    {
+        PhotonNetwork.LeaveLobby();
+    }
+
+    public RoomInfo[] getRoomList()
+    {
+        return PhotonNetwork.GetRoomList();
+    }
+
+    public void loadLevel(int levelNumber)
+    {
+        PhotonNetwork.LoadLevel(levelNumber);
+    }
+
+    public void loadLevel(string levelName)
+    {
+        PhotonNetwork.LoadLevel(levelName);
+    }
+
+    public void joinRoom(string gameName)
+    {
+        PhotonNetwork.JoinRoom(gameName);
+    }
+
+    public void leaveRoom()
+    {
+        PhotonNetwork.LeaveRoom();
+    }
+
+    /// <summary>
+    /// This can only be called by the master or owner of the game object
+    /// </summary>
+    /// <param name="obj">object to destroy</param>
+    public void Destroy(GameObject obj)
+    {
+        PhotonNetwork.Destroy(obj);
+    }
+
+    public void createRoom(string gameName, GameType type)
+    {
+        byte players = 4;
+        switch(type)
         {
-            Application.Quit();
+            case GameType.PVE:
+                PhotonNetwork.offlineMode = false;
+                players = 4;
+                break;
+            case GameType.PVP:
+                PhotonNetwork.offlineMode = false;
+                players = 8;
+                break;
+            case GameType.SINGLE:
+                PhotonNetwork.offlineMode = true;
+                players = 1;
+                break;
+            default:
+                Debug.Log("Invalid GameType provided");
+                break;
         }
-        connectionText.text = PhotonNetwork.connectionStateDetailed.ToString();
+        RoomOptions ro = new RoomOptions() { IsVisible = true, MaxPlayers = players };
+        PhotonNetwork.JoinOrCreateRoom(gameName, ro, TypedLobby.Default);
     }
 
-    void OnJoinedLobby()
+    public GameObject spawnSceneObject(string objectName, Transform trans, Object[] data)
     {
-        RoomOptions ro = new RoomOptions() { IsVisible = true, MaxPlayers = 4 };
-        PhotonNetwork.JoinOrCreateRoom("TestRoom", ro, TypedLobby.Default);
+        return spawnSceneObject(objectName, trans.position, trans.rotation, data);
     }
 
-    void OnJoinedRoom()
+    public GameObject spawnSceneObject(string objectName, Vector3 pos, Quaternion rot, Object[] data)
     {
-        StartSpawnProcess(0f);
+        return spawnSceneObject(objectName, pos, rot, 0, data);
     }
 
-    void StartSpawnProcess(float respawnTime)
+    public GameObject spawnSceneObject(string objectName, Vector3 pos, Quaternion rot, int group, Object[] data)
     {
-        sceneCamera.enabled = true;
-        StartCoroutine("SpawnPlayer", respawnTime);
+        if (isMaster()) {
+            return PhotonNetwork.InstantiateSceneObject(objectName,
+                                                  pos,
+                                                  rot,
+                                                  group,
+                                                  data);
+        }
+        else
+        {
+            return null;
+        }
     }
 
-    IEnumerator SpawnPlayer(float respawnTime)
+    public GameObject spawnObject(string objectName, Transform trans, Object[] data)
     {
-        yield return new WaitForSeconds(respawnTime);
+        return spawnObject(objectName, trans.position, trans.rotation, data);
+    }
 
-        int index = Random.Range(0, spawnPoints.Length);
-        player = PhotonNetwork.Instantiate("FirstPersonNinja",
-                                           spawnPoints[index].position,
-                                           spawnPoints[index].rotation,
-                                           0);
-        player.GetComponent<PlayerNetworkMover>().RespawnMe += StartSpawnProcess;
-        sceneCamera.enabled = false;
-        sceneListener.enabled = false;
+    public GameObject spawnObject(string objectName, Vector3 pos, Quaternion rot, Object[] data)
+    {
+        return spawnObject(objectName, pos, rot, 0, data);
+    }
+
+    public GameObject spawnObject(string objectName, Vector3 pos, Quaternion rot, int group, Object[] data)
+    {
+        return PhotonNetwork.Instantiate(objectName,
+                                              pos,
+                                              rot,
+                                              group,
+                                              data);
+    }
+
+    public bool isMaster()
+    {
+        return PhotonNetwork.isMasterClient;
     }
 }
