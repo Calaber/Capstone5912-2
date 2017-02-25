@@ -41,9 +41,15 @@ public class NetworkManager : MonoBehaviour
         PhotonNetwork.JoinLobby();
     }
 
+    public bool isInLobby()
+    {
+        return PhotonNetwork.insideLobby;
+    }
+
     public void leaveLobby()
     {
-        PhotonNetwork.LeaveLobby();
+        if (isInLobby())
+            PhotonNetwork.LeaveLobby();
     }
 
     public RoomInfo[] getRoomList()
