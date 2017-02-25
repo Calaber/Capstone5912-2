@@ -50,19 +50,6 @@ public class AiNetworkController : Photon.MonoBehaviour
     void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {
 
-        if (NetworkManager.networkManager.isMaster())
-        {
-            enemy.enabled = true;
-            nav.enabled = true;
-            sc.enabled = true;
-        }
-        else
-        {
-            enemy.enabled = false;
-            nav.enabled = false;
-            sc.enabled = false;
-        }
-
         if (stream.isWriting)
         {
             //stream.SendNext(data.animation_id);

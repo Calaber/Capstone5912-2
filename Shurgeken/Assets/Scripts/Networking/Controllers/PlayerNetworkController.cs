@@ -22,6 +22,7 @@ public class PlayerNetworkController  : Photon.MonoBehaviour
         {
             rigidbody.useGravity = true;
             data.local = true;
+            GetComponent<LightToggler>().enabled = true;
             GetComponent<PlayerController>().enabled = true;
             health.enabled = true;
             foreach (Camera cam in GetComponentsInChildren<Camera>()) { cam.enabled = true; }
