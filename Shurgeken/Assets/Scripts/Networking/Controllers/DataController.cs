@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 
 //Manages networked state information for each game object
@@ -40,6 +38,7 @@ public class DataController : MonoBehaviour {
     public int hp = 100;
     public int max_hp = 100;
     public bool alive = true;
+    public bool attachEnabled = true;
     
     //Not synched
     public bool local = false;
