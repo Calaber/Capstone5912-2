@@ -12,6 +12,7 @@ public class AiNetworkController : Photon.MonoBehaviour
     NavMeshAgent nav;
     EnemyStatePattern enemy;
     SphereCollider sc;
+    HealthController hc;
     float smoothing = 10f;
 
 
@@ -21,10 +22,11 @@ public class AiNetworkController : Photon.MonoBehaviour
         nav = GetComponent<NavMeshAgent>();
         enemy = GetComponent<EnemyStatePattern>();
         sc = GetComponent<SphereCollider>();
+        hc = GetComponent<HealthController>();
         if (photonView.isMine)
         {
             GetComponent<DataController>().local = true;
-            GetComponent<HealthController>().enabled = true;
+            hc.enabled = true;
             sc.enabled = true;
             nav.enabled = true;
             enemy.enabled = true;
@@ -47,19 +49,6 @@ public class AiNetworkController : Photon.MonoBehaviour
 
     void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {
-
-        if (NetworkManager.networkManager.isMaster())
-        {
-            enemy.enabled = true;
-            nav.enabled = true;
-            sc.enabled = true;
-        }
-        else
-        {
-            enemy.enabled = false;
-            nav.enabled = false;
-            sc.enabled = false;
-        }
 
         if (stream.isWriting)
         {
@@ -84,6 +73,6 @@ public class AiNetworkController : Photon.MonoBehaviour
     [PunRPC]
     public void TakeDamage(int damage)
     {
-        data.hp -= damage;
+        hc.TakeDamage(damage);
     }
 }
