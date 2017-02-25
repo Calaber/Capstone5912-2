@@ -6,6 +6,7 @@ public class PlayerController : MonoBehaviour
 {
 
     DataController  data;
+    PhotonView      pv;
     new Rigidbody   rigidbody;
     public Camera   FPCamera;
 
@@ -14,7 +15,7 @@ public class PlayerController : MonoBehaviour
     bool            falling = false;
     bool            can_jump = true;
     bool            crouching = false;
-    bool            dead = false;
+    //bool            dead = false;
     public bool     attack_enabled = true;
     bool            busy = false;
     int             busy_frames = 0;
@@ -34,7 +35,7 @@ public class PlayerController : MonoBehaviour
     {
         data = GetComponent<DataController>();
         rigidbody = GetComponent<Rigidbody>();
-
+        pv  = GetComponent<PhotonView>();
         //Set Damage handlers
         HealthController hp = GetComponent<HealthController>();
         hp.onHit = this.OnDamage;
@@ -48,8 +49,8 @@ public class PlayerController : MonoBehaviour
         //Handle respawning after death
         if (respawn_timer > 0) { respawn_timer--;
             if (respawn_timer == 0) {
-                GameInitScript.gis.StartSpawnProcess(0);
-                PhotonNetwork.Destroy(gameObject);
+                GameInitScript.gis.StartCoroutine("SpawnPlayerInJail", 0);
+                NetworkManager.networkManager.Destroy(gameObject);
             }
         }
     }
@@ -81,10 +82,7 @@ public class PlayerController : MonoBehaviour
             if (!midair && !busy) { UpdateMovement(); }
             if (midair) { AirControl(); }
         }
-        else if (!dead) {
-            data.SetAnimation(Player_Animation.DYING);
-            dead = true;
-        }
+
         //check if falling (midair w/negative velocity)
         if (rigidbody.velocity.y < falling_velocity)
         {
@@ -159,7 +157,7 @@ public class PlayerController : MonoBehaviour
         {
             
         }
-        if (Input.GetKeyDown(KeyCode.M)&& !busy && !dead)
+        if (Input.GetKeyDown(KeyCode.M)&& !busy && data.alive)
         {
             GetComponent<HealthController>().TakeDamage(1);
 
@@ -216,11 +214,12 @@ public class PlayerController : MonoBehaviour
         {
             GameObject obj = hit.transform.gameObject;
             while(obj.transform.parent != null) { obj = obj.transform.parent.gameObject; }
-            HealthController hp_controller = obj.GetComponent<HealthController>();
-            if (hp_controller && hp_controller.enabled) {
-                hp_controller.TakeDamage(damage);
-                //print("Bang!");
+            //hp_controller.TakeDamage(damage);
+            PhotonView target = obj.GetComponent<PhotonView>();
+            if (target!=null && obj.GetComponent<HealthController>() != null) {
+                target.RPC("TakeDamage", PhotonTargets.All, 1);
             }
+            //print("Bang!");
         }
     }
 
@@ -242,6 +241,7 @@ public class PlayerController : MonoBehaviour
     }
 
     public void OnDie() {
+        data.SetAnimation(Player_Animation.DYING);
         respawn_timer = 200;
     }
 

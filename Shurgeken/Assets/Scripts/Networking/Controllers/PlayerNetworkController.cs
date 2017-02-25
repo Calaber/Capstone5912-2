@@ -8,6 +8,7 @@ public class PlayerNetworkController  : Photon.MonoBehaviour
     public event Respawn RespawnMe;
 
     DataController data;
+    HealthController health;
     new Rigidbody rigidbody;
     float smoothing = 10f;
 
@@ -15,13 +16,14 @@ public class PlayerNetworkController  : Photon.MonoBehaviour
     void Start()
     {
         data = GetComponent<DataController>();
+        health = GetComponent<HealthController>();
         rigidbody = GetComponent<Rigidbody>();
         if (photonView.isMine)
         {
-            GetComponent<Rigidbody>().useGravity = true;
-            GetComponent<DataController>().local = true;
+            rigidbody.useGravity = true;
+            data.local = true;
             GetComponent<PlayerController>().enabled = true;
-            GetComponent<HealthController>().enabled = true;
+            health.enabled = true;
             foreach (Camera cam in GetComponentsInChildren<Camera>()) { cam.enabled = true; }
 
             foreach (AudioListener audio in GetComponentsInChildren<AudioListener>())
@@ -72,7 +74,7 @@ public class PlayerNetworkController  : Photon.MonoBehaviour
     [PunRPC]
     public void TakeDamage(int damage)
     {
-        data.hp -= damage;
+        health.TakeDamage(damage);
     }
 
 }
