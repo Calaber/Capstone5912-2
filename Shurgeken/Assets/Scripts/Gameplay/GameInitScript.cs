@@ -15,6 +15,9 @@ public class GameInitScript : MonoBehaviour
     Transform[] spawnPoints;
 
     [SerializeField]
+    Transform[] jailSpawnPoints;
+
+    [SerializeField]
     Transform[] aiSpawnPoints;
 
     [SerializeField]
@@ -60,6 +63,20 @@ public class GameInitScript : MonoBehaviour
         player.GetComponent<PlayerNetworkController>().RespawnMe += StartSpawnProcess;
         sceneCamera.enabled = false;
         sceneListener.enabled = false;
+        // --caller--.GetComponent<PhotonView>().RPC("asdf", PhotonPlayer.Find(int.Parse(T--target--.transform.name)),params);
+    }
+
+    public IEnumerator SpawnPlayerInJail(float respawnTime)
+    {
+        yield return new WaitForSeconds(respawnTime);
+
+        int index = Random.Range(0, jailSpawnPoints.Length);
+        player = networkManager.spawnObject("Player", jailSpawnPoints[index], null);
+
+        player.GetComponent<PlayerNetworkController>().RespawnMe += StartSpawnProcess;
+        sceneCamera.enabled = false;
+        sceneListener.enabled = false;
+        // 
     }
 
     public IEnumerator SpawnAI()
@@ -86,7 +103,10 @@ public class GameInitScript : MonoBehaviour
     {
         sceneCamera.enabled = true;
         StartCoroutine("SpawnPlayer", respawnTime);
-        StartCoroutine("SpawnAI");
-        StartCoroutine("SpawnFlag");
+        //if (NetworkManager.networkManager.isMaster()) {
+            StartCoroutine("SpawnAI");
+            StartCoroutine("SpawnFlag");
+        //}
+
     }
 }
