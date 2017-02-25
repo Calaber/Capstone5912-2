@@ -32,20 +32,21 @@ public class GameInitScript : MonoBehaviour
     [SerializeField]
     AudioListener sceneListener;
 
-    [SerializeField]
-    float playerScale = 1.2f;
-
     GameObject player;
 
     public GameObject redFlag;
 
     private NetworkManager networkManager;
 
+    public GameObject playerTracker;
+
     // Use this for initialization
     void Start () {
         gis = this;
         networkManager = NetworkManager.networkManager;
 	}
+
+    
 
     void Update()
     {
@@ -55,6 +56,10 @@ public class GameInitScript : MonoBehaviour
         if (redFlag == null)
         {
             redFlag = GameObject.FindGameObjectWithTag("RedFlag");
+        }
+        if (playerTracker == null)
+        {
+            playerTracker = GameObject.FindGameObjectWithTag("Tracker");
         }
     }
 
@@ -69,8 +74,7 @@ public class GameInitScript : MonoBehaviour
 
         int index = Random.Range(0, spawnPoints.Length);
         player = networkManager.spawnObject("Player", spawnPoints[index], null);
-
-        player.transform.localScale = new Vector3(playerScale, playerScale, playerScale);
+        
         player.GetComponent<PlayerNetworkController>().RespawnMe += StartSpawnProcess;
         sceneCamera.enabled = false;
         sceneListener.enabled = false;
@@ -83,8 +87,7 @@ public class GameInitScript : MonoBehaviour
 
         int index = Random.Range(0, jailSpawnPoints.Length);
         player = networkManager.spawnObject("Player", jailSpawnPoints[index], null);
-
-        player.transform.localScale = new Vector3(playerScale, playerScale, playerScale);
+        player.GetComponent<DataController>().inJail = true;
         player.GetComponent<PlayerNetworkController>().RespawnMe += StartSpawnProcess;
         sceneCamera.enabled = false;
         sceneListener.enabled = false;
@@ -108,14 +111,21 @@ public class GameInitScript : MonoBehaviour
         yield return null;
     }
 
+    public IEnumerator SpawnPlayerTracker()
+    {
+        playerTracker = networkManager.spawnSceneObject("PlayerTracker", null);
+        yield return null;
+    }
+
     public void StartSpawnProcess(float respawnTime)
     {
         sceneCamera.enabled = true;
         StartCoroutine("SpawnPlayer", respawnTime);
-        //if (NetworkManager.networkManager.isMaster()) {
+        if (NetworkManager.networkManager.isMaster()) {
             StartCoroutine("SpawnAI");
             StartCoroutine("SpawnFlag");
-        //}
+            StartCoroutine("SpawnPlayerTracker");
+        }
 
     }
 }

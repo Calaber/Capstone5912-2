@@ -38,14 +38,6 @@ public class FlagNetworkController : Photon.MonoBehaviour
 
     void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {
-        if (NetworkManager.networkManager.isMaster())
-        {
-            flagController.enabled = true;
-        }
-        else
-        {
-            flagController.enabled = false;
-        }
         if (stream.isWriting)
         {
             stream.SendNext(data.position);

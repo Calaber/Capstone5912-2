@@ -111,6 +111,11 @@ public class NetworkManager : MonoBehaviour
         PhotonNetwork.JoinOrCreateRoom(gameName, ro, TypedLobby.Default);
     }
 
+    public GameObject spawnSceneObject(string objectName, Object[] data)
+    {
+        return spawnSceneObject(objectName, transform, data);
+    }
+
     public GameObject spawnSceneObject(string objectName, Transform trans, Object[] data)
     {
         return spawnSceneObject(objectName, trans.position, trans.rotation, data);
