@@ -32,7 +32,12 @@ public class GameInitScript : MonoBehaviour
     [SerializeField]
     AudioListener sceneListener;
 
+    [SerializeField]
+    float playerScale = 1.2f;
+
     GameObject player;
+
+    public GameObject redFlag;
 
     private NetworkManager networkManager;
 
@@ -46,6 +51,11 @@ public class GameInitScript : MonoBehaviour
     {
         if (connectionText)
             connectionText.text = PhotonNetwork.connectionStateDetailed.ToString();
+
+        if (redFlag == null)
+        {
+            redFlag = GameObject.FindGameObjectWithTag("RedFlag");
+        }
     }
 
     void OnJoinedRoom()
@@ -60,10 +70,11 @@ public class GameInitScript : MonoBehaviour
         int index = Random.Range(0, spawnPoints.Length);
         player = networkManager.spawnObject("Player", spawnPoints[index], null);
 
+        player.transform.localScale = new Vector3(playerScale, playerScale, playerScale);
         player.GetComponent<PlayerNetworkController>().RespawnMe += StartSpawnProcess;
         sceneCamera.enabled = false;
         sceneListener.enabled = false;
-        // --caller--.GetComponent<PhotonView>().RPC("asdf", PhotonPlayer.Find(int.Parse(T--target--.transform.name)),params);
+        // --target--.GetComponent<PhotonView>().RPC("asdf", PhotonTargets.All,params);
     }
 
     public IEnumerator SpawnPlayerInJail(float respawnTime)
@@ -73,10 +84,10 @@ public class GameInitScript : MonoBehaviour
         int index = Random.Range(0, jailSpawnPoints.Length);
         player = networkManager.spawnObject("Player", jailSpawnPoints[index], null);
 
+        player.transform.localScale = new Vector3(playerScale, playerScale, playerScale);
         player.GetComponent<PlayerNetworkController>().RespawnMe += StartSpawnProcess;
         sceneCamera.enabled = false;
         sceneListener.enabled = false;
-        // 
     }
 
     public IEnumerator SpawnAI()
@@ -92,10 +103,8 @@ public class GameInitScript : MonoBehaviour
 
     public IEnumerator SpawnFlag()
     {
-
-        GameObject flag;
         int index = Random.Range(0, flagSpawns.Length);
-        flag = networkManager.spawnSceneObject("Red Flag 1", flagSpawns[index], null);
+        redFlag = networkManager.spawnSceneObject("Red Flag 1", flagSpawns[index], null);
         yield return null;
     }
 

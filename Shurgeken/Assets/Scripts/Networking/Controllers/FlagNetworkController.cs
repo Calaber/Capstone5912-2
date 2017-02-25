@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class FlagNetworkController : Photon.MonoBehaviour
@@ -62,8 +61,8 @@ public class FlagNetworkController : Photon.MonoBehaviour
     }
 
     [PunRPC]
-    public void ThrowFlag()
+    public void ThrowFlag(int id)
     {
-        flagController.HandleFlagPass();
+        flagController.HandleFlagPass(id);
     }
 }

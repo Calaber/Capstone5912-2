@@ -78,5 +78,11 @@ public class PlayerNetworkController  : Photon.MonoBehaviour
         health.TakeDamage(damage);
     }
 
+    [PunRPC]
+    public void EnableAttack (bool able)
+    {
+        data.attachEnabled = able;
+    }
+
 }
 
