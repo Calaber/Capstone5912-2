@@ -27,9 +27,11 @@ public class MenuLogic : MonoBehaviour {
         mainMenu.SetActive(true);
         network.SetActive(false);
         createRoom.SetActive(false);
+        NetworkManager.networkManager.leaveLobby();
     }
     public void toNetwork()
     {
+        NetworkManager.networkManager.joinLobby();
         settings.SetActive(false);
         mainMenu.SetActive(false);
         network.SetActive(true);
