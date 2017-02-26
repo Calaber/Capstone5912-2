@@ -45,7 +45,8 @@ public class ResolutionScript : MonoBehaviour {
 
     public void Selected()
     {
-        string comparator = Screen.currentResolution.width + "x" + Screen.currentResolution.height;
+        string comparator;
+        comparator= Screen.width + "x" + Screen.height;
         int foundindex=resList.IndexOf(comparator);
         print(comparator + foundindex);
         scRes.value = foundindex;
