@@ -18,7 +18,7 @@ public class DamageState : IEnemyState
 
     public void ToAlertState()
     {
-        enemy.currentState = enemy.alertState;
+        enemy.setCurrentState(new AlertState(enemy));
     }
 
     public void ToAttackState()

@@ -6,6 +6,7 @@ public class FlagController : MonoBehaviour {
     public GameObject owner;
     public GameObject previous_owner;
     public int owner_timer;
+    public Transform spawnPoint;
     new Rigidbody rigidbody;
     float angle;
     float distance;

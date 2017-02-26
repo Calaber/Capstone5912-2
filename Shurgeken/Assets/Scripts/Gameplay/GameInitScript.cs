@@ -109,7 +109,7 @@ public class GameInitScript : MonoBehaviour
         int index = Random.Range(0, aiSpawnPoints.Length);
         guard = networkManager.spawnSceneObject("Guard", aiSpawnPoints[index], null);
         if (guard)
-            guard.GetComponent<EnemyStatePattern>().patrolPath = new TestPath(aiWayPoints);
+            guard.GetComponent<EnemyStatePattern>().setPatrolPath(new TestPath(aiWayPoints));
         yield return null;
     }
 
@@ -117,6 +117,8 @@ public class GameInitScript : MonoBehaviour
     {
         int index = Random.Range(0, flagSpawns.Length);
         redFlag = networkManager.spawnSceneObject("Red Flag 1", flagSpawns[index], null);
+        redFlag.GetComponent<FlagController>().spawnPoint = flagSpawns[index];
+        redFlag.transform.gameObject.layer = 11;
         yield return null;
     }
 
