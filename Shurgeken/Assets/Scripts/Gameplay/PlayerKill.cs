@@ -8,7 +8,6 @@ public class PlayerKill : MonoBehaviour{
         if (c.gameObject.tag == "Player") {
             c.gameObject.GetComponent<PhotonView>().RPC("TakeDamage", PhotonTargets.All,999);
         }
-
     }
 
 
