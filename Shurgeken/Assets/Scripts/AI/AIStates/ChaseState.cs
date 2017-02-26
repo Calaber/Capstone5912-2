@@ -31,7 +31,7 @@ public class ChaseState : IEnemyState {
 
     public void ToAlertState()
     {
-        enemy.currentState = enemy.alertState;
+        enemy.setCurrentState(new AlertState(enemy));
     }
 
     public void ToChaseState()
@@ -41,7 +41,7 @@ public class ChaseState : IEnemyState {
 
     public void ToFlagPickUpState()
     {
-        enemy.currentState = enemy.pickUp;
+        enemy.setCurrentState(new AlertState(enemy));
     }
 
     private void LookForFlag()
@@ -49,7 +49,7 @@ public class ChaseState : IEnemyState {
         RaycastHit hit;
         if (Physics.Raycast(enemy.eyes.transform.position, enemy.eyes.transform.forward, out hit, enemy.sightRange) && hit.collider.CompareTag("Flag"))
         {
-            enemy.chaseTarget = hit.transform;
+            enemy.setChaseTarget(hit.transform);
             Debug.Log("You");
             ToFlagPickUpState();
         }
@@ -82,7 +82,7 @@ public class ChaseState : IEnemyState {
 
                 if (!Physics.Raycast(enemy.eyes.transform.position, dirToTarget, light_cutoff_view_distance, enemy.obstacleLayerMasks))
                 {
-                    enemy.chaseTarget = target.transform;
+                    enemy.setChaseTarget(target.transform);
                     if (dstToTarget <= enemy.attackDistance)
                     {
                         ToAttackState();
@@ -101,12 +101,12 @@ public class ChaseState : IEnemyState {
     private void Chase()
     {
         enemy.meshRendererFlag.material.color = Color.red;
-        enemy.navMeshAgent.destination = enemy.chaseTarget.position;
-        enemy.navMeshAgent.Resume();
+        enemy.getNavMeshAgent().destination = enemy.getChaseTarget().position;
+        enemy.getNavMeshAgent().Resume();
     }
 
     public void ToAttackState()
     {
-        enemy.currentState = enemy.attackState;
+        enemy.setCurrentState(new AttackState(enemy));
     }
 }

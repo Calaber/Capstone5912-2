@@ -34,17 +34,17 @@ public class PatrolState : IEnemyState {
 
     public void ToAlertState()
     {
-        enemy.currentState = enemy.alertState;
+        enemy.setCurrentState(new AlertState(enemy));
     }
 
     public void ToChaseState()
     {
-        enemy.currentState = enemy.chaseState;
+        enemy.setCurrentState(new ChaseState(enemy));
     }
 
     public void ToFlagPickUpState()
     {
-        enemy.currentState = enemy.pickUp;
+        enemy.setCurrentState(new FlagPickUp(enemy));
     }
 
     private void LookForFlag()
@@ -52,7 +52,7 @@ public class PatrolState : IEnemyState {
         RaycastHit hit;
         if (Physics.Raycast(enemy.eyes.transform.position, enemy.eyes.transform.forward, out hit, enemy.sightRange) && hit.collider.CompareTag("Flag"))
         {
-            enemy.chaseTarget = hit.transform;
+            enemy.setChaseTarget(hit.transform);
             ToFlagPickUpState();
         }
     }
@@ -79,39 +79,22 @@ public class PatrolState : IEnemyState {
 
                 if (!Physics.Raycast(enemy.eyes.transform.position, dirToTarget, light_cutoff_view_distance, enemy.obstacleLayerMasks))
                 {
-                    enemy.chaseTarget = target.transform;
+                    enemy.setChaseTarget(target.transform);
                     ToChaseState();
                 }
             }
         }
-       /* RaycastHit hit; //Old Code Keeping here for time being
-        if (Physics.Raycast(enemy.eyes.transform.position, enemy.eyes.transform.forward, out hit, enemy.sightRange)&&hit.collider.CompareTag("Player")){
-            
-            //Light based view distance cutoff
-            GameObject player = hit.transform.gameObject;
-            GameObject lighting = LightManager.nearestLightSource(player);
-            float player_illumination = lighting.GetComponent<LightManager>().lightIntenstity(player);
-            float cutoff_sight_range = enemy.minimumSightRange + (enemy.sightRange - enemy.minimumSightRange) * player_illumination;
-            // Debug.Log("Enemy view distance:"cutoff_sight_range + " / 20.0");
-            Vector3 displacement = player.transform.position - enemy.transform.position;
-            if (displacement.magnitude < cutoff_sight_range) {
-                enemy.chaseTarget = hit.transform;
-                ToChaseState();
-            }
-            //
-
-        }*/
     }
 
     private void Patrol()
     {
         enemy.meshRendererFlag.material.color = Color.green;
-        enemy.navMeshAgent.destination = enemy.patrolPath.getPath()[nextWayPoint].position;
-        enemy.navMeshAgent.Resume();
+        enemy.getNavMeshAgent().destination = enemy.getPatrolPath().getPath()[nextWayPoint].position;
+        enemy.getNavMeshAgent().Resume();
         
-        if (enemy.navMeshAgent.remainingDistance <= enemy.navMeshAgent.stoppingDistance && !enemy.navMeshAgent.pathPending)
+        if (enemy.getNavMeshAgent().remainingDistance <= enemy.getNavMeshAgent().stoppingDistance && !enemy.getNavMeshAgent().pathPending)
         {
-            nextWayPoint = (nextWayPoint + 1) % enemy.patrolPath.getPath().Length;
+            nextWayPoint = (nextWayPoint + 1) % enemy.getPatrolPath().getPath().Length;
         }
     }
 

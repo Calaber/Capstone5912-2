@@ -5,53 +5,41 @@ using UnityEngine;
 using UnityEngine.AI;
 
 public class EnemyStatePattern : MonoBehaviour {
+    //Ai Settings
+    //Search Settings
     public float searchingTurnSpeed = 120f;
     public float searchingDuration = 4f;
+
+    //Attack Settings
+    public float attackDistance = 2f;
+
+    //Fov settings
     public float sightRange = 20f;
     public float minimumSightRange = 10f;
-
-    //Fov stuff
     public float enemyViewRadius = 12f;
     [Range(0,360)]
     public float enemyViewAngle = 110f;
     public LayerMask playerLayerMasks;
     public LayerMask obstacleLayerMasks;
+    public LayerMask flagLayerMasks;
     public Transform eyes;
     public Vector3 offset = new Vector3(0, .5f, 0);
 
     //Indicator
     public MeshRenderer meshRendererFlag;
     
-    [HideInInspector] public Transform chaseTarget;
-    [HideInInspector] public IEnemyState currentState;
-
-    //States that are gonna be refactored in next timebox or I'm gonna kill myself so much
-    [HideInInspector] public ChaseState chaseState;
-    [HideInInspector] public AlertState alertState;
-    [HideInInspector] public PatrolState patrolState;
-    [HideInInspector] public FlagPickUp pickUp;
-    [HideInInspector] public AttackState attackState;
-    [HideInInspector] public DeathState deathState;
-    [HideInInspector] public DamageState damageState;
-
+    //
+    [HideInInspector] private IEnemyState currentState;
+    
     //Pathing
     public Transform[] wayPoints;
-    [HideInInspector] public NavMeshAgent navMeshAgent;
-    [HideInInspector] public IPatrolPath patrolPath;
-
-    //Attack
-    [HideInInspector] public float attackDistance = 2f;
+    [HideInInspector] private IPatrolPath patrolPath;
+    [HideInInspector] private NavMeshAgent navMeshAgent;
+    [HideInInspector] private Transform chaseTarget;
 
     private void Awake()
     {
         patrolPath = new TestPath(wayPoints);
-        patrolState = new PatrolState(this);
-        alertState = new AlertState(this);
-        chaseState = new ChaseState(this);
-        pickUp = new FlagPickUp(this);
-        attackState = new AttackState(this);
-        damageState = new DamageState(this);
-        deathState = new DeathState(this);
 
         //Set Damage handlers
         HealthController hp = GetComponent<HealthController>();
@@ -64,7 +52,7 @@ public class EnemyStatePattern : MonoBehaviour {
     }
 
     void Start () {
-        currentState = patrolState;
+        currentState = new PatrolState(this);
     }
 	
 	void Update ()
@@ -76,6 +64,24 @@ public class EnemyStatePattern : MonoBehaviour {
         currentState.OnTriggerEnter(other);
     }
 
+
+    private void randomizePath()
+    {
+        patrolPath.randamizePath();
+    }
+
+    //Death and Damage Calls for hp contoller
+    private void OnDie()
+    {
+        currentState = new DeathState(this);
+    }
+
+    private void OnDamage(int dmg)
+    {
+        currentState = new DamageState(this);
+    }
+
+    //Method for conversion
     public Vector3 DirFromAngle(float angleInDegrees, bool angleIsGlobal)
     {
         if (!angleIsGlobal)
@@ -85,18 +91,39 @@ public class EnemyStatePattern : MonoBehaviour {
         return new Vector3(Mathf.Sin(angleInDegrees * Mathf.Deg2Rad), 0, Mathf.Cos(angleInDegrees * Mathf.Deg2Rad));
     }
 
-    private void randomizePath()
+    //Getters and Setters
+    public IEnemyState getCurrentState()
     {
-        patrolPath.randamizePath();
+        return currentState;
     }
 
-    private void OnDie()
+    public void setCurrentState(IEnemyState state)
     {
-        currentState = deathState;
+        currentState = state;
     }
 
-    private void OnDamage(int dmg)
+    public Transform getChaseTarget()
     {
-        currentState = damageState;
+        return chaseTarget;
+    }
+
+    public void setChaseTarget(Transform target)
+    {
+        chaseTarget = target;
+    }
+    
+    public NavMeshAgent getNavMeshAgent()
+    {
+        return navMeshAgent;
+    }
+
+    public IPatrolPath getPatrolPath()
+    {
+        return patrolPath;
+    }
+
+    public void setPatrolPath(IPatrolPath path)
+    {
+        patrolPath= path;
     }
 }

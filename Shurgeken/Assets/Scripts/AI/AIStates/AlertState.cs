@@ -27,7 +27,7 @@ public class AlertState : IEnemyState {
     public void ToPatrolState()
     {
         searchTimer = 0f;
-        enemy.currentState = enemy.patrolState;
+        enemy.setCurrentState(new PatrolState(enemy));
     }
 
     public void ToAlertState()
@@ -38,12 +38,12 @@ public class AlertState : IEnemyState {
     public void ToChaseState()
     {
         searchTimer = 0f;
-        enemy.currentState = enemy.chaseState;
+        enemy.setCurrentState(new ChaseState(enemy));
     }
 
     public void ToFlagPickUpState()
     {
-        enemy.currentState = enemy.pickUp;
+        enemy.setCurrentState(new FlagPickUp(enemy));
     }
 
     private void LookForFlag()
@@ -51,7 +51,7 @@ public class AlertState : IEnemyState {
         RaycastHit hit;
         if (Physics.Raycast(enemy.eyes.transform.position, enemy.eyes.transform.forward, out hit, enemy.sightRange) && hit.collider.CompareTag("Flag"))
         {
-            enemy.chaseTarget = hit.transform;
+            enemy.setChaseTarget(hit.transform);
             ToFlagPickUpState();
         }
     }
@@ -59,6 +59,7 @@ public class AlertState : IEnemyState {
     private void Look()
     {
         Collider[] targetsInViewRadius = Physics.OverlapSphere(enemy.transform.position, enemy.enemyViewRadius, enemy.playerLayerMasks);
+        Collider[] flagsInViewRadius = Physics.OverlapSphere(enemy.transform.position, enemy.enemyViewRadius, enemy.flagLayerMasks);
 
         for (int i = 0; i < targetsInViewRadius.Length; i++)
         {
@@ -79,7 +80,7 @@ public class AlertState : IEnemyState {
 
                 if (!Physics.Raycast(enemy.eyes.transform.position, dirToTarget, light_cutoff_view_distance, enemy.obstacleLayerMasks))
                 {
-                    enemy.chaseTarget = target.transform;
+                    enemy.setChaseTarget(target.transform);
                     ToChaseState();
                 }
             }
@@ -89,7 +90,7 @@ public class AlertState : IEnemyState {
     private void Search()
     {
         enemy.meshRendererFlag.material.color = Color.yellow;
-        enemy.navMeshAgent.Stop();
+        enemy.getNavMeshAgent().Stop();
         enemy.transform.Rotate(0, enemy.searchingTurnSpeed * Time.deltaTime, 0);
         searchTimer += Time.deltaTime;
 

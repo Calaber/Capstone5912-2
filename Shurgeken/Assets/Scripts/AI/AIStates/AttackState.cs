@@ -32,17 +32,17 @@ public class AttackState : IEnemyState {
 
     public void ToAlertState()
     {
-        enemy.currentState = enemy.alertState;
+        enemy.setCurrentState(new AlertState(enemy));
     }
 
     public void ToChaseState()
     {
-        enemy.currentState = enemy.chaseState;
+        enemy.setCurrentState(new ChaseState(enemy));
     }
 
     public void ToFlagPickUpState()
     {
-        enemy.currentState = enemy.pickUp;
+        enemy.setCurrentState(new FlagPickUp(enemy));
     }
 
     private void LookForFlag()
@@ -50,7 +50,7 @@ public class AttackState : IEnemyState {
         RaycastHit hit;
         if (Physics.Raycast(enemy.eyes.transform.position, enemy.eyes.transform.forward, out hit, enemy.sightRange) && hit.collider.CompareTag("Flag"))
         {
-            enemy.chaseTarget = hit.transform;
+            enemy.setChaseTarget(hit.transform);
             ToFlagPickUpState();
         }
     }
@@ -83,7 +83,7 @@ public class AttackState : IEnemyState {
                 {
                     if (dstToTarget > enemy.attackDistance)
                     {
-                        enemy.chaseTarget = target.transform;
+                        enemy.setChaseTarget(target.transform);
                         ToChaseState();
                     }
                 }

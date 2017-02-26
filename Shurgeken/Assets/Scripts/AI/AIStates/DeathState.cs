@@ -42,6 +42,6 @@ public class DeathState : IEnemyState
 
     public void UpdateState()
     {
-        Debug.Log("I'm dead");
+
     }
 }

@@ -30,7 +30,7 @@ public class FlagPickUp : IEnemyState
 
     public void ToAlertState()
     {
-        enemy.currentState = enemy.alertState;
+        enemy.setCurrentState(new AlertState(enemy));
     }
 
     public void ToChaseState()
@@ -46,10 +46,10 @@ public class FlagPickUp : IEnemyState
     private void Look()
     {
         RaycastHit hit;
-        Vector3 enemyToTarget = (enemy.chaseTarget.position + enemy.offset) - enemy.eyes.transform.position;
+        Vector3 enemyToTarget = (enemy.getChaseTarget().position + enemy.offset) - enemy.eyes.transform.position;
         if (Physics.Raycast(enemy.eyes.transform.position, enemyToTarget, out hit, enemy.sightRange) && hit.collider.CompareTag("Flag"))
         {
-            enemy.chaseTarget = hit.transform;
+            enemy.setChaseTarget(hit.transform);
         }
         else
         {
@@ -61,8 +61,8 @@ public class FlagPickUp : IEnemyState
     private void Chase()
     {
         enemy.meshRendererFlag.material.color = Color.blue;
-        enemy.navMeshAgent.destination = enemy.chaseTarget.position;
-        enemy.navMeshAgent.Resume();
+        enemy.getNavMeshAgent().destination = enemy.getChaseTarget().position;
+        enemy.getNavMeshAgent().Resume();
     }
 
     public void ToAttackState()
