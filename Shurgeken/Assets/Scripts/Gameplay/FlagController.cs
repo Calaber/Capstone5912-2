@@ -63,7 +63,7 @@ public class FlagController : MonoBehaviour {
     }
 
     public void HandleFlagPass(int id) {
-        if (id == owner.GetComponent<PhotonView>().viewID)
+        if (owner != null && id == owner.GetComponent<PhotonView>().viewID)
         {
             owner.GetComponent<PhotonView>().RPC("EnableAttack", PhotonTargets.All, true);
             this.transform.position = owner.transform.position + (owner.transform.TransformDirection(Vector3.forward) * 1.5f) + new Vector3(0, 1.5f, 0);
