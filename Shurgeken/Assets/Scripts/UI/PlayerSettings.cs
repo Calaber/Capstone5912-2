@@ -19,11 +19,24 @@ public class PlayerSettings : MonoBehaviour {
         get { return _fullscreen; }
         set { _fullscreen = value; }
     }
+
+    public int screenWidth
+    {
+        get { return _screenWidth; }
+        set { _screenWidth = value; }
+    }
+    public int screenHeight
+    {
+        get { return _screenHeight; }
+        set { _screenHeight = value; }
+    }
     // Use this for initialization
     void Start () {
         DontDestroyOnLoad(this);
         _volume = 0.2f;
-
+        _screenHeight = Screen.currentResolution.height;
+        _screenWidth = Screen.currentResolution.width;
+        print(_screenHeight+"x"+_screenWidth);
 
     }
 	
