@@ -35,7 +35,7 @@ public class EnemyStatePattern : MonoBehaviour {
     public Transform[] wayPoints;
     [HideInInspector] private IPatrolPath patrolPath;
     [HideInInspector] private NavMeshAgent navMeshAgent;
-    [HideInInspector] private Transform chaseTarget;
+    [HideInInspector] private GameObject chaseTarget;
 
     private void Awake()
     {
@@ -102,12 +102,12 @@ public class EnemyStatePattern : MonoBehaviour {
         currentState = state;
     }
 
-    public Transform getChaseTarget()
+    public GameObject getChaseTarget()
     {
         return chaseTarget;
     }
 
-    public void setChaseTarget(Transform target)
+    public void setChaseTarget(GameObject target)
     {
         chaseTarget = target;
     }

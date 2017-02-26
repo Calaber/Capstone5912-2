@@ -5,14 +5,12 @@ using UnityEngine;
 
 public class DeathState : IEnemyState
 {
-    private EnemyStatePattern enemy;
     public DeathState(EnemyStatePattern enemyStatePattern)
     {
-        enemy = enemyStatePattern;
     }
     public void OnTriggerEnter(Collider other)
     {
-        Debug.Log("I'm dead");
+
     }
 
     public void ToAlertState()

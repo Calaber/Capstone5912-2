@@ -45,23 +45,46 @@ public class FlagPickUp : IEnemyState
 
     private void Look()
     {
-        RaycastHit hit;
-        Vector3 enemyToTarget = (enemy.getChaseTarget().position + enemy.offset) - enemy.eyes.transform.position;
-        if (Physics.Raycast(enemy.eyes.transform.position, enemyToTarget, out hit, enemy.sightRange) && hit.collider.CompareTag("Flag"))
+        Collider[] flagsInViewRadius = Physics.OverlapSphere(enemy.transform.position, enemy.enemyViewRadius, enemy.flagLayerMasks);
+        bool flagInView = false;
+        for (int i = 0; i < flagsInViewRadius.Length; i++)
         {
-            enemy.setChaseTarget(hit.transform);
+            Transform target = flagsInViewRadius[i].transform;
+            Vector3 dirToTarget = (target.transform.position - enemy.transform.position).normalized;
+            if (Vector3.Angle(enemy.eyes.transform.forward, dirToTarget) < enemy.enemyViewAngle / 2)
+            {
+                float light_cutoff_view_distance = enemy.enemyViewRadius * 0.5f;/*[Adam] TODO: constant for how much light cuts vision, for now it's half*/
+
+                GameObject lightObject = LightManager.nearestLightSource(target.gameObject);
+                if (lightObject != null)
+                {
+                    Light light = lightObject.GetComponent<LightManager>().LightSource.GetComponent<Light>();
+
+                    float light_factor = 1.0f - (target.position - light.transform.position).magnitude / light.range;//[Adam] TODO: factor in light intensity. Some kind of parabolic function?
+                    if (light_factor > 0) { light_cutoff_view_distance += (enemy.enemyViewRadius * 0.5f) * light_factor; }
+                }
+
+                if (!Physics.Raycast(enemy.eyes.transform.position, dirToTarget, light_cutoff_view_distance, enemy.obstacleLayerMasks))
+                {
+                    flagInView = true;
+                    enemy.setChaseTarget(target.gameObject);
+                }
+                else
+                {
+                    ToAlertState();
+                }
+            }
         }
-        else
+        if (!flagInView)
         {
             ToAlertState();
         }
-
     }
 
     private void Chase()
     {
         enemy.meshRendererFlag.material.color = Color.blue;
-        enemy.getNavMeshAgent().destination = enemy.getChaseTarget().position;
+        enemy.getNavMeshAgent().destination = enemy.getChaseTarget().transform.position;
         enemy.getNavMeshAgent().Resume();
     }
 

@@ -117,6 +117,7 @@ public class GameInitScript : MonoBehaviour
     {
         int index = Random.Range(0, flagSpawns.Length);
         redFlag = networkManager.spawnSceneObject("Red Flag 1", flagSpawns[index], null);
+        redFlag.GetComponent<FlagController>().spawnPoint = flagSpawns[index];
         yield return null;
     }
 
