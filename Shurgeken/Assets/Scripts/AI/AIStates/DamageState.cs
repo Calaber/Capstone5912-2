@@ -10,6 +10,7 @@ public class DamageState : IEnemyState
     public DamageState(EnemyStatePattern enemyStatePattern)
     {
         enemy = enemyStatePattern;
+        enemy.GetComponent<DataController>().SetAnimation(Player_Animation.DAMAGED);
     }
     public void OnTriggerEnter(Collider other)
     {

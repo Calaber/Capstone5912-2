@@ -9,6 +9,7 @@ public class ChaseState : IEnemyState {
     public ChaseState(EnemyStatePattern statePatternEnemy)
     {
         enemy = statePatternEnemy;
+        enemy.GetComponent<DataController>().SetAnimation(Player_Animation.RUN_FORWARDS);
     }
 
     public void UpdateState()

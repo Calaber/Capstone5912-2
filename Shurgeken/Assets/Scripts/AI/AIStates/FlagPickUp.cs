@@ -10,6 +10,7 @@ public class FlagPickUp : IEnemyState
     public FlagPickUp(EnemyStatePattern enemyStatePattern)
     {
         enemy = enemyStatePattern;
+        enemy.GetComponent<DataController>().SetAnimation(Player_Animation.RUN_FORWARDS);
     }
 
     public void UpdateState()
