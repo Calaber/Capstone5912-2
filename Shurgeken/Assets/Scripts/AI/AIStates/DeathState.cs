@@ -5,8 +5,11 @@ using UnityEngine;
 
 public class DeathState : IEnemyState
 {
+    private EnemyStatePattern enemy;
     public DeathState(EnemyStatePattern enemyStatePattern)
     {
+        enemy = enemyStatePattern;
+        enemy.GetComponent<DataController>().SetAnimation(Player_Animation.RUN_FORWARDS);
     }
     public void OnTriggerEnter(Collider other)
     {
