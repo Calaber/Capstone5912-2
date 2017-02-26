@@ -28,29 +28,33 @@ public class ResolutionScript : MonoBehaviour {
 
         string listEntry;
         //There are 6 of each resolution in the array back to back
-        int indexer = 0; 
+        //int indexer = 0; 
         foreach (Resolution res in availableRes)
         {
             listEntry=res.width + "x" + res.height;
-            if (indexer % 6 == 0)
-            {
-                resList.Insert(0,listEntry);
-            }
-            indexer++;
+            resList.Insert(0, listEntry);
+            //if (indexer % 6 == 0)
+            //{
+            //    resList.Insert(0,listEntry);
+            //}
+            //indexer++;
             
 
         }
     }
 
-    void Selected()
+    public void Selected()
     {
-        string comparator = Screen.currentResolution.width + "x" + Screen.currentResolution.height;
+        string comparator;
+        comparator= Screen.width + "x" + Screen.height;
         int foundindex=resList.IndexOf(comparator);
+        print(comparator + foundindex);
         scRes.value = foundindex;
+        scRes.RefreshShownValue();
     }
 
 	// Update is called once per frame
 	void Update () {
-		
-	}
+        scRes.RefreshShownValue();
+    }
 }
