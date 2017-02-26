@@ -10,6 +10,7 @@ public class AttackState : IEnemyState {
     public AttackState(EnemyStatePattern statePatternEnemy)
     {
         enemy = statePatternEnemy;
+        enemy.GetComponent<DataController>().SetAnimation(Player_Animation.MELEE_1);
     }
 
     public void UpdateState()
@@ -129,8 +130,8 @@ public class AttackState : IEnemyState {
     {
         enemy.meshRendererFlag.material.color = Color.magenta;
         //The is where the enemy will attack the player, need player contoller code, animation to be added
-        enemy.GetComponent<DataController>().SetAnimation(Player_Animation.MELEE_1);
-        ToAttackState();
+        PhotonView target = enemy.getChaseTarget().GetComponent<PhotonView>();
+        target.RPC("TakeDamage", PhotonTargets.All, 1);
     }
 
     public void ToAttackState()
