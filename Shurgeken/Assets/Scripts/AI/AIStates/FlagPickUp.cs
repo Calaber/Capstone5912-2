@@ -66,8 +66,14 @@ public class FlagPickUp : IEnemyState
 
                 if (!Physics.Raycast(enemy.eyes.transform.position, dirToTarget, light_cutoff_view_distance, enemy.obstacleLayerMasks))
                 {
-                    flagInView = true;
-                    enemy.setChaseTarget(target.gameObject);
+                    float flagFromSpawn = Vector3.Distance(target.transform.position, target.GetComponent<FlagController>().spawnPoint.position);
+                    bool isFlagNotInSpawn = (flagFromSpawn > 0.5f);
+                    bool isOwned = target.gameObject.GetComponent<FlagController>().owner == null;
+                    if (isOwned && isFlagNotInSpawn)
+                    {
+                        flagInView = true;
+                        enemy.setChaseTarget(target.gameObject);
+                    }
                 }
                 else
                 {
