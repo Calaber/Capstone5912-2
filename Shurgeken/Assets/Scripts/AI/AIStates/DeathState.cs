@@ -9,10 +9,11 @@ public class DeathState : IEnemyState
     public DeathState(EnemyStatePattern enemyStatePattern)
     {
         enemy = enemyStatePattern;
+        enemy.GetComponent<DataController>().SetAnimation(Player_Animation.RUN_FORWARDS);
     }
     public void OnTriggerEnter(Collider other)
     {
-        Debug.Log("I'm dead");
+
     }
 
     public void ToAlertState()
@@ -42,6 +43,6 @@ public class DeathState : IEnemyState
 
     public void UpdateState()
     {
-        Debug.Log("I'm dead");
+
     }
 }

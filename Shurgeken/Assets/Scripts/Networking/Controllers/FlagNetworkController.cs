@@ -57,4 +57,11 @@ public class FlagNetworkController : Photon.MonoBehaviour
     {
         flagController.HandleFlagPass(id);
     }
+
+    [PunRPC]
+    public void ResetFlag()
+    {
+        GameInitScript.gis.StartCoroutine("SpawnFlag");
+        NetworkManager.networkManager.Destroy(this.gameObject);
+    }
 }
