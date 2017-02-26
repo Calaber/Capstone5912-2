@@ -30,7 +30,7 @@ public class GameMaster : MonoBehaviour {
         blueTeamScore++;
         if (blueTeamScore > scoreToWin)
         {
-
+            Debug.Log("Blue wins. Handle it please.");
         }
         else
         {
@@ -44,7 +44,7 @@ public class GameMaster : MonoBehaviour {
         redTeamScore++;
         if (redTeamScore > scoreToWin)
         {
-
+            Debug.Log("Red wins. Handle it please.");
         }
         else
         {

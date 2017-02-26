@@ -5,7 +5,6 @@ using UnityEngine;
 public class PlayerKill : MonoBehaviour{
 
     void OnTriggerEnter(Collider c){
-        Debug.Log("The tag is: " + c.gameObject.tag);
         if (c.gameObject.tag == "Player") {
             c.gameObject.GetComponent<PhotonView>().RPC("TakeDamage", PhotonTargets.All,999);
         }
