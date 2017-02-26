@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class FlagController : MonoBehaviour {
 
@@ -46,29 +44,34 @@ public class FlagController : MonoBehaviour {
     {
        
         if (other.tag == "Player") {
-            if (other.gameObject != previous_owner || owner_timer <= 0) {
+            if (owner == null && (other.gameObject != previous_owner || owner_timer <= 0)) {
                 owner = other.gameObject;
-                owner.GetComponent<PlayerController>().attack_enabled = false;
+                owner.GetComponent<PhotonView>().RPC("EnableAttack", PhotonTargets.All, false);
                 //print("pickup");
             }
 
         }
         if (other.tag == "Goal")
         {
-            if (owner) { owner.GetComponent<PlayerController>().attack_enabled = true; }
+            if (owner)
+            {
+                owner.GetComponent<PhotonView>().RPC("EnableAttack", PhotonTargets.All, true);
+            }
             NetworkManager.networkManager.Destroy(gameObject);
             //print("score");
         }
     }
 
-    public void HandleFlagPass() {
-
-        owner.GetComponent<PlayerController>().attack_enabled = true;
-        this.transform.position = owner.transform.position + (owner.transform.TransformDirection(Vector3.forward) * 1.5f) + new Vector3(0, 1.5f, 0);
-        rigidbody.velocity = owner.transform.TransformDirection(Vector3.forward)* pass_speed;
-        previous_owner = owner;
-        owner = null;
-        owner_timer = 100;
+    public void HandleFlagPass(int id) {
+        if (id == owner.GetComponent<PhotonView>().viewID)
+        {
+            owner.GetComponent<PhotonView>().RPC("EnableAttack", PhotonTargets.All, true);
+            this.transform.position = owner.transform.position + (owner.transform.TransformDirection(Vector3.forward) * 1.5f) + new Vector3(0, 1.5f, 0);
+            rigidbody.velocity = owner.transform.TransformDirection(Vector3.forward) * pass_speed;
+            previous_owner = owner;
+            owner = null;
+            owner_timer = 100;
+        }
     }
 
 }

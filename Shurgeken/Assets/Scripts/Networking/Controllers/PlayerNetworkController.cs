@@ -22,6 +22,7 @@ public class PlayerNetworkController  : Photon.MonoBehaviour
         {
             rigidbody.useGravity = true;
             data.local = true;
+            GetComponent<LightToggler>().enabled = true;
             GetComponent<PlayerController>().enabled = true;
             health.enabled = true;
             foreach (Camera cam in GetComponentsInChildren<Camera>()) { cam.enabled = true; }
@@ -75,6 +76,12 @@ public class PlayerNetworkController  : Photon.MonoBehaviour
     public void TakeDamage(int damage)
     {
         health.TakeDamage(damage);
+    }
+
+    [PunRPC]
+    public void EnableAttack (bool able)
+    {
+        data.attachEnabled = able;
     }
 
 }

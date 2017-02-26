@@ -19,7 +19,7 @@ public class LightToggler : MonoBehaviour
             if (light != null) {
                 Vector3 displacement = light.transform.position - this.transform.position;
                 if(displacement.magnitude < light_toggle_range)
-                    light.GetComponent<LightManager>().toggleLight();
+                    light.GetComponent<PhotonView>().RPC("switchLight", PhotonTargets.All);
             }
         }
     }

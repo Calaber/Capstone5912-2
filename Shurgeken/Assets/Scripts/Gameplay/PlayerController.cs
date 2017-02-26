@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
 
 
 public class PlayerController : MonoBehaviour 
@@ -16,8 +15,6 @@ public class PlayerController : MonoBehaviour
     bool            falling = false;
     bool            can_jump = true;
     bool            crouching = false;
-    //bool            dead = false;
-    public bool     attack_enabled = true;
     bool            busy = false;
     int             busy_frames = 0;
     public int      respawn_timer;
@@ -150,7 +147,7 @@ public class PlayerController : MonoBehaviour
     }
 
     void UpdateActions() {
-        if (Input.GetMouseButtonDown(0) && attack_enabled && !busy && !midair){
+        if (Input.GetMouseButtonDown(0) && data.attachEnabled && !busy && !midair){
             if (busy || midair) return;//Dont perform if we're doing something else.
             data.SetAnimation(Player_Animation.MELEE_1);
             busy = true;
@@ -158,12 +155,11 @@ public class PlayerController : MonoBehaviour
         }
         if (Input.GetMouseButtonDown(1))
         {
-            
+            GameInitScript.gis.redFlag.GetComponent<PhotonView>().RPC("ThrowFlag", PhotonTargets.All, GetComponent<PhotonView>().viewID);
         }
         if (Input.GetKeyDown(KeyCode.M)&& !busy && data.alive)
         {
             GetComponent<HealthController>().TakeDamage(1);
-
         }
     }
 
