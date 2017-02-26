@@ -54,6 +54,13 @@ public class PlayerTrackerScript : Photon.MonoBehaviour
         redPlayersInJail = new List<int>();
     }
 
+    [PunRPC]
+    public void respawnAllJail()
+    {
+        respawnBlueTeam();
+        respawnRedTeam();
+    }
+
     public void respawnAtBase(int id)
     {
         PhotonView.Find(id).RPC("RespawnAtBase", PhotonTargets.All);
