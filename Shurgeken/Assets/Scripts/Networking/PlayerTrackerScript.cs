@@ -5,10 +5,13 @@ using UnityEngine;
 public class PlayerTrackerScript : Photon.MonoBehaviour
 {
 
+    [SerializeField]    
     List<int> redPlayersInJail;
 
+    [SerializeField]
     List<int> bluePlayersInJail;
 
+    [SerializeField]
     List<int> notGettingOut;
 
     PhotonView photonView;
@@ -17,6 +20,7 @@ public class PlayerTrackerScript : Photon.MonoBehaviour
     {
         redPlayersInJail = new List<int>();
         bluePlayersInJail = new List<int>();
+        notGettingOut = new List<int>();
         photonView = this.GetComponent<PhotonView>();
     }
 
@@ -41,15 +45,17 @@ public class PlayerTrackerScript : Photon.MonoBehaviour
     public void respawnBlueTeam()
     {
         bluePlayersInJail.ForEach(player => respawnAtBase(player));
+        bluePlayersInJail = new List<int>();
     }
 
     [PunRPC]
     public void respawnRedTeam() {
         redPlayersInJail.ForEach(player => respawnAtBase(player));
+        redPlayersInJail = new List<int>();
     }
 
     public void respawnAtBase(int id)
     {
-        photonView.RPC("RespawnAtBase", PhotonPlayer.Find(id));
+        PhotonView.Find(id).RPC("RespawnAtBase", PhotonTargets.All);
     }
 }

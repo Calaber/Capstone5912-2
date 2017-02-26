@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -32,21 +31,25 @@ public class GameInitScript : MonoBehaviour
     [SerializeField]
     AudioListener sceneListener;
 
+    [SerializeField]
+    int enemyAiCount;
+
     GameObject player;
 
     public GameObject redFlag;
 
     private NetworkManager networkManager;
 
-    public GameObject playerTracker;
+    public PhotonView playerTracker;
 
     // Use this for initialization
-    void Start () {
+    void Start()
+    {
         gis = this;
         networkManager = NetworkManager.networkManager;
-	}
+    }
 
-    
+
 
     void Update()
     {
@@ -59,7 +62,9 @@ public class GameInitScript : MonoBehaviour
         }
         if (playerTracker == null)
         {
-            playerTracker = GameObject.FindGameObjectWithTag("Tracker");
+            GameObject go = GameObject.FindGameObjectWithTag("Tracker");
+            if (go != null)
+                playerTracker = go.GetComponent<PhotonView>();
         }
     }
 
@@ -74,7 +79,7 @@ public class GameInitScript : MonoBehaviour
 
         int index = Random.Range(0, spawnPoints.Length);
         player = networkManager.spawnObject("Player", spawnPoints[index], null);
-        
+
         player.GetComponent<PlayerNetworkController>().RespawnMe += StartSpawnProcess;
         sceneCamera.enabled = false;
         sceneListener.enabled = false;
@@ -87,7 +92,11 @@ public class GameInitScript : MonoBehaviour
 
         int index = Random.Range(0, jailSpawnPoints.Length);
         player = networkManager.spawnObject("Player", jailSpawnPoints[index], null);
-        player.GetComponent<DataController>().inJail = true;
+
+        // Mark that player is in jail
+        playerTracker.RPC("AddPlayerToJail", PhotonTargets.All, player.GetComponent<PhotonView>().ownerId, player.GetComponent<DataController>().team);
+
+        //Start spawn process and switch to the new camera and listener
         player.GetComponent<PlayerNetworkController>().RespawnMe += StartSpawnProcess;
         sceneCamera.enabled = false;
         sceneListener.enabled = false;
@@ -113,7 +122,7 @@ public class GameInitScript : MonoBehaviour
 
     public IEnumerator SpawnPlayerTracker()
     {
-        playerTracker = networkManager.spawnSceneObject("PlayerTracker", null);
+        playerTracker = networkManager.spawnSceneObject("PlayerTracker", null).GetComponent<PhotonView>();
         yield return null;
     }
 
@@ -121,8 +130,12 @@ public class GameInitScript : MonoBehaviour
     {
         sceneCamera.enabled = true;
         StartCoroutine("SpawnPlayer", respawnTime);
-        if (NetworkManager.networkManager.isMaster()) {
-            StartCoroutine("SpawnAI");
+        if (NetworkManager.networkManager.isMaster())
+        {
+            for (int i = 0; i < enemyAiCount; i++)
+            {
+                StartCoroutine("SpawnAI");
+            }
             StartCoroutine("SpawnFlag");
             StartCoroutine("SpawnPlayerTracker");
         }
