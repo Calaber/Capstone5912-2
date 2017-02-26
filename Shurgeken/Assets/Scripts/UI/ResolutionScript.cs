@@ -27,18 +27,11 @@ public class ResolutionScript : MonoBehaviour {
     {
 
         string listEntry;
-        //There are 6 of each resolution in the array back to back
-        //int indexer = 0; 
+
         foreach (Resolution res in availableRes)
         {
             listEntry=res.width + "x" + res.height;
             resList.Insert(0, listEntry);
-            //if (indexer % 6 == 0)
-            //{
-            //    resList.Insert(0,listEntry);
-            //}
-            //indexer++;
-            
 
         }
     }

@@ -9,7 +9,6 @@ public class toSettingsScript : MonoBehaviour {
 
     public Button settings;
     public MenuLogic menu;
-    public ResolutionScript resDrop;
 	// Use this for initialization
 	void Start () {
         settings.onClick.AddListener(TaskOnClick);
@@ -19,6 +18,6 @@ public class toSettingsScript : MonoBehaviour {
     void TaskOnClick()
     {
         menu.toSettings();
-        resDrop.Selected();
+        
     }
 }

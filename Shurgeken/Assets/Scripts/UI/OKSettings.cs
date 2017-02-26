@@ -48,5 +48,6 @@ public class OKSettings : MonoBehaviour {
         setScreenStyle();
         setRes();
         Screen.SetResolution(pSet.screenWidth, pSet.screenHeight, pSet.fullscreen);
+        
     }
 }

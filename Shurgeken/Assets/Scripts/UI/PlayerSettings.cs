@@ -34,6 +34,7 @@ public class PlayerSettings : MonoBehaviour {
     void Start () {
         DontDestroyOnLoad(this);
         _volume = 0.2f;
+        _fullscreen = Screen.fullScreen;
         _screenHeight = Screen.currentResolution.height;
         _screenWidth = Screen.currentResolution.width;
         print(_screenHeight+"x"+_screenWidth);
