@@ -42,6 +42,8 @@ public class GameInitScript : MonoBehaviour
 
     public PhotonView playerTracker;
 
+    public PhotonView gameMaster;
+
     // Use this for initialization
     void Start()
     {
@@ -65,6 +67,14 @@ public class GameInitScript : MonoBehaviour
             GameObject go = GameObject.FindGameObjectWithTag("Tracker");
             if (go != null)
                 playerTracker = go.GetComponent<PhotonView>();
+        }
+        if (gameMaster == null)
+        {
+            GameObject go = GameObject.FindGameObjectWithTag("gm");
+            if (go != null)
+            {
+                gameMaster = go.GetComponent<PhotonView>();
+            }
         }
     }
 
@@ -128,6 +138,12 @@ public class GameInitScript : MonoBehaviour
         yield return null;
     }
 
+    public IEnumerator SpawnGameMaster()
+    {
+        gameMaster = networkManager.spawnSceneObject("GameMaster", null).GetComponent<PhotonView>();
+        yield return null;
+    }
+
     public void StartSpawnProcess(float respawnTime)
     {
         sceneCamera.enabled = true;
@@ -141,6 +157,5 @@ public class GameInitScript : MonoBehaviour
             StartCoroutine("SpawnFlag");
             StartCoroutine("SpawnPlayerTracker");
         }
-
     }
 }
