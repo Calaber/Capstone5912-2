@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -33,7 +32,7 @@ public class GameInitScript : MonoBehaviour
     AudioListener sceneListener;
 
     [SerializeField]
-    float playerScale = 1.2f;
+    int enemyAiCount;
 
     GameObject player;
 
@@ -41,11 +40,18 @@ public class GameInitScript : MonoBehaviour
 
     private NetworkManager networkManager;
 
+    public PhotonView playerTracker;
+
+    public PhotonView gameMaster;
+
     // Use this for initialization
-    void Start () {
+    void Start()
+    {
         gis = this;
         networkManager = NetworkManager.networkManager;
-	}
+    }
+
+
 
     void Update()
     {
@@ -55,6 +61,20 @@ public class GameInitScript : MonoBehaviour
         if (redFlag == null)
         {
             redFlag = GameObject.FindGameObjectWithTag("RedFlag");
+        }
+        if (playerTracker == null)
+        {
+            GameObject go = GameObject.FindGameObjectWithTag("Tracker");
+            if (go != null)
+                playerTracker = go.GetComponent<PhotonView>();
+        }
+        if (gameMaster == null)
+        {
+            GameObject go = GameObject.FindGameObjectWithTag("gm");
+            if (go != null)
+            {
+                gameMaster = go.GetComponent<PhotonView>();
+            }
         }
     }
 
@@ -70,7 +90,6 @@ public class GameInitScript : MonoBehaviour
         int index = Random.Range(0, spawnPoints.Length);
         player = networkManager.spawnObject("Player", spawnPoints[index], null);
 
-        player.transform.localScale = new Vector3(playerScale, playerScale, playerScale);
         player.GetComponent<PlayerNetworkController>().RespawnMe += StartSpawnProcess;
         sceneCamera.enabled = false;
         sceneListener.enabled = false;
@@ -84,7 +103,10 @@ public class GameInitScript : MonoBehaviour
         int index = Random.Range(0, jailSpawnPoints.Length);
         player = networkManager.spawnObject("Player", jailSpawnPoints[index], null);
 
-        player.transform.localScale = new Vector3(playerScale, playerScale, playerScale);
+        // Mark that player is in jail
+        playerTracker.RPC("AddPlayerToJail", PhotonTargets.All, player.GetComponent<PhotonView>().ownerId, player.GetComponent<DataController>().team);
+
+        //Start spawn process and switch to the new camera and listener
         player.GetComponent<PlayerNetworkController>().RespawnMe += StartSpawnProcess;
         sceneCamera.enabled = false;
         sceneListener.enabled = false;
@@ -97,7 +119,7 @@ public class GameInitScript : MonoBehaviour
         int index = Random.Range(0, aiSpawnPoints.Length);
         guard = networkManager.spawnSceneObject("Guard", aiSpawnPoints[index], null);
         if (guard)
-            guard.GetComponent<EnemyStatePattern>().patrolPath = new TestPath(aiWayPoints);
+            guard.GetComponent<EnemyStatePattern>().setPatrolPath(new TestPath(aiWayPoints));
         yield return null;
     }
 
@@ -105,6 +127,20 @@ public class GameInitScript : MonoBehaviour
     {
         int index = Random.Range(0, flagSpawns.Length);
         redFlag = networkManager.spawnSceneObject("Red Flag 1", flagSpawns[index], null);
+        redFlag.GetComponent<FlagController>().spawnPoint = flagSpawns[index];
+        redFlag.transform.gameObject.layer = 11;
+        yield return null;
+    }
+
+    public IEnumerator SpawnPlayerTracker()
+    {
+        playerTracker = networkManager.spawnSceneObject("PlayerTracker", null).GetComponent<PhotonView>();
+        yield return null;
+    }
+
+    public IEnumerator SpawnGameMaster()
+    {
+        gameMaster = networkManager.spawnSceneObject("GameMaster", null).GetComponent<PhotonView>();
         yield return null;
     }
 
@@ -112,10 +148,14 @@ public class GameInitScript : MonoBehaviour
     {
         sceneCamera.enabled = true;
         StartCoroutine("SpawnPlayer", respawnTime);
-        //if (NetworkManager.networkManager.isMaster()) {
-            StartCoroutine("SpawnAI");
+        if (NetworkManager.networkManager.isMaster())
+        {
+            for (int i = 0; i < enemyAiCount; i++)
+            {
+                StartCoroutine("SpawnAI");
+            }
             StartCoroutine("SpawnFlag");
-        //}
-
+            StartCoroutine("SpawnPlayerTracker");
+        }
     }
 }

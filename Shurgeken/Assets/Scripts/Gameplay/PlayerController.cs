@@ -8,6 +8,7 @@ public class PlayerController : MonoBehaviour
     PhotonView      pv;
     new Rigidbody   rigidbody;
     public Camera   FPCamera;
+    HealthScript HealthBar;
 
 
     bool            midair = false;
@@ -40,6 +41,8 @@ public class PlayerController : MonoBehaviour
 
         Cursor.lockState = CursorLockMode.Locked;
         respawn_timer = -1;
+        HealthBar = GameObject.FindObjectOfType<HealthScript>();
+        HealthBar._hp = data;
     }
 
     void Update() {

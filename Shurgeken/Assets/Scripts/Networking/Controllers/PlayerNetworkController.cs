@@ -84,5 +84,12 @@ public class PlayerNetworkController  : Photon.MonoBehaviour
         data.attachEnabled = able;
     }
 
+    [PunRPC]
+    public void RespawnAtBase()
+    {
+        GameInitScript.gis.StartCoroutine("SpawnPlayer", 0);
+        NetworkManager.networkManager.Destroy(this.gameObject);
+    }
+
 }
 

@@ -7,6 +7,7 @@ public class OKSettings : MonoBehaviour {
 
     public PlayerSettings pSet;
     public Dropdown ScreenStyle;
+    public Dropdown Res;
     public MenuLogic menu;
 
     
@@ -24,20 +25,29 @@ public class OKSettings : MonoBehaviour {
         }
     }
 
+    void setRes()
+    {
+        Resolution [] newRes = Screen.resolutions;
+        print(newRes);
+        pSet.screenHeight = newRes[(Screen.resolutions.Length - 1) - Res.value].height;
+        pSet.screenWidth =newRes[(Screen.resolutions.Length - 1) - Res.value].width;
+    }
+
 
     public void okClick()
     {
 
         setScreenStyle();
-
-        Screen.SetResolution(Screen.width, Screen.height, pSet.fullscreen);
+        setRes();
+        Screen.SetResolution(pSet.screenWidth, pSet.screenHeight, pSet.fullscreen);
         menu.toMainMenu();
     }
 
     public void applyClick()
     {
         setScreenStyle();
-
-        Screen.SetResolution(Screen.width, Screen.height, pSet.fullscreen);
+        setRes();
+        Screen.SetResolution(pSet.screenWidth, pSet.screenHeight, pSet.fullscreen);
+        
     }
 }

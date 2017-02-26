@@ -6,11 +6,12 @@ using UnityEngine.SceneManagement;
 
 public class MenuLogic : MonoBehaviour {
 
-
     public GameObject mainMenu;
     public GameObject settings;
     public GameObject network;
     public GameObject createRoom;
+    public ResolutionScript resDrop;
+    public Dropdown ScreenStyle;
 
     public PlayerSettings playSet;
 
@@ -20,6 +21,17 @@ public class MenuLogic : MonoBehaviour {
         mainMenu.SetActive(false);
         network.SetActive(false);
         createRoom.SetActive(false);
+        resDrop.Selected();
+        if (playSet.fullscreen)
+        {
+            ScreenStyle.value = 0;
+        }
+        else
+        {
+
+            ScreenStyle.value = 1;
+        }
+
     }
     public void toMainMenu()
     {
@@ -27,9 +39,11 @@ public class MenuLogic : MonoBehaviour {
         mainMenu.SetActive(true);
         network.SetActive(false);
         createRoom.SetActive(false);
+        NetworkManager.networkManager.leaveLobby();
     }
     public void toNetwork()
     {
+        NetworkManager.networkManager.joinLobby();
         settings.SetActive(false);
         mainMenu.SetActive(false);
         network.SetActive(true);
@@ -44,8 +58,4 @@ public class MenuLogic : MonoBehaviour {
         createRoom.SetActive(true);
     }
 
-    public void setScreenRes()
-    {
-
-    }
 }

@@ -38,14 +38,6 @@ public class FlagNetworkController : Photon.MonoBehaviour
 
     void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {
-        if (NetworkManager.networkManager.isMaster())
-        {
-            flagController.enabled = true;
-        }
-        else
-        {
-            flagController.enabled = false;
-        }
         if (stream.isWriting)
         {
             stream.SendNext(data.position);
@@ -64,5 +56,12 @@ public class FlagNetworkController : Photon.MonoBehaviour
     public void ThrowFlag(int id)
     {
         flagController.HandleFlagPass(id);
+    }
+
+    [PunRPC]
+    public void ResetFlag()
+    {
+        GameInitScript.gis.StartCoroutine("SpawnFlag");
+        NetworkManager.networkManager.Destroy(this.gameObject);
     }
 }
