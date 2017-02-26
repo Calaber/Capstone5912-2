@@ -20,7 +20,7 @@ public class CreateMultiplayerRoomButton : MonoBehaviour {
     public void CreatePvPRoom()
     {
         NetworkManager.networkManager.createRoom(roomName.text, NetworkManager.GameType.PVP);
-        NetworkManager.networkManager.loadLevel("Demo 5");
+        NetworkManager.networkManager.loadLevel("Demo 6");
     }
     public void CreatePvERoom()
     {
