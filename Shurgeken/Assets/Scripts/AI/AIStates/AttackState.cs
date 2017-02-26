@@ -129,10 +129,12 @@ public class AttackState : IEnemyState {
     {
         enemy.meshRendererFlag.material.color = Color.magenta;
         //The is where the enemy will attack the player, need player contoller code, animation to be added
+        enemy.GetComponent<DataController>().SetAnimation(Player_Animation.MELEE_1);
+        ToAttackState();
     }
 
     public void ToAttackState()
     {
-        Debug.Log("Already Attacking Dummy");
+        enemy.setCurrentState(new AttackState(enemy));
     }
 }
