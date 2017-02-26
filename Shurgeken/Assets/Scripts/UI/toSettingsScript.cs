@@ -18,5 +18,6 @@ public class toSettingsScript : MonoBehaviour {
     void TaskOnClick()
     {
         menu.toSettings();
+        
     }
 }
