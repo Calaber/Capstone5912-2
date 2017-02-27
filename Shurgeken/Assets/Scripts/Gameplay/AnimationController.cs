@@ -21,6 +21,10 @@ public class AnimationController : MonoBehaviour {
             animator.SetInteger("animation_id", data.animation_id);
             animator.SetTrigger("transition_trigger");
             last_animation_id = data.animation_id;
+
+            //playing audio for animations
+            AudioManager audioManager = GetComponent<AudioManager>();
+            audioManager.PlaySound(data.animation_id);
         }
 	}
 }
