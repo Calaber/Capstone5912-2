@@ -28,6 +28,11 @@ public class PlayerController : MonoBehaviour
     public float    crouched_speed = 1.0f;
     public float    airstrafe_speed = 5.0f;
     public float    mouse_sensitivity = 1.0f;
+    //[HideInInspector]
+    public bool can_release_from_jail = false;
+    public int time_to_release = 200;
+    private int jail_release_frames;
+
 
     void Start()
     {
@@ -43,6 +48,7 @@ public class PlayerController : MonoBehaviour
         respawn_timer = -1;
         HealthBar = GameObject.FindObjectOfType<HealthScript>();
         HealthBar._hp = data;
+        jail_release_frames = 0;
     }
 
     void Update() {
@@ -52,6 +58,17 @@ public class PlayerController : MonoBehaviour
                 GameInitScript.gis.StartCoroutine("SpawnPlayerInJail", 0);
                 NetworkManager.networkManager.Destroy(gameObject);
             }
+        }
+        if (can_release_from_jail && Input.GetKey(KeyCode.F))
+        {
+            jail_release_frames++;
+            if (jail_release_frames > time_to_release) {
+                GameObject.Find("UI Popup").transform.FindChild("Jailbreak").GetComponent<PopupFadeout>().StartPopup();
+                //what do I do here?
+            }
+        }
+        else {
+            jail_release_frames = 0;
         }
     }
 

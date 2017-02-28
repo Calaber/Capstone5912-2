@@ -44,13 +44,14 @@ public class GameMaster : MonoBehaviour {
         redTeamScore++;
         if (redTeamScore >= scoreToWin)
         {
-            Debug.Log("Red wins. Handle it please.");
+            //Debug.Log("Red wins. Handle it please.");
 
             GameObject.Find("UI Popup").transform.FindChild("Win").GetComponent<PopupFadeout>().StartPopup();
                 //(Adam) TODO: ^ Not this. This is a bad way to do this, and won't work over the network.
         }
         else
         {
+            GameObject.Find("UI Popup").transform.FindChild("Score").GetComponent<PopupFadeout>().StartPopup();
             RespawnPlayersInJail();
         }
     }

@@ -6,8 +6,8 @@ using UnityEngine.UI;
 public class PopupFadeout : MonoBehaviour {
 
 
-    public int frames_to_last = 400;
-    public int frames_to_fade = 200;
+    public int frames_to_last = 200;
+    public int frames_to_fade = 100;
     private int frames_lasted, frames_faded;
 
     private Color current_color;
@@ -34,7 +34,6 @@ public class PopupFadeout : MonoBehaviour {
 
     public void StartPopup() {
         //(Adam)TODO: set/unset this.active so update methods aren't always being called. ATM generates linker errors trying it?
-        Debug.Log("Popup msg");
         frames_lasted = 0;
         frames_faded = 0;
         current_color = Color.white;
