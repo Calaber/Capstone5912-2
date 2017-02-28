@@ -92,6 +92,12 @@ public class PlayerController : MonoBehaviour
             data.SetAnimation(Player_Animation.FALLING);
         }
         else { falling = false; }
+
+        //Jitter fix. Remove very small velocities from colliding with uneven terrain.
+        if (rigidbody.velocity.magnitude < 0.01f/*some very small number*/) {
+            rigidbody.velocity = Vector3.zero;
+        }
+
     }
 
     void UpdateMovement()
