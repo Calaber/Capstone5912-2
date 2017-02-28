@@ -60,6 +60,7 @@ public class FlagController : MonoBehaviour {
             }
             NetworkManager.networkManager.Destroy(gameObject);
             //print("score");
+            GameInitScript.gis.gameMaster.RPC("redTeamScored", PhotonTargets.All);
         }
     }
 
