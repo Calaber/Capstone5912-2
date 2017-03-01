@@ -24,6 +24,11 @@ public class PlayerTrackerScript : Photon.MonoBehaviour
         photonView = this.GetComponent<PhotonView>();
     }
 
+    void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    {
+        /* No-op We dont care about this */
+    }
+
     [PunRPC]
     public void AddPlayerToJail(int viewId, string team)
     {

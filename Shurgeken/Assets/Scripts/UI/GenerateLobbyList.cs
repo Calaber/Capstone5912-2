@@ -77,7 +77,6 @@ public class GenerateLobbyList : MonoBehaviour {
                 int maxP = roomArray[i].MaxPlayers;
                 int curP = roomArray[i].PlayerCount;
                 buttonList.transform.GetChild(i).GetChild(1).GetComponent<Text>().text = curP.ToString() + " / " + maxP.ToString();
-                Debug.Log(roomArray[i].Name);
             }
             else
             {
