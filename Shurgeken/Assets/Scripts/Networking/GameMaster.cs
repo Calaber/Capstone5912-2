@@ -6,10 +6,12 @@ public class GameMaster : Photon.MonoBehaviour {
     public int redTeamScore;
     public int scoreToWin;
     public int round_reset_timer;
+    public static GameMaster gm;
 
 
     void Start() {
         round_reset_timer = -1;
+        gm = this;
     }
 
     void Update() {
