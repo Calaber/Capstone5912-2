@@ -67,7 +67,6 @@ public class GenerateLobbyList : MonoBehaviour {
     void GenerateList()
     {
         roomArray = NetworkManager.networkManager.getRoomList();
-        Debug.Log(roomArray.Length);
         for (int i = 0; i < pageListMax; i++)
         {
             string buttonName = buttonList.transform.GetChild(i).name;

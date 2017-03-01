@@ -44,7 +44,6 @@ public class PlayerSettings : MonoBehaviour {
         _fullscreen = Screen.fullScreen;
         _screenHeight = Screen.currentResolution.height;
         _screenWidth = Screen.currentResolution.width;
-        print(_screenHeight+"x"+_screenWidth);
         _inGame = false;
     }
 	

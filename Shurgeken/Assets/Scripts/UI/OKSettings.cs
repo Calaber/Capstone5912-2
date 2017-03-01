@@ -32,7 +32,6 @@ public class OKSettings : MonoBehaviour {
     void setRes()
     {
         Resolution [] newRes = Screen.resolutions;
-        print(newRes);
         pSet.screenHeight = newRes[(Screen.resolutions.Length - 1) - Res.value].height;
         pSet.screenWidth =newRes[(Screen.resolutions.Length - 1) - Res.value].width;
     }
