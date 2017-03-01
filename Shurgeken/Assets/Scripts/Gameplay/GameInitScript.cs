@@ -74,6 +74,7 @@ public class GameInitScript : MonoBehaviour
             if (go != null)
             {
                 gameMaster = go.GetComponent<PhotonView>();
+                Debug.Log("Assigned game master.");
             }
         }
     }
