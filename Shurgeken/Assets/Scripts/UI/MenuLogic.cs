@@ -21,7 +21,6 @@ public class MenuLogic : MonoBehaviour {
         mainMenu.SetActive(false);
         network.SetActive(false);
         createRoom.SetActive(false);
-        resDrop.Selected();
         if (playSet.fullscreen)
         {
             ScreenStyle.value = 0;
@@ -39,6 +38,7 @@ public class MenuLogic : MonoBehaviour {
         mainMenu.SetActive(true);
         network.SetActive(false);
         createRoom.SetActive(false);
+        resDrop.Selected();
         NetworkManager.networkManager.leaveLobby();
     }
     public void toNetwork()

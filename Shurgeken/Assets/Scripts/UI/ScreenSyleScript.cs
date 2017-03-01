@@ -10,6 +10,7 @@ public class ScreenSyleScript : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
+        playSet = GameObject.FindObjectOfType<PlayerSettings>();
         if (playSet.fullscreen)
         {
             ScreenStyle.value = 0;
