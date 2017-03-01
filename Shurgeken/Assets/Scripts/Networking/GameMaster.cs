@@ -24,13 +24,6 @@ public class GameMaster : Photon.MonoBehaviour {
 
     }
 
-    public static GameMaster gm;
-
-    void Start()
-    {
-        gm = this;
-    }
-
     void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {
         if (stream.isWriting)
