@@ -33,10 +33,15 @@ public class PopupFadeout : MonoBehaviour {
     }
 
     public void StartPopup() {
+        if (frames_lasted < frames_to_last) return;//dont'restart if we're not fading yet.
         //(Adam)TODO: set/unset this.active so update methods aren't always being called. ATM generates linker errors trying it?
         frames_lasted = 0;
         frames_faded = 0;
         current_color = Color.white;
         popup_image.color = current_color;
+        AudioManager am = this.GetComponent<AudioManager>();
+        if (am != null) {
+            am.PlaySound(0);
+        }
     }
 }
