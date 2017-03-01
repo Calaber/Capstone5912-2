@@ -8,6 +8,7 @@ public class PlayerSettings : MonoBehaviour {
     private bool _fullscreen;
     private int _screenWidth;
     private int _screenHeight;
+    private bool _inGame;
 
     public float volume
     {
@@ -30,6 +31,12 @@ public class PlayerSettings : MonoBehaviour {
         get { return _screenHeight; }
         set { _screenHeight = value; }
     }
+
+    public bool inGame
+    {
+        get { return _inGame; }
+        set { _inGame = value; }
+    }
     // Use this for initialization
     void Start () {
         DontDestroyOnLoad(this);
@@ -37,8 +44,7 @@ public class PlayerSettings : MonoBehaviour {
         _fullscreen = Screen.fullScreen;
         _screenHeight = Screen.currentResolution.height;
         _screenWidth = Screen.currentResolution.width;
-        print(_screenHeight+"x"+_screenWidth);
-
+        _inGame = false;
     }
 	
 	// Update is called once per frame

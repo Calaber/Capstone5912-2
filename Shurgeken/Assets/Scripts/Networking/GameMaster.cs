@@ -1,8 +1,6 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
-public class GameMaster : MonoBehaviour {
+public class GameMaster : Photon.MonoBehaviour {
 
     public int blueTeamScore;
     public int redTeamScore;
@@ -28,7 +26,7 @@ public class GameMaster : MonoBehaviour {
     public void blueTeamScored()
     {
         blueTeamScore++;
-        if (blueTeamScore > scoreToWin)
+        if (blueTeamScore >= scoreToWin)
         {
             Debug.Log("Blue wins. Handle it please.");
         }
@@ -42,12 +40,16 @@ public class GameMaster : MonoBehaviour {
     public void redTeamScored()
     {
         redTeamScore++;
-        if (redTeamScore > scoreToWin)
+        if (redTeamScore >= scoreToWin)
         {
-            Debug.Log("Red wins. Handle it please.");
+            //Debug.Log("Red wins. Handle it please.");
+
+            GameObject.Find("UI Popup").transform.FindChild("Win").GetComponent<PopupFadeout>().StartPopup();
+                //(Adam) TODO: ^ Not this. This is a bad way to do this, and won't work over the network.
         }
         else
         {
+            GameObject.Find("UI Popup").transform.FindChild("Score").GetComponent<PopupFadeout>().StartPopup();
             RespawnPlayersInJail();
         }
     }

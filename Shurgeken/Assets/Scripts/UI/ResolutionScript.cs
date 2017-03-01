@@ -7,7 +7,7 @@ using UnityEngine.UI;
 public class ResolutionScript : MonoBehaviour {
 
     public Dropdown scRes;
-    private List<string> resList;
+    private static List<string> resList;
     private Resolution[] availableRes;
 
 	// Use this for initialization
@@ -17,9 +17,7 @@ public class ResolutionScript : MonoBehaviour {
         CreateListOfRes();
         scRes.AddOptions(resList);
         Selected();
-        int test = 0;
-        test++;
-        print(test);
+
     }
 	
 
@@ -41,7 +39,6 @@ public class ResolutionScript : MonoBehaviour {
         string comparator;
         comparator= Screen.width + "x" + Screen.height;
         int foundindex=resList.IndexOf(comparator);
-        print(comparator + foundindex);
         scRes.value = foundindex;
         scRes.RefreshShownValue();
     }
