@@ -264,7 +264,10 @@ public class PlayerController : MonoBehaviour
 
     public void OnDie() {
         data.SetAnimation(Player_Animation.DYING);
-        respawn_timer = 200;
+        if (respawn_timer < 0)
+        {
+            respawn_timer = 200;
+        }
     }
 
 

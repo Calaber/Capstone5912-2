@@ -12,14 +12,17 @@ public class PopupFadeout : MonoBehaviour {
 
     private Color current_color;
     private RawImage popup_image;
-
+    private AudioSource aud;
 	// Use this for initialization
 	void Start () {
+        this.gameObject.SetActive(true);
         frames_lasted = frames_to_last;
         frames_faded = frames_to_fade;
         popup_image = this.gameObject.GetComponent<RawImage>();
         current_color = new Color();
         current_color.a = 0;
+        aud = gameObject.AddComponent<AudioSource>();
+        aud.spatialBlend = 0;
         popup_image.color = current_color;
     }
 	
@@ -41,7 +44,11 @@ public class PopupFadeout : MonoBehaviour {
         popup_image.color = current_color;
         AudioManager am = this.GetComponent<AudioManager>();
         if (am != null) {
-            am.PlaySound(0);
+            Debug.Log("Playing sound for banner");
+            AudioClip clip = am.audioClips[0];
+            aud.clip = clip;
+            aud.loop = false;
+            aud.Play();
         }
     }
 }
