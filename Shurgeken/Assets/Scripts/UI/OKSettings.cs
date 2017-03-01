@@ -10,7 +10,11 @@ public class OKSettings : MonoBehaviour {
     public Dropdown Res;
     public MenuLogic menu;
 
-    
+    void Start()
+    {
+        pSet = GameObject.FindObjectOfType<PlayerSettings>(); 
+    }
+
     void setScreenStyle()
     {
 
