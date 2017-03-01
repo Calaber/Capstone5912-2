@@ -5,7 +5,7 @@ public class GameMaster : Photon.MonoBehaviour {
     public int blueTeamScore;
     public int redTeamScore;
     public int scoreToWin;
-    int round_reset_timer;
+    public int round_reset_timer;
 
 
     void Start() {
@@ -29,12 +29,14 @@ public class GameMaster : Photon.MonoBehaviour {
             stream.SendNext(blueTeamScore);
             stream.SendNext(redTeamScore);
             stream.SendNext(scoreToWin);
+            stream.SendNext(round_reset_timer);
         }
         else
         {
             blueTeamScore = (int)stream.ReceiveNext();
             redTeamScore  = (int)stream.ReceiveNext();
             scoreToWin    = (int)stream.ReceiveNext();
+            round_reset_timer = (int)stream.ReceiveNext();
         }
     }
 
