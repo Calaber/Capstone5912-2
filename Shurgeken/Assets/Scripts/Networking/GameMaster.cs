@@ -1,8 +1,6 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
-public class GameMaster : MonoBehaviour {
+public class GameMaster : Photon.MonoBehaviour {
 
     public int blueTeamScore;
     public int redTeamScore;

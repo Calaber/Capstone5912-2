@@ -151,12 +151,13 @@ public class GameInitScript : MonoBehaviour
         StartCoroutine("SpawnPlayer", respawnTime);
         if (NetworkManager.networkManager.isMaster())
         {
+            StartCoroutine("SpawnPlayerTracker");
+            StartCoroutine("SpawnGameMaster");
+            StartCoroutine("SpawnFlag");
             for (int i = 0; i < enemyAiCount; i++)
             {
                 StartCoroutine("SpawnAI");
             }
-            StartCoroutine("SpawnFlag");
-            StartCoroutine("SpawnPlayerTracker");
         }
     }
 }
