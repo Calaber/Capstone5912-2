@@ -10,14 +10,14 @@ public class LoadRotaion : MonoBehaviour {
     float rotationsPerMinute;
 	// Use this for initialization
 	void Start () {
-        rotationsPerMinute = 50;
+        rotationsPerMinute = 80;
 	}
 	
 	// Update is called once per frame
 	void Update () {
         
 
-         shur.transform.Rotate(0,0 , 6.0f * rotationsPerMinute * Time.deltaTime);
+         shur.transform.Rotate(0,0 , -6.0f * rotationsPerMinute * Time.deltaTime);
         
     }
 }
