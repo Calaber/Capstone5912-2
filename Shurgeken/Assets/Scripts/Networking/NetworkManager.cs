@@ -164,4 +164,9 @@ public class NetworkManager : MonoBehaviour
     {
         return PhotonNetwork.isMasterClient;
     }
+
+    public int getPlayerCount()
+    {
+        return PhotonNetwork.countOfPlayersInRooms;
+    }
 }
