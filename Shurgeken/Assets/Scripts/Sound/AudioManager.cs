@@ -11,6 +11,7 @@ public class AudioManager : MonoBehaviour {
     void Start()
     {
         aud = gameObject.AddComponent<AudioSource>();
+        aud.spatialBlend = 1;
     }
 
     public void PlaySound (int clipV)
