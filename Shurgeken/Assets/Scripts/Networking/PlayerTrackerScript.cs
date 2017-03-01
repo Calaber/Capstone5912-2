@@ -39,7 +39,7 @@ public class PlayerTrackerScript : Photon.MonoBehaviour
                 if (NetworkManager.networkManager.getPlayerCount() == redPlayersInJail.Count)
                 {//lose condition
                     GameObject.Find("UI Popup").transform.FindChild("Lose").GetComponent<PopupFadeout>().StartPopup();
-                    GameInitScript.gis.gameMaster.round_reset_timer = 100;
+                    GameMaster.gm.round_reset_timer = 100;
                 }
                 break;
             case "blue":
