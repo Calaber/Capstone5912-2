@@ -9,6 +9,7 @@ public class MasterAudioSlide : MonoBehaviour {
     public PlayerSettings volSettings;
 	// Use this for initialization
 	void Start () {
+        volSettings = GameObject.FindObjectOfType<PlayerSettings>();
         volumeSlider.value = volSettings.volume;
         //volSettings.volume = volumeSlider.value;
 	}
