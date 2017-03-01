@@ -36,6 +36,11 @@ public class PlayerTrackerScript : Photon.MonoBehaviour
         {
             case "red":
                 redPlayersInJail.Add(viewId);
+                if (NetworkManager.networkManager.getPlayerCount() == redPlayersInJail.Count)
+                {//lose condition
+                    GameObject.Find("UI Popup").transform.FindChild("Lose").GetComponent<PopupFadeout>().StartPopup();
+
+                }
                 break;
             case "blue":
                 bluePlayersInJail.Add(viewId);

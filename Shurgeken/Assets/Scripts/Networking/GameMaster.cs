@@ -5,6 +5,22 @@ public class GameMaster : Photon.MonoBehaviour {
     public int blueTeamScore;
     public int redTeamScore;
     public int scoreToWin;
+    int round_reset_timer;
+
+
+    void Start() {
+        round_reset_timer = -1;
+    }
+
+    void Update() {
+        if (round_reset_timer > 0) {
+            round_reset_timer--;
+            if (round_reset_timer == 0) {
+                GameObject.Find("UI Popup").transform.FindChild("ExitButton").GetComponent<RoundEndButton>().Activate(true);
+            }
+        }
+
+    }
 
     void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {
@@ -45,6 +61,7 @@ public class GameMaster : Photon.MonoBehaviour {
             //Debug.Log("Red wins. Handle it please.");
 
             GameObject.Find("UI Popup").transform.FindChild("Win").GetComponent<PopupFadeout>().StartPopup();
+            round_reset_timer = 100;
                 //(Adam) TODO: ^ Not this. This is a bad way to do this, and won't work over the network.
         }
         else
