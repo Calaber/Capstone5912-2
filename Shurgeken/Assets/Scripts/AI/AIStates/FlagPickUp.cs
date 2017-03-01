@@ -74,6 +74,12 @@ public class FlagPickUp : IEnemyState
                     {
                         flagInView = true;
                         enemy.setChaseTarget(target.gameObject);
+                        if (checkDistanceToFlag())
+                        {
+                            GameInitScript.gis.StartCoroutine("SpawnFlag");
+                            NetworkManager.networkManager.Destroy(enemy.getChaseTarget().gameObject);
+                            ToAlertState();
+                        }
                     }
                 }
                 else
@@ -98,5 +104,18 @@ public class FlagPickUp : IEnemyState
     public void ToAttackState()
     {
         Debug.Log("Not gonna attack while I'm chasing the flag");
+    }
+
+    private Boolean checkDistanceToFlag()
+    {
+        bool inReturnDis = false;
+        float disToFlag = Vector3.Distance(enemy.transform.position, enemy.getChaseTarget().transform.position);
+
+        if(disToFlag < 0.8f)
+        {
+            inReturnDis = true;
+        }
+
+        return inReturnDis;
     }
 }

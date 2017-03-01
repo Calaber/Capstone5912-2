@@ -6,10 +6,13 @@ using UnityEngine;
 public class DeathState : IEnemyState
 {
     private EnemyStatePattern enemy;
+    private float timer;
     public DeathState(EnemyStatePattern enemyStatePattern)
     {
         enemy = enemyStatePattern;
-        enemy.GetComponent<DataController>().SetAnimation(Player_Animation.RUN_FORWARDS);
+        enemy.GetComponent<DataController>().SetAnimation(Player_Animation.DYING);
+        timer = 0.0f;
+        enemy.meshRendererFlag.material.color = Color.black;
     }
     public void OnTriggerEnter(Collider other)
     {
@@ -43,6 +46,11 @@ public class DeathState : IEnemyState
 
     public void UpdateState()
     {
-
+        timer = timer + Time.deltaTime;
+        if(timer >= 10.0f)
+        {
+            GameInitScript.gis.StartCoroutine("SpawnAI");
+            NetworkManager.networkManager.Destroy(enemy.gameObject);
+        }
     }
 }
