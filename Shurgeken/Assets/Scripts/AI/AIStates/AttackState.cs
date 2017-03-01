@@ -6,11 +6,14 @@ using UnityEngine;
 public class AttackState : IEnemyState {
 
     private readonly EnemyStatePattern enemy;
+    private float attackTimer;
 
     public AttackState(EnemyStatePattern statePatternEnemy)
     {
         enemy = statePatternEnemy;
         enemy.GetComponent<DataController>().SetAnimation(Player_Animation.MELEE_1);
+        attackTimer = 0.0f;
+        enemy.meshRendererFlag.material.color = Color.magenta;
     }
 
     public void UpdateState()
@@ -128,10 +131,13 @@ public class AttackState : IEnemyState {
 
     private void Attack()
     {
-        enemy.meshRendererFlag.material.color = Color.magenta;
         //The is where the enemy will attack the player, need player contoller code, animation to be added
-        PhotonView target = enemy.getChaseTarget().GetComponent<PhotonView>();
-        target.RPC("TakeDamage", PhotonTargets.All, 1);
+        if (attackTimer <= 0.5f) { 
+            PhotonView target = enemy.getChaseTarget().GetComponent<PhotonView>();
+            target.RPC("TakeDamage", PhotonTargets.All, 1);
+            attackTimer = 2.0f;
+        }
+        attackTimer -= Time.deltaTime;
     }
 
     public void ToAttackState()
