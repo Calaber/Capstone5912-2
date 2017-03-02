@@ -34,11 +34,12 @@ public class MenuLogic : MonoBehaviour {
     }
     public void toMainMenu()
     {
+        resDrop.Selected();
         settings.SetActive(false);
         mainMenu.SetActive(true);
         network.SetActive(false);
         createRoom.SetActive(false);
-        resDrop.Selected();
+        
         NetworkManager.networkManager.leaveLobby();
     }
     public void toNetwork()
