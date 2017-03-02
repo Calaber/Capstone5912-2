@@ -122,9 +122,17 @@ public class ChaseState : IEnemyState {
 
     private void Chase()
     {
-        enemy.meshRendererFlag.material.color = Color.red;
-        enemy.getNavMeshAgent().destination = enemy.getChaseTarget().transform.position;
-        enemy.getNavMeshAgent().Resume();
+        
+        try {
+            enemy.meshRendererFlag.material.color = Color.red;
+            enemy.getNavMeshAgent().destination = enemy.getChaseTarget().transform.position;
+            enemy.getNavMeshAgent().Resume();
+        }
+        catch (MissingReferenceException mre)
+        {
+            Debug.Log("Missing Reference Exception in chase state chase(0, going to alert");
+            ToAlertState();
+        }
     }
 
     public void ToAttackState()
