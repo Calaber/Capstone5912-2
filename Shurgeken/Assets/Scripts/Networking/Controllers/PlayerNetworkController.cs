@@ -86,10 +86,18 @@ public class PlayerNetworkController  : Photon.MonoBehaviour
     }
 
     [PunRPC]
-    public void RespawnAtBase()
+    public void RespawnAtBase(int viewid)
     {
-        GameInitScript.gis.StartCoroutine("SpawnPlayer", 0);
-        NetworkManager.networkManager.Destroy(this.gameObject);
+        if (GetComponent<PhotonView>().viewID == viewid && data.isInJail)
+        {
+            // Try to be safe
+            foreach (Camera cam in GetComponentsInChildren<Camera>()) { cam.enabled = false; }
+            foreach (AudioListener audio in GetComponentsInChildren<AudioListener>()) { audio.enabled = false; }
+
+            GameInitScript.gis.StartCoroutine("SpawnPlayer", 0);
+            Debug.Log("Destroying this gameobject");
+            NetworkManager.networkManager.Destroy(gameObject);
+        }
     }
 
 }

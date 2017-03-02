@@ -74,7 +74,7 @@ public class PlayerTrackerScript : Photon.MonoBehaviour
     [PunRPC]
     public void AddPlayerToJail(int viewId, string team)
     {
-        Debug.Log("The team is: " + team);
+        Debug.Log("Network Player count: " + NetworkManager.networkManager.getPlayerCount());
         switch (team.ToLower())
         {
             case "red":
@@ -107,13 +107,13 @@ public class PlayerTrackerScript : Photon.MonoBehaviour
     public void respawnBlueTeam()
     {
         bluePlayersInJail.ForEach(player => respawnAtBase(player));
-        bluePlayersInJail = new List<int>();
+        bluePlayersInJail.Clear();
     }
 
     [PunRPC]
     public void respawnRedTeam() {
         redPlayersInJail.ForEach(player => respawnAtBase(player));
-        redPlayersInJail = new List<int>();
+        redPlayersInJail.Clear();
     }
 
     [PunRPC]
@@ -125,6 +125,10 @@ public class PlayerTrackerScript : Photon.MonoBehaviour
 
     public void respawnAtBase(int id)
     {
-        PhotonView.Find(id).RPC("RespawnAtBase", PhotonTargets.All);
+        if (NetworkManager.networkManager.isMaster())
+        {
+            Debug.Log("Respawning id: " + id);
+            PhotonView.Find(id).RPC("RespawnAtBase", PhotonTargets.All, id);
+        }
     }
 }
