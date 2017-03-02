@@ -40,7 +40,7 @@ public class DataController : MonoBehaviour {
     public bool alive = true;
     public bool attachEnabled = true;
 
-    public string team = "red";
+    public string team;
     
     //Not synched
     public bool local = false;

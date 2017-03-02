@@ -103,8 +103,9 @@ public class GameInitScript : MonoBehaviour
 
         int index = Random.Range(0, jailSpawnPoints.Length);
         player = networkManager.spawnObject("Player", jailSpawnPoints[index], null);
-
+        player.GetComponent<DataController>().team = "red";
         // Mark that player is in jail
+        Debug.Log("Team is (GIS): " + player.GetComponent<DataController>().team);
         playerTracker.RPC("AddPlayerToJail", PhotonTargets.All, player.GetComponent<PhotonView>().viewID, player.GetComponent<DataController>().team);
 
         //Start spawn process and switch to the new camera and listener
