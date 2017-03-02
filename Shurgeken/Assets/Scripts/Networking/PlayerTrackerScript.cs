@@ -26,27 +26,78 @@ public class PlayerTrackerScript : Photon.MonoBehaviour
 
     void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {
-        /* No-op We dont care about this */
+        if (stream.isWriting)
+        {
+            stream.SendNext(redPlayersInJail.Count + bluePlayersInJail.Count + notGettingOut.Count);
+            redPlayersInJail.ForEach(id => stream.SendNext("Red-" + id.ToString()));
+            bluePlayersInJail.ForEach(id => stream.SendNext("Blue-" + id.ToString()));
+            notGettingOut.ForEach(id => stream.SendNext("Other-" + id.ToString()));
+        }
+        else
+        {
+            string recieved;
+            string[] split;
+            int viewId;
+            int count = (int)stream.ReceiveNext();
+            for (int i = 0; count > i; i++)
+            {
+                recieved = (string)stream.ReceiveNext();
+                split = recieved.Split('-');
+                switch (split[0])
+                {
+                    case "Red":
+                        viewId = int.Parse(split[1]);
+                        if (!redPlayersInJail.Contains(viewId))
+                        {
+                            redPlayersInJail.Add(viewId);
+                        }
+                        break;
+                    case "Blue":
+                        viewId = int.Parse(split[1]);
+                        if (!bluePlayersInJail.Contains(viewId))
+                        {
+                            bluePlayersInJail.Add(viewId);
+                        }
+                        break;
+                    case "Other":
+                        viewId = int.Parse(split[1]);
+                        if (!notGettingOut.Contains(viewId))
+                        {
+                            notGettingOut.Add(viewId);
+                        }
+                        break;
+                }
+            }
+        }
     }
 
     [PunRPC]
     public void AddPlayerToJail(int viewId, string team)
     {
-        switch (team)
+        switch (team.ToLower())
         {
             case "red":
-                redPlayersInJail.Add(viewId);
-                if (NetworkManager.networkManager.getPlayerCount() == redPlayersInJail.Count)
-                {//lose condition
-                    GameObject.Find("UI Popup").transform.FindChild("Lose").GetComponent<PopupFadeout>().StartPopup();
-                    GameMaster.gm.round_reset_timer = 100;
+                if (!redPlayersInJail.Contains(viewId))
+                {
+                    redPlayersInJail.Add(viewId);
+                    if (NetworkManager.networkManager.getPlayerCount() == redPlayersInJail.Count)
+                    {//lose condition
+                        GameObject.Find("UI Popup").transform.FindChild("Lose").GetComponent<PopupFadeout>().StartPopup();
+                        GameMaster.gm.round_reset_timer = 100;
+                    }
                 }
                 break;
             case "blue":
-                bluePlayersInJail.Add(viewId);
+                if (!bluePlayersInJail.Contains(viewId))
+                {
+                    bluePlayersInJail.Add(viewId);
+                }
                 break;
             default:
-                notGettingOut.Add(viewId);
+                if (!notGettingOut.Contains(viewId))
+                {
+                    notGettingOut.Add(viewId);
+                }
                 break;
         }
     }
@@ -55,13 +106,13 @@ public class PlayerTrackerScript : Photon.MonoBehaviour
     public void respawnBlueTeam()
     {
         bluePlayersInJail.ForEach(player => respawnAtBase(player));
-        bluePlayersInJail = new List<int>();
+        bluePlayersInJail.Clear();
     }
 
     [PunRPC]
     public void respawnRedTeam() {
         redPlayersInJail.ForEach(player => respawnAtBase(player));
-        redPlayersInJail = new List<int>();
+        redPlayersInJail.Clear();
     }
 
     [PunRPC]
@@ -73,6 +124,9 @@ public class PlayerTrackerScript : Photon.MonoBehaviour
 
     public void respawnAtBase(int id)
     {
-        PhotonView.Find(id).RPC("RespawnAtBase", PhotonTargets.All);
+        if (NetworkManager.networkManager.isMaster())
+        {
+            PhotonView.Find(id).RPC("RespawnAtBase", PhotonTargets.All, id);
+        }
     }
 }

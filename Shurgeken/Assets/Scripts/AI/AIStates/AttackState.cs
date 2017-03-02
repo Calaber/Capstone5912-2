@@ -131,13 +131,22 @@ public class AttackState : IEnemyState {
 
     private void Attack()
     {
-        //The is where the enemy will attack the player, need player contoller code, animation to be added
-        if (attackTimer <= 0.5f) { 
-            PhotonView target = enemy.getChaseTarget().GetComponent<PhotonView>();
-            target.RPC("TakeDamage", PhotonTargets.All, 1);
-            attackTimer = 2.0f;
+        try
+        {
+            //The is where the enemy will attack the player, need player contoller code, animation to be added
+            if (attackTimer <= 0.5f)
+            {
+                PhotonView target = enemy.getChaseTarget().GetComponent<PhotonView>();
+                target.RPC("TakeDamage", PhotonTargets.All, 1);
+                attackTimer = 2.0f;
+            }
+            attackTimer -= Time.deltaTime;
         }
-        attackTimer -= Time.deltaTime;
+        catch (MissingReferenceException mre)
+        {
+            Debug.Log("Missing Reference Exception caught in attack state attack, going to alert state");
+            ToAlertState();
+        }
     }
 
     public void ToAttackState()

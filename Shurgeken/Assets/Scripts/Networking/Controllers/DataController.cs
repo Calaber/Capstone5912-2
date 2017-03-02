@@ -39,8 +39,9 @@ public class DataController : MonoBehaviour {
     public int max_hp = 100;
     public bool alive = true;
     public bool attachEnabled = true;
+    public bool isInJail;
 
-    public string team = "red";
+    public string team;
     
     //Not synched
     public bool local = false;
