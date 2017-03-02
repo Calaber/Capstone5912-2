@@ -7,6 +7,7 @@ public class GameMenuLogic : MenuLogic {
     public GameObject Options;
     public GameObject Settings;
     public GameObject KeyBinds;
+    public GameObject Score;
     private GameObject WinScreen;
     private GameObject LoseScreen;
     private bool _win;
@@ -22,6 +23,7 @@ public class GameMenuLogic : MenuLogic {
     {
         Settings.SetActive(false);
         Options.SetActive(!Options.activeSelf);
+        Score.SetActive(!Score.activeSelf);
         if (!Options.activeSelf)
         {
             Cursor.lockState = CursorLockMode.Locked;
