@@ -105,7 +105,7 @@ public class GameInitScript : MonoBehaviour
         player = networkManager.spawnObject("Player", jailSpawnPoints[index], null);
 
         // Mark that player is in jail
-        playerTracker.RPC("AddPlayerToJail", PhotonTargets.All, player.GetComponent<PhotonView>().ownerId, player.GetComponent<DataController>().team);
+        playerTracker.RPC("AddPlayerToJail", PhotonTargets.All, player.GetComponent<PhotonView>().viewID, player.GetComponent<DataController>().team);
 
         //Start spawn process and switch to the new camera and listener
         player.GetComponent<PlayerNetworkController>().RespawnMe += StartSpawnProcess;
@@ -148,7 +148,6 @@ public class GameInitScript : MonoBehaviour
     public void StartSpawnProcess(float respawnTime)
     {
         sceneCamera.enabled = true;
-        StartCoroutine("SpawnPlayer", respawnTime);
         if (NetworkManager.networkManager.isMaster())
         {
             StartCoroutine("SpawnPlayerTracker");
@@ -159,5 +158,6 @@ public class GameInitScript : MonoBehaviour
                 StartCoroutine("SpawnAI");
             }
         }
+        StartCoroutine("SpawnPlayer", respawnTime);
     }
 }

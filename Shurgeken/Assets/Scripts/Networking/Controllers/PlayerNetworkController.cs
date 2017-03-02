@@ -22,6 +22,7 @@ public class PlayerNetworkController  : Photon.MonoBehaviour
         {
             rigidbody.useGravity = true;
             data.local = true;
+            data.team = "red";
             GetComponent<LightToggler>().enabled = true;
             GetComponent<PlayerController>().enabled = true;
             health.enabled = true;

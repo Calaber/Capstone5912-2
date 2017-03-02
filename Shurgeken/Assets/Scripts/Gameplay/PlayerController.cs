@@ -64,7 +64,7 @@ public class PlayerController : MonoBehaviour
             jail_release_frames++;
             if (jail_release_frames > time_to_release) {
                 GameObject.Find("UI Popup").transform.FindChild("Jailbreak").GetComponent<PopupFadeout>().StartPopup();
-                //what do I do here?
+                GameInitScript.gis.playerTracker.RPC("respawnAllJail", PhotonTargets.All);
             }
         }
         else {
