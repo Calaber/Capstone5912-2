@@ -38,9 +38,12 @@ public class ResolutionScript : MonoBehaviour {
     {
         string comparator;
         comparator= Screen.width + "x" + Screen.height;
-        int foundindex=resList.IndexOf(comparator);
-        scRes.value = foundindex;
-        scRes.RefreshShownValue();
+        if (resList!=null)
+        {
+            int foundindex = resList.IndexOf(comparator);
+            scRes.value = foundindex;
+            scRes.RefreshShownValue();
+        }
     }
 
 	// Update is called once per frame
