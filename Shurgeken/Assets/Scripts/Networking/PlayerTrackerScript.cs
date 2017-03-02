@@ -74,7 +74,6 @@ public class PlayerTrackerScript : Photon.MonoBehaviour
     [PunRPC]
     public void AddPlayerToJail(int viewId, string team)
     {
-        Debug.Log("Network Player count: " + NetworkManager.networkManager.getPlayerCount());
         switch (team.ToLower())
         {
             case "red":
@@ -127,7 +126,6 @@ public class PlayerTrackerScript : Photon.MonoBehaviour
     {
         if (NetworkManager.networkManager.isMaster())
         {
-            Debug.Log("Respawning id: " + id);
             PhotonView.Find(id).RPC("RespawnAtBase", PhotonTargets.All, id);
         }
     }
