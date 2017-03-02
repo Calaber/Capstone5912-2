@@ -15,7 +15,7 @@ public class MenuLogic : MonoBehaviour {
 
     public PlayerSettings playSet;
 
-    public void toSettings()
+    public virtual void toSettings()
     {
         settings.SetActive(true);
         mainMenu.SetActive(false);
@@ -32,7 +32,7 @@ public class MenuLogic : MonoBehaviour {
         }
 
     }
-    public void toMainMenu()
+    public virtual void toMainMenu()
     {
         resDrop.Selected();
         settings.SetActive(false);

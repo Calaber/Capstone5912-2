@@ -19,7 +19,7 @@ public class GameMenuLogic : MenuLogic {
         set { _win = value; }
     }
     
-    new void toMainMenu()
+    public override void toMainMenu()
     {
         Settings.SetActive(false);
         Options.SetActive(!Options.activeSelf);
@@ -36,14 +36,14 @@ public class GameMenuLogic : MenuLogic {
         }
     }
 
-    new void toSettings()
+    public override void toSettings()
     {
         Options.SetActive(false);
         Settings.SetActive(true);
     }
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.P)&&!Settings.activeSelf&&!gameEnd)
+        if (Input.GetKeyDown(KeyCode.P)&&!Settings.activeSelf)
         {
             toMainMenu();
         }
