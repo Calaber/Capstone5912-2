@@ -31,6 +31,8 @@ public class PlayerController : MonoBehaviour
     //[HideInInspector]
     public bool can_release_from_jail = false;
     public int time_to_release = 200;
+    [SerializeField]
+    private bool released;
     private int jail_release_frames;
 
 
@@ -49,6 +51,7 @@ public class PlayerController : MonoBehaviour
         HealthBar = GameObject.FindObjectOfType<HealthScript>();
         HealthBar._hp = data;
         jail_release_frames = 0;
+        released = false;
     }
 
     void Update() {
@@ -62,13 +65,15 @@ public class PlayerController : MonoBehaviour
         if (can_release_from_jail && Input.GetKey(KeyCode.F))
         {
             jail_release_frames++;
-            if (jail_release_frames > time_to_release) {
+            if (jail_release_frames > time_to_release && !released) {
+                released = true;
                 GameObject.Find("UI Popup").transform.FindChild("Jailbreak").GetComponent<PopupFadeout>().StartPopup();
-                //what do I do here?
+                GameInitScript.gis.playerTracker.RPC("respawnAllJail", PhotonTargets.All);
             }
         }
         else {
             jail_release_frames = 0;
+            released = false;
         }
     }
 

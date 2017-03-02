@@ -167,6 +167,6 @@ public class NetworkManager : MonoBehaviour
 
     public int getPlayerCount()
     {
-        return PhotonNetwork.countOfPlayersInRooms;
+        return PhotonNetwork.playerList.Length;
     }
 }
