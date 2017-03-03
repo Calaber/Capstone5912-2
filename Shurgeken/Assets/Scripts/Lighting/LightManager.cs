@@ -46,11 +46,18 @@ public class LightManager : MonoBehaviour {
         float distance = float.MaxValue;
         foreach (LightManager light in lights)
         {
-            Vector3 displacement = target.transform.position - light.transform.position;
-            if (displacement.sqrMagnitude < distance)
+            try
             {
-                distance = displacement.sqrMagnitude;
-                closest = light.gameObject;
+                Vector3 displacement = target.transform.position - light.transform.position;
+                if (displacement.sqrMagnitude < distance)
+                {
+                    distance = displacement.sqrMagnitude;
+                    closest = light.gameObject;
+                }
+            }
+            catch (MissingReferenceException mre)
+            {
+                Debug.Log("MissingReferenceException in LightManager nearestLightSource()");
             }
         }
         return closest;
