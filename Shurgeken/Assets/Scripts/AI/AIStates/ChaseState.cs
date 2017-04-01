@@ -105,10 +105,16 @@ public class ChaseState : IEnemyState {
 
                     if (!Physics.Raycast(enemy.eyes.transform.position, dirToTarget, light_cutoff_view_distance, enemy.obstacleLayerMasks))
                     {
-                        enemy.setChaseTarget(target.gameObject);
-                        if (dstToTarget <= enemy.attackDistance)
+                        if (target.gameObject.GetComponent<DataController>().alive)
                         {
-                            ToAttackState();
+                            enemy.setChaseTarget(target.gameObject);
+                            if (dstToTarget <= enemy.attackDistance)
+                            {
+                                ToAttackState();
+                            }
+                        }else
+                        {
+                            ToAlertState();
                         }
                     }
                     else
@@ -124,9 +130,12 @@ public class ChaseState : IEnemyState {
     {
         if (enemy.getChaseTarget() != null)
         {
-            enemy.meshRendererFlag.material.color = Color.red;
-            enemy.getNavMeshAgent().destination = enemy.getChaseTarget().transform.position;
-            enemy.getNavMeshAgent().Resume();
+            if (enemy.getChaseTarget().GetComponent<DataController>().alive)
+            {
+                enemy.meshRendererFlag.material.color = Color.red;
+                enemy.getNavMeshAgent().destination = enemy.getChaseTarget().transform.position;
+                enemy.getNavMeshAgent().Resume();
+            }
         }
         else
         {

@@ -131,15 +131,22 @@ public class AttackState : IEnemyState {
 
     private void Attack()
     {
-        if (enemy.getChaseTarget() != null) { 
-            //The is where the enemy will attack the player, need player contoller code, animation to be added
-            if (attackTimer <= 0.5f)
+        if (enemy.getChaseTarget() != null)
+        {
+            if (enemy.getChaseTarget().GetComponent<DataController>().alive)
             {
-                PhotonView target = enemy.getChaseTarget().GetComponent<PhotonView>();
-                target.RPC("TakeDamage", PhotonTargets.All, 1);
-                attackTimer = 5.5f;
+                //The is where the enemy will attack the player, need player contoller code, animation to be added
+                if (attackTimer <= 0.5f)
+                {
+                    PhotonView target = enemy.getChaseTarget().GetComponent<PhotonView>();
+                    target.RPC("TakeDamage", PhotonTargets.All, 1);
+                    attackTimer = 5.5f;
+                }
+                attackTimer -= Time.deltaTime;
+            }else
+            {
+                ToAlertState();
             }
-            attackTimer -= Time.deltaTime;
         }
         else{
             ToAlertState();
