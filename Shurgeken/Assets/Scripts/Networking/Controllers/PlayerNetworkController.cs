@@ -30,7 +30,7 @@ public class PlayerNetworkController  : Photon.MonoBehaviour
 
             foreach (AudioListener audio in GetComponentsInChildren<AudioListener>())
                 audio.enabled = true;
-            transform.Find("Head").gameObject.SetActive(false);
+            //transform.Find("Head").gameObject.SetActive(false);       [Adam]:Keeping head now, switching to 3rd person.
         }
         else
         {
@@ -82,7 +82,7 @@ public class PlayerNetworkController  : Photon.MonoBehaviour
     [PunRPC]
     public void EnableAttack (bool able)
     {
-        data.attachEnabled = able;
+        data.attackEnabled = able;
     }
 
     [PunRPC]

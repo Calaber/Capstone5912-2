@@ -9,14 +9,17 @@ public class PlayerController : MonoBehaviour
     new Rigidbody   rigidbody;
     public Camera   FPCamera;
     HealthScript HealthBar;
+    public Animator anim;
 
     public static bool invert_y_axis;
     bool            midair = false;
     bool            falling = false;
     bool            can_jump = true;
     bool            crouching = false;
-    bool            busy = false;
-    int             busy_frames = 0;
+    bool            attacking = false;
+    int             attack_frames = 0;
+    bool            being_damaged = false;
+    int             damage_frames = 0;
     public int      respawn_timer;
     float           falling_velocity = -1f;
     float           max_airstrafe_velocity = 10.0f;
@@ -28,6 +31,7 @@ public class PlayerController : MonoBehaviour
     public float    crouched_speed = 1.0f;
     public float    airstrafe_speed = 5.0f;
     public float    mouse_sensitivity = 1.0f;
+    public AttackHitboxManager attack_hitbox;
     //[HideInInspector]
     public bool can_release_from_jail = false;
     public int time_to_release = 200;
@@ -41,6 +45,7 @@ public class PlayerController : MonoBehaviour
         data = GetComponent<DataController>();
         rigidbody = GetComponent<Rigidbody>();
         pv  = GetComponent<PhotonView>();
+        anim = GetComponent<Animator>();
         //Set Damage handlers
         HealthController hp = GetComponent<HealthController>();
         hp.onHit = this.OnDamage;
@@ -56,8 +61,11 @@ public class PlayerController : MonoBehaviour
 
     void Update() {
         //Handle respawning after death
-        if (respawn_timer > 0) { respawn_timer--;
-            if (respawn_timer == 0) {
+        if (respawn_timer > 0)
+        {
+            respawn_timer--;
+            if (respawn_timer == 0)
+            {
                 GameInitScript.gis.StartCoroutine("SpawnPlayerInJail", 0);
                 NetworkManager.networkManager.Destroy(gameObject);
             }
@@ -81,29 +89,35 @@ public class PlayerController : MonoBehaviour
     void FixedUpdate()
     {
         UpdateMenu();
-        UpdateActions();
         //apply gravity
         rigidbody.AddForce(0, gravity, 0, ForceMode.Acceleration);
         //align camera
         FirstPersonCamera();
-        CheckIfGrounded();
-        //Attack logic: Stand still and cast a damage ray in the middle of the animation.
-        if (busy_frames > 0)
+        if(data.alive)CheckIfGrounded();
+
+        //Handle attack timing
+        if (attack_frames > 0)
         {
-            busy_frames--;
-            rigidbody.velocity = Vector3.zero;
-            if (busy_frames == 30) {
-                CastDamageRay(1.0f, 1);
+            attack_frames--;
+            if (attack_frames == 30) {
+                attack_hitbox.DoSwing(1); 
             }
         }
         else {
-            busy = false;
+            attacking = false;
         }
+
+        //Handle timing for being damaged
+        if(damage_frames > 0){damage_frames--;}
+        else { being_damaged = false; }
+
+
         if (data.alive)
         {
             UpdateJumping();
-            if (!midair && !busy) { UpdateMovement(); }
+            if (!midair && !being_damaged) { UpdateMovement(); }
             if (midair) { AirControl(); }
+            UpdateActions();
         }
 
         //check if falling (midair w/negative velocity)
@@ -116,9 +130,9 @@ public class PlayerController : MonoBehaviour
         }
         else { falling = false; }
 
-        //Jitter fix. Remove very small velocities from colliding with uneven terrain.
-        if (rigidbody.velocity.magnitude < 0.01f/*some very small number*/) {
-            rigidbody.velocity = Vector3.zero;
+        //Remove very small velocities from colliding with uneven terrain. Also don't slide on death.
+        if (!data.alive || rigidbody.velocity.magnitude < 0.02f/*some very small number*/) {
+            rigidbody.velocity = new Vector3(0, rigidbody.velocity.y, 0);
         }
 
     }
@@ -129,10 +143,12 @@ public class PlayerController : MonoBehaviour
         Vector3 velocity = rigidbody.velocity;
         Vector3 motion = WorldspaceInput();
         if (motion.magnitude > 1){motion.Normalize();}
-        if (motion.magnitude > 0.05f)
+        if (motion.magnitude > 0.05f )
         {
             float inputHorizontal = Input.GetAxisRaw("Horizontal");
             float inputVertical = Input.GetAxisRaw("Vertical");
+            anim.SetFloat("x_velocity", inputHorizontal);
+            anim.SetFloat("y_velocity", inputVertical);
             if (Mathf.Abs(inputHorizontal) > Mathf.Abs(inputVertical))
             {
                 if (inputHorizontal > 0) { data.SetAnimation(Player_Animation.RUN_RIGHT); }
@@ -151,8 +167,12 @@ public class PlayerController : MonoBehaviour
 
     void UpdateJumping()
     {
-        if (!busy && can_jump && Input.GetButtonDown("Jump"))
+        if (!being_damaged && can_jump && Input.GetButtonDown("Jump"))
         {
+            //cancel attack
+            attacking = false;
+            attack_frames = 0;
+            //jump
             midair = true;
             rigidbody.velocity += jump_speed * Vector3.up;
             data.SetAnimation(Player_Animation.JUMPING);
@@ -176,19 +196,14 @@ public class PlayerController : MonoBehaviour
     }
 
     void UpdateActions() {
-        if (Input.GetMouseButtonDown(0) && data.attachEnabled && !busy && !midair){
-            if (busy || midair) return;//Dont perform if we're doing something else.
+        if (Input.GetMouseButtonDown(0)/* && data.attackEnabled && !attacking && !being_damaged && !midair*/){
             data.SetAnimation(Player_Animation.MELEE_1);
-            busy = true;
-            busy_frames = 40;
+            attacking = true;
+            attack_frames = 40;
         }
         if (Input.GetMouseButtonDown(1))
         {
             GameInitScript.gis.redFlag.GetComponent<PhotonView>().RPC("ThrowFlag", PhotonTargets.All, GetComponent<PhotonView>().viewID);
-        }
-        if (Input.GetKeyDown(KeyCode.M)&& !busy && data.alive)
-        {
-            GetComponent<HealthController>().TakeDamage(1);
         }
     }
 
@@ -213,41 +228,26 @@ public class PlayerController : MonoBehaviour
         cam_pitch = Mathf.Clamp(cam_pitch, -70, 90);
 
         transform.eulerAngles = new Vector3(0, cam_turn, 0);
-        FPCamera.gameObject.transform.eulerAngles = new Vector3(-cam_pitch, cam_turn, 0);
+        FPCamera.gameObject.transform.parent.eulerAngles = new Vector3(-cam_pitch, cam_turn, 0);
+        
     }
 
     void CheckIfGrounded()
     {
         float distanceToGround;
-        float threshold = .45f;
+        float threshold = 0.65f;
         RaycastHit hit;
-        Vector3 offset = new Vector3(0, .4f, 0);
-        if (Physics.Raycast((transform.position + offset), -Vector3.up, out hit, 100f))
+        Vector3 offset = new Vector3(0, 0.5f, 0);
+        if (Physics.Raycast((transform.position + offset), -Vector3.up, out hit, threshold+0.1f))
         {
             distanceToGround = hit.distance;
-            if (distanceToGround < threshold)
+            if (distanceToGround < threshold)//if we are close to the ground, and are about to hit it.
             {
-                if (falling) {data.SetAnimation(Player_Animation.LANDING);}
+                if (falling && data.alive) {data.SetAnimation(Player_Animation.LANDING);}
                 midair = false;
                 falling = false;
                 can_jump = true;
             }
-        }
-    }
-
-    void CastDamageRay(float distance,int damage) {
-        Vector3 offset = Vector3.zero;
-        RaycastHit hit;
-        if (Physics.Raycast((FPCamera.transform.position + offset),FPCamera.transform.TransformDirection(Vector3.forward), out hit, distance))
-        {
-            GameObject obj = hit.transform.gameObject;
-            while(obj.transform.parent != null) { obj = obj.transform.parent.gameObject; }
-            //hp_controller.TakeDamage(damage);
-            PhotonView target = obj.GetComponent<PhotonView>();
-            if (target!=null && obj.GetComponent<HealthController>() != null) {
-                target.RPC("TakeDamage", PhotonTargets.All, 1);
-            }
-            //print("Bang!");
         }
     }
 
@@ -264,8 +264,8 @@ public class PlayerController : MonoBehaviour
     public void OnDamage(int dmg) {
         data.SetAnimation(Player_Animation.DAMAGED);
         if (data.local) { DamageIndicator.DamageFlash(); }
-        busy = true;
-        busy_frames = 30;
+        being_damaged = true;
+        damage_frames = 30;
     }
 
     public void OnDie() {
