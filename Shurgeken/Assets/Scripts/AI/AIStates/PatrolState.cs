@@ -65,7 +65,7 @@ public class PatrolState : IEnemyState {
             {
                 float light_cutoff_view_distance = enemy.enemyViewRadius * 0.5f;/*[Adam] TODO: constant for how much light cuts vision, for now it's half*/
 
-                GameObject lightObject = LightManager.nearestLightSource(target.gameObject);
+                GameObject lightObject = LightManager.nearestLightSource(target.gameObject, true);
                 if (lightObject != null)
                 {
                     Light light = lightObject.GetComponent<LightManager>().LightSource.GetComponent<Light>();
@@ -99,7 +99,7 @@ public class PatrolState : IEnemyState {
                 {
                     float light_cutoff_view_distance = enemy.enemyViewRadius * 0.5f;/*[Adam] TODO: constant for how much light cuts vision, for now it's half*/
 
-                    GameObject lightObject = LightManager.nearestLightSource(target.gameObject);
+                    GameObject lightObject = LightManager.nearestLightSource(target.gameObject, true);
                     if (lightObject != null)
                     {
                         Light light = lightObject.GetComponent<LightManager>().LightSource.GetComponent<Light>();
@@ -110,8 +110,11 @@ public class PatrolState : IEnemyState {
 
                     if (!Physics.Raycast(enemy.eyes.transform.position, dirToTarget, light_cutoff_view_distance, enemy.obstacleLayerMasks))
                     {
-                        enemy.setChaseTarget(target.gameObject);
-                        ToChaseState();
+                        if (target.gameObject.GetComponent<DataController>().alive)
+                        {
+                            enemy.setChaseTarget(target.gameObject);
+                            ToChaseState();
+                        }
                     }
                 }
             }
