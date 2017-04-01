@@ -18,31 +18,39 @@ public class LightManager : MonoBehaviour {
     }
 
     //Iterates through all managed lights to find the closest one that's active
-    public static GameObject nearestLightSource(GameObject target,bool active_only) {
+    public static GameObject nearestLightSource(GameObject target, bool active_only)
+    {
         GameObject closest = null;
+        int shift = 0, index;
         float distance = float.MaxValue;
-        bool null_light = false;
 
-        for (int i = 0; i < lights.Count; i++) {
-            if (lights[i] == null) { lights.RemoveAt(i); continue; }//updates lights.Count so this iteration should be safe.
+        for (int i = 0; (i - shift) < lights.Count; i++)
+        {
+            index = (i - shift);
+            if (lights[index] == null)
+            {
+                lights.RemoveAt(index);
+                shift++;
+                continue;
+            }//updates lights.Count so this iteration should be safe.
             try
             {
-                Vector3 displacement = target.transform.position - lights[i].transform.position;
+                Vector3 displacement = target.transform.position - lights[index].transform.position;
                 if (displacement.sqrMagnitude < distance)
                 {
-                    if (!active_only || lights[i].LightSource.GetActive())
+                    if (!active_only || lights[index].LightSource.GetActive())
                     {
                         distance = displacement.sqrMagnitude;
-                        closest = lights[i].gameObject;
+                        closest = lights[index].gameObject;
                     }
                 }
             }
             catch (MissingReferenceException mre)
             {
                 Debug.Log("MissingReferenceException in LightManager nearestLightSource()");
-
-                null_light = true;
-            } 
+                lights.RemoveAt(index);
+                shift++;
+            }
         }
         return closest;
     }
