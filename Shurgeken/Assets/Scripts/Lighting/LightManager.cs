@@ -5,7 +5,6 @@ using UnityEngine;
 public class LightManager : MonoBehaviour {
 
     private static List<LightManager> lights;
-    public bool Active = true;
     public bool Extinguishable = true;
     public GameObject LightSource;
 
@@ -23,10 +22,17 @@ public class LightManager : MonoBehaviour {
         GameObject closest = null;
         float distance = float.MaxValue;
         foreach (LightManager light in lights) {
-            Vector3 displacement = target.transform.position - light.transform.position;
-            if (displacement.sqrMagnitude < distance && light.Active) {
-                distance = displacement.sqrMagnitude;
-                closest = light.gameObject;
+            try
+            {
+                Vector3 displacement = target.transform.position - light.transform.position;
+                if (displacement.sqrMagnitude < distance && light.LightSource.GetActive())
+                {
+                    distance = displacement.sqrMagnitude;
+                    closest = light.gameObject;
+                }
+            } catch (MissingReferenceException mre)
+            {
+                Debug.Log("MissingReferenceException in LightManager nearestLightSource()");
             }
         }
         return closest;
@@ -40,11 +46,18 @@ public class LightManager : MonoBehaviour {
         float distance = float.MaxValue;
         foreach (LightManager light in lights)
         {
-            Vector3 displacement = target.transform.position - light.transform.position;
-            if (displacement.sqrMagnitude < distance)
+            try
             {
-                distance = displacement.sqrMagnitude;
-                closest = light.gameObject;
+                Vector3 displacement = target.transform.position - light.transform.position;
+                if (displacement.sqrMagnitude < distance)
+                {
+                    distance = displacement.sqrMagnitude;
+                    closest = light.gameObject;
+                }
+            }
+            catch (MissingReferenceException mre)
+            {
+                Debug.Log("MissingReferenceException in LightManager nearestLightSource()");
             }
         }
         return closest;
@@ -64,8 +77,7 @@ public class LightManager : MonoBehaviour {
     //Turns the light on and off
     public void toggleLight() {
         if (Extinguishable) {
-            Active = !Active;
-            LightSource.SetActive(Active);
+            LightSource.SetActive(!LightSource.GetActive());
         }
     }
 
