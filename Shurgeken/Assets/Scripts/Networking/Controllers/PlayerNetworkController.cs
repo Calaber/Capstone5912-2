@@ -26,7 +26,14 @@ public class PlayerNetworkController  : Photon.MonoBehaviour
             GetComponent<LightToggler>().enabled = true;
             GetComponent<PlayerController>().enabled = true;
             health.enabled = true;
-            foreach (Camera cam in GetComponentsInChildren<Camera>()) { cam.enabled = true; }
+            foreach (Camera cam in GetComponentsInChildren<Camera>()) {
+                cam.enabled = true;
+                cam.gameObject.AddComponent<BrightnessEffect>();
+                BrightnessEffect brights = cam.GetComponent<BrightnessEffect>();
+                brights.enabled=true;
+
+
+            }
 
             foreach (AudioListener audio in GetComponentsInChildren<AudioListener>())
                 audio.enabled = true;
