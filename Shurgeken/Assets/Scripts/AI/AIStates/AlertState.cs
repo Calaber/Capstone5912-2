@@ -60,7 +60,7 @@ public class AlertState : IEnemyState {
             {
                 float light_cutoff_view_distance = enemy.enemyViewRadius * 0.5f;/*[Adam] TODO: constant for how much light cuts vision, for now it's half*/
 
-                GameObject lightObject = LightManager.nearestLightSource(target.gameObject);
+                GameObject lightObject = LightManager.nearestLightSource(target.gameObject,true);
                 if (lightObject != null)
                 {
                     Light light = lightObject.GetComponent<LightManager>().LightSource.GetComponent<Light>();
@@ -94,7 +94,7 @@ public class AlertState : IEnemyState {
                 {
                     float light_cutoff_view_distance = enemy.enemyViewRadius * 0.5f;/*[Adam] TODO: constant for how much light cuts vision, for now it's half*/
 
-                    GameObject lightObject = LightManager.nearestLightSource(target.gameObject);
+                    GameObject lightObject = LightManager.nearestLightSource(target.gameObject,true);
                     if (lightObject != null)
                     {
                         Light light = lightObject.GetComponent<LightManager>().LightSource.GetComponent<Light>();
