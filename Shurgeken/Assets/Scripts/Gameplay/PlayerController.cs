@@ -10,7 +10,7 @@ public class PlayerController : MonoBehaviour
     public Camera   FPCamera;
     HealthScript HealthBar;
 
-
+    public static bool invert_y_axis;
     bool            midair = false;
     bool            falling = false;
     bool            can_jump = true;
@@ -62,6 +62,7 @@ public class PlayerController : MonoBehaviour
                 NetworkManager.networkManager.Destroy(gameObject);
             }
         }
+        //handle jail release
         if (can_release_from_jail && Input.GetKey(KeyCode.F))
         {
             jail_release_frames++;
@@ -206,7 +207,7 @@ public class PlayerController : MonoBehaviour
 
     void FirstPersonCamera()
     {
-        cam_pitch += Input.GetAxis("Mouse Y") * mouse_sensitivity;
+        cam_pitch += Input.GetAxis("Mouse Y") * mouse_sensitivity * ((invert_y_axis)? -1:1);
         cam_turn += Input.GetAxis("Mouse X") * mouse_sensitivity;
 
         cam_pitch = Mathf.Clamp(cam_pitch, -70, 90);
