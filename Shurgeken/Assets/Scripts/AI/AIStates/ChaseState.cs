@@ -58,7 +58,7 @@ public class ChaseState : IEnemyState {
             {
                 float light_cutoff_view_distance = enemy.enemyViewRadius * 0.5f;/*[Adam] TODO: constant for how much light cuts vision, for now it's half*/
 
-                GameObject lightObject = LightManager.nearestLightSource(target.gameObject);
+                GameObject lightObject = LightManager.nearestLightSource(target.gameObject, true);
                 if (lightObject != null)
                 {
                     Light light = lightObject.GetComponent<LightManager>().LightSource.GetComponent<Light>();
@@ -94,7 +94,7 @@ public class ChaseState : IEnemyState {
                     float dstToTarget = Vector3.Distance(enemy.transform.position, target.position);
                     float light_cutoff_view_distance = enemy.enemyViewRadius * 0.5f;/*[Adam] TODO: constant for how much light cuts vision, for now it's half*/
 
-                    GameObject lightObject = LightManager.nearestLightSource(target.gameObject);
+                    GameObject lightObject = LightManager.nearestLightSource(target.gameObject, true);
                     if (lightObject != null)
                     {
                         Light light = lightObject.GetComponent<LightManager>().LightSource.GetComponent<Light>();
@@ -105,10 +105,16 @@ public class ChaseState : IEnemyState {
 
                     if (!Physics.Raycast(enemy.eyes.transform.position, dirToTarget, light_cutoff_view_distance, enemy.obstacleLayerMasks))
                     {
-                        enemy.setChaseTarget(target.gameObject);
-                        if (dstToTarget <= enemy.attackDistance)
+                        if (target.gameObject.GetComponent<DataController>().alive)
                         {
-                            ToAttackState();
+                            enemy.setChaseTarget(target.gameObject);
+                            if (dstToTarget <= enemy.attackDistance)
+                            {
+                                ToAttackState();
+                            }
+                        }else
+                        {
+                            ToAlertState();
                         }
                     }
                     else
@@ -122,15 +128,17 @@ public class ChaseState : IEnemyState {
 
     private void Chase()
     {
-        
-        try {
-            enemy.meshRendererFlag.material.color = Color.red;
-            enemy.getNavMeshAgent().destination = enemy.getChaseTarget().transform.position;
-            enemy.getNavMeshAgent().Resume();
-        }
-        catch (MissingReferenceException mre)
+        if (enemy.getChaseTarget() != null)
         {
-            Debug.Log("Missing Reference Exception in chase state chase(0, going to alert");
+            if (enemy.getChaseTarget().GetComponent<DataController>().alive)
+            {
+                enemy.meshRendererFlag.material.color = Color.red;
+                enemy.getNavMeshAgent().destination = enemy.getChaseTarget().transform.position;
+                enemy.getNavMeshAgent().Resume();
+            }
+        }
+        else
+        {
             ToAlertState();
         }
     }

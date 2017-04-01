@@ -18,46 +18,38 @@ public class LightManager : MonoBehaviour {
     }
 
     //Iterates through all managed lights to find the closest one that's active
-    public static GameObject nearestLightSource(GameObject target) {
-        GameObject closest = null;
-        float distance = float.MaxValue;
-        foreach (LightManager light in lights) {
-            try
-            {
-                Vector3 displacement = target.transform.position - light.transform.position;
-                if (displacement.sqrMagnitude < distance && light.LightSource.GetActive())
-                {
-                    distance = displacement.sqrMagnitude;
-                    closest = light.gameObject;
-                }
-            } catch (MissingReferenceException mre)
-            {
-                Debug.Log("MissingReferenceException in LightManager nearestLightSource()");
-            }
-        }
-        return closest;
-    }
-
-
-    //Iterates through all managed lights to find the closest one, active or not.
-    public static GameObject nearestLightManager(GameObject target)
+    public static GameObject nearestLightSource(GameObject target, bool active_only)
     {
         GameObject closest = null;
+        int shift = 0, index;
         float distance = float.MaxValue;
-        foreach (LightManager light in lights)
+
+        for (int i = 0; (i - shift) < lights.Count; i++)
         {
+            index = (i - shift);
+            if (lights[index] == null)
+            {
+                lights.RemoveAt(index);
+                shift++;
+                continue;
+            }//updates lights.Count so this iteration should be safe.
             try
             {
-                Vector3 displacement = target.transform.position - light.transform.position;
+                Vector3 displacement = target.transform.position - lights[index].transform.position;
                 if (displacement.sqrMagnitude < distance)
                 {
-                    distance = displacement.sqrMagnitude;
-                    closest = light.gameObject;
+                    if (!active_only || lights[index].LightSource.GetActive())
+                    {
+                        distance = displacement.sqrMagnitude;
+                        closest = lights[index].gameObject;
+                    }
                 }
             }
             catch (MissingReferenceException mre)
             {
                 Debug.Log("MissingReferenceException in LightManager nearestLightSource()");
+                lights.RemoveAt(index);
+                shift++;
             }
         }
         return closest;
