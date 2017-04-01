@@ -110,8 +110,11 @@ public class PatrolState : IEnemyState {
 
                     if (!Physics.Raycast(enemy.eyes.transform.position, dirToTarget, light_cutoff_view_distance, enemy.obstacleLayerMasks))
                     {
-                        enemy.setChaseTarget(target.gameObject);
-                        ToChaseState();
+                        if (target.gameObject.GetComponent<DataController>().alive)
+                        {
+                            enemy.setChaseTarget(target.gameObject);
+                            ToChaseState();
+                        }
                     }
                 }
             }
