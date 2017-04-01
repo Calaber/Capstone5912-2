@@ -196,7 +196,8 @@ public class PlayerController : MonoBehaviour
     }
 
     void UpdateActions() {
-        if (Input.GetMouseButtonDown(0)/* && data.attackEnabled && !attacking && !being_damaged && !midair*/){
+        if (Input.GetMouseButtonDown(0) &&!attacking && !being_damaged/*&& data.attackEnabled && */)
+        {
             data.SetAnimation(Player_Animation.MELEE_1);
             attacking = true;
             attack_frames = 40;
