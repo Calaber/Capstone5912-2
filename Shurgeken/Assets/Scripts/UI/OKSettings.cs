@@ -9,6 +9,8 @@ public class OKSettings : MonoBehaviour {
     public Dropdown ScreenStyle;
     public Dropdown Res;
     public MenuLogic menu;
+    public Slider Brightness;
+    public Slider Contrast;
 
     void Start()
     {
@@ -36,6 +38,12 @@ public class OKSettings : MonoBehaviour {
         pSet.screenWidth =newRes[(Screen.resolutions.Length - 1) - Res.value].width;
     }
 
+    void setBrightContrast()
+    {
+        pSet.brightness = Brightness.value;
+        pSet.contrast = Contrast.value;
+    }
+
 
     public void okClick()
     {
@@ -43,6 +51,7 @@ public class OKSettings : MonoBehaviour {
         setScreenStyle();
         setRes();
         Screen.SetResolution(pSet.screenWidth, pSet.screenHeight, pSet.fullscreen);
+        setBrightContrast();
         menu.toMainMenu();
     }
 
@@ -50,7 +59,10 @@ public class OKSettings : MonoBehaviour {
     {
         setScreenStyle();
         setRes();
+        setBrightContrast();
         Screen.SetResolution(pSet.screenWidth, pSet.screenHeight, pSet.fullscreen);
         
     }
+
+
 }
