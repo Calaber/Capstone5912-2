@@ -22,31 +22,28 @@ public class LightManager : MonoBehaviour {
         GameObject closest = null;
         float distance = float.MaxValue;
         bool null_light = false;
-        foreach (LightManager light in lights) {
+
+        for (int i = 0; i < lights.Count; i++) {
+            if (lights[i] == null) { lights.RemoveAt(i); continue; }//updates lights.Count so this iteration should be safe.
             try
             {
-                Vector3 displacement = target.transform.position - light.transform.position;
+                Vector3 displacement = target.transform.position - lights[i].transform.position;
                 if (displacement.sqrMagnitude < distance)
                 {
-                    if (!active_only || light.LightSource.GetActive()) {
+                    if (!active_only || lights[i].LightSource.GetActive())
+                    {
                         distance = displacement.sqrMagnitude;
-                        closest = light.gameObject;
+                        closest = lights[i].gameObject;
                     }
                 }
-            } catch (MissingReferenceException mre)
+            }
+            catch (MissingReferenceException mre)
             {
                 Debug.Log("MissingReferenceException in LightManager nearestLightSource()");
-                
-                null_light = true;
-            }
-            if (null_light) break;
-        }
-        if (null_light) {
-            for (int i = 0; i < lights.Count; i++) {
-                if(lights[i]==null)lights.RemoveAt(i);//updates lights.Count so this iteration should be safe.
-            }
-        }
 
+                null_light = true;
+            } 
+        }
         return closest;
     }
 
