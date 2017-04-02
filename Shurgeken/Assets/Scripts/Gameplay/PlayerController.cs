@@ -59,11 +59,11 @@ public class PlayerController : MonoBehaviour
         released = false;
     }
 
-    void Update() {}
 
 
     private int my_anim_id = 0;
     private int my_anim_priority = 0;
+    void Update() { }
 
     void FixedUpdate()
     {

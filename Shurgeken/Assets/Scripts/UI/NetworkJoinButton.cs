@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class NetworkJoinButton : MonoBehaviour {
@@ -18,8 +19,9 @@ public class NetworkJoinButton : MonoBehaviour {
 
     void TaskOnClick()
     {
-        NetworkManager.networkManager.joinRoom(joinRoom.transform.GetChild(0).GetComponent<Text>().text);
-
-
+        PlayerSettings.PlayerRoomName = joinRoom.transform.GetChild(0).GetComponent<Text>().text;
+        PlayerSettings.JoiningRoom = true;
+        SceneManager.LoadScene(1);
+        //NetworkManager.networkManager.joinRoom(joinRoom.transform.GetChild(0).GetComponent<Text>().text);
     }
 }

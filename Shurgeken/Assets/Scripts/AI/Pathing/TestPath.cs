@@ -1,17 +1,16 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 public class TestPath : IPatrolPath
 {
     private List<Transform> allWaypoints;
     private List<Transform> randomWaypoints;
-    private int numWaypoints;
+    private int numWaypoints, currentWP;
     private System.Random rand;
 
     public TestPath(Transform[] waypoints)
     {
+        currentWP = 0;
         rand = new System.Random();
         numWaypoints = waypoints.Length;
         allWaypoints = new List<Transform>(waypoints);
@@ -21,6 +20,16 @@ public class TestPath : IPatrolPath
     public Transform[] getPath()
     {
         return randomWaypoints.ToArray();
+    }
+
+    public void advanceWaypoint()
+    {
+        currentWP = (currentWP + 1) % (randomWaypoints.Count - 1);
+    }
+
+    public Transform getCurrentWaypoint()
+    {
+        return randomWaypoints[currentWP];
     }
 
     public void randamizePath()
