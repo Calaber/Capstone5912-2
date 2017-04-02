@@ -17,11 +17,11 @@ public class PlayerController : MonoBehaviour
     bool            can_jump = true;
     bool            crouching = false;
     bool            attacking = false;
-    int             attack_frames = 0;
+    public int             attack_frames = 0;
     bool            being_damaged = false;
     int             damage_frames = 0;
     public int      respawn_timer;
-    float           falling_velocity = -1f;
+    float           falling_velocity = -2f;
     float           max_airstrafe_velocity = 10.0f;
     float           jump_speed = 12.0f;
     float           gravity = -9.81f;
@@ -84,7 +84,27 @@ public class PlayerController : MonoBehaviour
             jail_release_frames = 0;
             released = false;
         }
+        //Handle attack timing
+        if (attack_frames > 0)
+        {
+            attack_frames--;
+            if (attack_frames == 10)
+            {
+                attack_hitbox.DoSwing(1);
+            }
+        }
+        else {
+            attacking = false;
+        }
+
+        //Handle timing for being damaged
+        if (damage_frames > 0) { damage_frames--; }
+        else { being_damaged = false; }
     }
+
+
+    private int my_anim_id = 0;
+    private int my_anim_priority = 0;
 
     void FixedUpdate()
     {
@@ -93,27 +113,10 @@ public class PlayerController : MonoBehaviour
         rigidbody.AddForce(0, gravity, 0, ForceMode.Acceleration);
         //align camera
         FirstPersonCamera();
-        if(data.alive)CheckIfGrounded();
-
-        //Handle attack timing
-        if (attack_frames > 0)
-        {
-            attack_frames--;
-            if (attack_frames == 30) {
-                attack_hitbox.DoSwing(1); 
-            }
-        }
-        else {
-            attacking = false;
-        }
-
-        //Handle timing for being damaged
-        if(damage_frames > 0){damage_frames--;}
-        else { being_damaged = false; }
-
 
         if (data.alive)
         {
+            CheckIfGrounded();
             UpdateJumping();
             if (!midair && !being_damaged) { UpdateMovement(); }
             if (midair) { AirControl(); }
@@ -126,13 +129,19 @@ public class PlayerController : MonoBehaviour
             midair = true;
             falling = true;
             can_jump = false;
-            data.SetAnimation(Player_Animation.FALLING);
+            SetAnimationWithPriority(Player_Animation.FALLING, 4);
         }
         else { falling = false; }
 
-        //Remove very small velocities from colliding with uneven terrain. Also don't slide on death.
+
         if (!data.alive || rigidbody.velocity.magnitude < 0.02f/*some very small number*/) {
             rigidbody.velocity = new Vector3(0, rigidbody.velocity.y, 0);
+        }
+        
+        if (my_anim_id != -1) {
+            data.SetAnimation((Player_Animation)my_anim_id);
+            my_anim_id = -1;
+            my_anim_priority = 0;
         }
 
     }
@@ -143,7 +152,7 @@ public class PlayerController : MonoBehaviour
         Vector3 velocity = rigidbody.velocity;
         Vector3 motion = WorldspaceInput();
         if (motion.magnitude > 1){motion.Normalize();}
-        if (motion.magnitude > 0.05f )
+        if (motion.magnitude > 0.05f)
         {
             float inputHorizontal = Input.GetAxisRaw("Horizontal");
             float inputVertical = Input.GetAxisRaw("Vertical");
@@ -151,15 +160,15 @@ public class PlayerController : MonoBehaviour
             anim.SetFloat("y_velocity", inputVertical);
             if (Mathf.Abs(inputHorizontal) > Mathf.Abs(inputVertical))
             {
-                if (inputHorizontal > 0) { data.SetAnimation(Player_Animation.RUN_RIGHT); }
-                else { data.SetAnimation(Player_Animation.RUN_LEFT); }
+                if (inputHorizontal > 0) { SetAnimationWithPriority(Player_Animation.RUN_RIGHT, 7); }
+                else { SetAnimationWithPriority(Player_Animation.RUN_LEFT, 7); }
             }
             else {
-                if (inputVertical > 0) { data.SetAnimation(Player_Animation.RUN_FORWARDS); }
-                else { data.SetAnimation(Player_Animation.RUN_BACKWARDS); }
+                if (inputVertical > 0) { SetAnimationWithPriority(Player_Animation.RUN_FORWARDS, 7); }
+                else { SetAnimationWithPriority(Player_Animation.RUN_BACKWARDS, 7); }
             }
         }
-        else { data.SetAnimation(Player_Animation.IDLE); }
+        else { SetAnimationWithPriority(Player_Animation.RUN_BACKWARDS, 1); }
         velocity = motion * ((crouching)?crouched_speed:run_speed);
         velocity.y = rigidbody.velocity.y;
         rigidbody.velocity = velocity;
@@ -174,15 +183,15 @@ public class PlayerController : MonoBehaviour
             attack_frames = 0;
             //jump
             midair = true;
-            rigidbody.velocity += jump_speed * Vector3.up;
-            data.SetAnimation(Player_Animation.JUMPING);
+            rigidbody.velocity = new Vector3(rigidbody.velocity.x, jump_speed, rigidbody.velocity.z);
+            SetAnimationWithPriority(Player_Animation.JUMPING, 9);
         }
         if (midair)
         {
             can_jump = false;
             if (falling)
             {
-                data.SetAnimation(Player_Animation.FALLING);
+                SetAnimationWithPriority(Player_Animation.LANDING, 3);
             }
         }
     }
@@ -196,11 +205,11 @@ public class PlayerController : MonoBehaviour
     }
 
     void UpdateActions() {
-        if (Input.GetMouseButtonDown(0) &&!attacking && !being_damaged/*&& data.attackEnabled && */)
+        if (Input.GetMouseButtonDown(0) &&!attacking && !being_damaged && data.attackEnabled)
         {
-            data.SetAnimation(Player_Animation.MELEE_1);
+            SetAnimationWithPriority(Player_Animation.MELEE_1, 8);
             attacking = true;
-            attack_frames = 40;
+            attack_frames = 20;
         }
         if (Input.GetMouseButtonDown(1))
         {
@@ -236,15 +245,15 @@ public class PlayerController : MonoBehaviour
     void CheckIfGrounded()
     {
         float distanceToGround;
-        float threshold = 0.65f;
+        float threshold = 0.45f;
         RaycastHit hit;
-        Vector3 offset = new Vector3(0, 0.5f, 0);
+        Vector3 offset = new Vector3(0, 0.4f, 0);
         if (Physics.Raycast((transform.position + offset), -Vector3.up, out hit, threshold+0.1f))
         {
             distanceToGround = hit.distance;
             if (distanceToGround < threshold)//if we are close to the ground, and are about to hit it.
             {
-                if (falling && data.alive) {data.SetAnimation(Player_Animation.LANDING);}
+                if (falling && data.alive) { SetAnimationWithPriority(Player_Animation.LANDING, 1); }
                 midair = false;
                 falling = false;
                 can_jump = true;
@@ -263,19 +272,26 @@ public class PlayerController : MonoBehaviour
     }
 
     public void OnDamage(int dmg) {
-        data.SetAnimation(Player_Animation.DAMAGED);
+        SetAnimationWithPriority(Player_Animation.DAMAGED, 9);
         if (data.local) { DamageIndicator.DamageFlash(); }
         being_damaged = true;
         damage_frames = 30;
     }
 
     public void OnDie() {
-        data.SetAnimation(Player_Animation.DYING);
+        SetAnimationWithPriority(Player_Animation.DYING, 10);
         if (respawn_timer < 0)
         {
             respawn_timer = 200;
         }
     }
 
+    //bugfix: Multiple player aimations can be set on the same frame, with only one actually being sent to the animator.
+    public void SetAnimationWithPriority(Player_Animation anim, int priority) {
+        if (my_anim_priority < priority) {
+            my_anim_priority = priority;
+            my_anim_id = (int)anim;
+        }
+    }
 
 }
