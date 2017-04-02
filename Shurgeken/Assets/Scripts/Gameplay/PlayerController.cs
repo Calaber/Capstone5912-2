@@ -168,7 +168,7 @@ public class PlayerController : MonoBehaviour
                 else { SetAnimationWithPriority(Player_Animation.RUN_BACKWARDS, 7); }
             }
         }
-        else { SetAnimationWithPriority(Player_Animation.RUN_BACKWARDS, 1); }
+        else { SetAnimationWithPriority(Player_Animation.IDLE, 1); }
         velocity = motion * ((crouching)?crouched_speed:run_speed);
         velocity.y = rigidbody.velocity.y;
         rigidbody.velocity = velocity;
