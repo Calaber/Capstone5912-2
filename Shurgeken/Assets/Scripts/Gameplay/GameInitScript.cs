@@ -34,6 +34,9 @@ public class GameInitScript : MonoBehaviour
     [SerializeField]
     int enemyAiCount;
 
+    [SerializeField]
+    GameObject door;
+
     GameObject player;
 
     public GameObject redFlag;
@@ -43,6 +46,8 @@ public class GameInitScript : MonoBehaviour
     public PhotonView playerTracker;
 
     public PhotonView gameMaster;
+
+    public PhotonView doorController;
 
     // Use this for initialization
     void Start()
@@ -62,6 +67,19 @@ public class GameInitScript : MonoBehaviour
         {
             redFlag = GameObject.FindGameObjectWithTag("RedFlag");
         }
+        if (doorController == null)
+        {
+            GameObject dc = GameObject.FindGameObjectWithTag("spawndoor");
+            if (dc != null)
+            {
+                if (door != null)
+                {
+                    doorController = dc.GetComponent<PhotonView>();
+                    dc.GetComponent<SpawnDoorNetworkController>().door = door;
+                }
+            }
+        }
+
         if (playerTracker == null)
         {
             GameObject go = GameObject.FindGameObjectWithTag("Tracker");
@@ -148,11 +166,20 @@ public class GameInitScript : MonoBehaviour
         yield return null;
     }
 
+    public IEnumerator SpawnDoor()
+    {
+        SpawnDoorNetworkController sdnc = networkManager.spawnSceneObject("", null).GetComponent<SpawnDoorNetworkController>();
+        sdnc.door = door;
+        doorController = sdnc.gameObject.GetComponent<PhotonView>();
+        yield return null;
+    }
+
     public void StartSpawnProcess(float respawnTime)
     {
         sceneCamera.enabled = true;
         if (NetworkManager.networkManager.isMaster())
         {
+            StartCoroutine("SpawnDoor");
             StartCoroutine("SpawnPlayerTracker");
             StartCoroutine("SpawnGameMaster");
             StartCoroutine("SpawnFlag");

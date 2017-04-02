@@ -76,6 +76,11 @@ public class PlayerController : MonoBehaviour
             jail_release_frames = 0;
             released = false;
         }
+
+        if (Input.GetKeyDown(KeyCode.P))
+        {
+            GameInitScript.gis.doorController.RPC("OpenDoorRPC", PhotonTargets.All);
+        }
     }
 
     void FixedUpdate()
