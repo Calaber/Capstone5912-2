@@ -11,6 +11,7 @@ public class PlayerSettings : MonoBehaviour {
     private bool _inGame;
     private float _contrast;
     private float _brightness;
+    public static bool Y_Invert;
 
     public float volume
     {
@@ -60,6 +61,7 @@ public class PlayerSettings : MonoBehaviour {
         _inGame = false;
         _brightness = 0.5f;
         _contrast = 0.5f;
+        Y_Invert = false;
     }
 	
 	// Update is called once per frame

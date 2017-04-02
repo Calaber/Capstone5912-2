@@ -11,6 +11,7 @@ public class OKSettings : MonoBehaviour {
     public MenuLogic menu;
     public Slider Brightness;
     public Slider Contrast;
+    public Dropdown Inverter;
 
     void Start()
     {
@@ -44,7 +45,11 @@ public class OKSettings : MonoBehaviour {
         pSet.contrast = Contrast.value;
     }
 
-
+    void setInvert()
+    {
+        PlayerController.invert_y_axis = (Inverter.value == 1);
+        PlayerSettings.Y_Invert = (Inverter.value == 1);
+    }
     public void okClick()
     {
 
@@ -52,6 +57,7 @@ public class OKSettings : MonoBehaviour {
         setRes();
         Screen.SetResolution(pSet.screenWidth, pSet.screenHeight, pSet.fullscreen);
         setBrightContrast();
+        setInvert();
         menu.toMainMenu();
     }
 
@@ -59,6 +65,7 @@ public class OKSettings : MonoBehaviour {
     {
         setScreenStyle();
         setRes();
+        setInvert();
         setBrightContrast();
         Screen.SetResolution(pSet.screenWidth, pSet.screenHeight, pSet.fullscreen);
         
