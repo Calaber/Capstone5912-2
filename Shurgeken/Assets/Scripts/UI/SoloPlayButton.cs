@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 
@@ -23,8 +24,9 @@ public class SoloPlayButton : MonoBehaviour {
     /// </summary>
     void TaskOnClick()
     {
-        NetworkManager.networkManager.createRoom("myRoom", NetworkManager.GameType.SINGLE);
-        NetworkManager.networkManager.loadLevel("Demo 5");
-
+        PlayerSettings.PlayerRoomName = "Single";
+        PlayerSettings.PlayGame = NetworkManager.GameType.SINGLE;
+        PlayerSettings.JoiningRoom = false;
+        SceneManager.LoadScene(1);
     }
 }

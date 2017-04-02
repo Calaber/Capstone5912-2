@@ -69,21 +69,24 @@ public class GenerateLobbyList : MonoBehaviour {
         roomArray = NetworkManager.networkManager.getRoomList();
         for (int i = 0; i < pageListMax; i++)
         {
-            string buttonName = buttonList.transform.GetChild(i).name;
-            if (i+(10*(currentPage-1)) < roomArray.Length)
+            if (!(roomArray[i].MaxPlayers == 1))
             {
-                buttonList.transform.GetChild(i).GetComponent<Button>().interactable = true;
-                buttonList.transform.GetChild(i).GetChild(0).GetComponent<Text>().text = roomArray[i].Name;
-                int maxP = roomArray[i].MaxPlayers;
-                int curP = roomArray[i].PlayerCount;
-                buttonList.transform.GetChild(i).GetChild(1).GetComponent<Text>().text = curP.ToString() + " / " + maxP.ToString();
-            }
-            else
-            {
+                string buttonName = buttonList.transform.GetChild(i).name;
+                if (i + (10 * (currentPage - 1)) < roomArray.Length)
+                {
+                    buttonList.transform.GetChild(i).GetComponent<Button>().interactable = true;
+                    buttonList.transform.GetChild(i).GetChild(0).GetComponent<Text>().text = roomArray[i].Name;
+                    int maxP = roomArray[i].MaxPlayers;
+                    int curP = roomArray[i].PlayerCount;
+                    buttonList.transform.GetChild(i).GetChild(1).GetComponent<Text>().text = curP.ToString() + " / " + maxP.ToString();
+                }
+                else
+                {
 
-                buttonList.transform.GetChild(i).GetComponent<Button>().interactable = false;
-                buttonList.transform.GetChild(i).GetChild(0).GetComponent<Text>().text = "<Empty>";
-                buttonList.transform.GetChild(i).GetChild(1).GetComponent<Text>().text = "0/0";
+                    buttonList.transform.GetChild(i).GetComponent<Button>().interactable = false;
+                    buttonList.transform.GetChild(i).GetChild(0).GetComponent<Text>().text = "<Empty>";
+                    buttonList.transform.GetChild(i).GetChild(1).GetComponent<Text>().text = "0/0";
+                }
             }
         }
     }

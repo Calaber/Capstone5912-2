@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class CreateMultiplayerRoomButton : MonoBehaviour {
@@ -19,12 +20,16 @@ public class CreateMultiplayerRoomButton : MonoBehaviour {
 
     public void CreatePvPRoom()
     {
-        NetworkManager.networkManager.createRoom(roomName.text, NetworkManager.GameType.PVP);
-        NetworkManager.networkManager.loadLevel("Demo 6");
+        PlayerSettings.PlayerRoomName = roomName.text;
+        PlayerSettings.PlayGame = NetworkManager.GameType.PVP;
+        PlayerSettings.JoiningRoom = false;
+        SceneManager.LoadScene(1);
     }
     public void CreatePvERoom()
     {
-        NetworkManager.networkManager.createRoom(roomName.text, NetworkManager.GameType.PVE);
-        NetworkManager.networkManager.loadLevel("Combat");
+        PlayerSettings.PlayerRoomName = roomName.text;
+        PlayerSettings.JoiningRoom = false;
+        PlayerSettings.PlayGame = NetworkManager.GameType.PVE;
+        SceneManager.LoadScene(1);
     }
 }
