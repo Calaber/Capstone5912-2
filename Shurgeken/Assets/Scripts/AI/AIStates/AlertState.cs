@@ -14,7 +14,6 @@ public class AlertState : IEnemyState {
 
     public void UpdateState()
     {
-        LookForFlag();
         Look();
         Search();
     }
@@ -27,7 +26,7 @@ public class AlertState : IEnemyState {
     public void ToPatrolState()
     {
         searchTimer = 0f;
-        enemy.currentState = enemy.patrolState;
+        enemy.setCurrentState(new PatrolState(enemy));
     }
 
     public void ToAlertState()
@@ -38,37 +37,30 @@ public class AlertState : IEnemyState {
     public void ToChaseState()
     {
         searchTimer = 0f;
-        enemy.currentState = enemy.chaseState;
+        enemy.setCurrentState(new ChaseState(enemy));
     }
 
     public void ToFlagPickUpState()
     {
-        enemy.currentState = enemy.pickUp;
+        enemy.setCurrentState(new FlagPickUp(enemy));
     }
-
-    private void LookForFlag()
-    {
-        RaycastHit hit;
-        if (Physics.Raycast(enemy.eyes.transform.position, enemy.eyes.transform.forward, out hit, enemy.sightRange) && hit.collider.CompareTag("Flag"))
-        {
-            enemy.chaseTarget = hit.transform;
-            ToFlagPickUpState();
-        }
-    }
-
+    
     private void Look()
     {
         Collider[] targetsInViewRadius = Physics.OverlapSphere(enemy.transform.position, enemy.enemyViewRadius, enemy.playerLayerMasks);
+        Collider[] flagsInViewRadius = Physics.OverlapSphere(enemy.transform.position, enemy.enemyViewRadius, enemy.flagLayerMasks);
 
-        for (int i = 0; i < targetsInViewRadius.Length; i++)
+        bool flagInView = false;
+
+        for (int i = 0; i < flagsInViewRadius.Length; i++)
         {
-            Transform target = targetsInViewRadius[i].transform;
+            Transform target = flagsInViewRadius[i].transform;
             Vector3 dirToTarget = (target.transform.position - enemy.transform.position).normalized;
             if (Vector3.Angle(enemy.eyes.transform.forward, dirToTarget) < enemy.enemyViewAngle / 2)
             {
                 float light_cutoff_view_distance = enemy.enemyViewRadius * 0.5f;/*[Adam] TODO: constant for how much light cuts vision, for now it's half*/
-                
-                GameObject lightObject = LightManager.nearestLightSource(target.gameObject);
+
+                GameObject lightObject = LightManager.nearestLightSource(target.gameObject,true);
                 if (lightObject != null)
                 {
                     Light light = lightObject.GetComponent<LightManager>().LightSource.GetComponent<Light>();
@@ -79,8 +71,50 @@ public class AlertState : IEnemyState {
 
                 if (!Physics.Raycast(enemy.eyes.transform.position, dirToTarget, light_cutoff_view_distance, enemy.obstacleLayerMasks))
                 {
-                    enemy.chaseTarget = target.transform;
-                    ToChaseState();
+                    float flagFromSpawn = Vector3.Distance(target.transform.position, target.GetComponent<FlagController>().spawnPoint.position);
+                    bool isFlagNotInSpawn = (flagFromSpawn > 0.5f);
+                    bool isOwned = target.gameObject.GetComponent<FlagController>().owner == null;
+                    if (isOwned && isFlagNotInSpawn)
+                    {
+                        flagInView = true;
+                        enemy.setChaseTarget(target.gameObject);
+                        ToFlagPickUpState();
+                    }
+                }
+            }
+        }
+
+        if (!flagInView)
+        {
+            for (int i = 0; i < targetsInViewRadius.Length; i++)
+            {
+                Transform target = targetsInViewRadius[i].transform;
+                Vector3 dirToTarget = (target.transform.position - enemy.transform.position).normalized;
+                if (Vector3.Angle(enemy.eyes.transform.forward, dirToTarget) < enemy.enemyViewAngle / 2)
+                {
+                    float light_cutoff_view_distance = enemy.enemyViewRadius * 0.5f;/*[Adam] TODO: constant for how much light cuts vision, for now it's half*/
+
+                    GameObject lightObject = LightManager.nearestLightSource(target.gameObject,true);
+                    if (lightObject != null)
+                    {
+                        Light light = lightObject.GetComponent<LightManager>().LightSource.GetComponent<Light>();
+
+                        float light_factor = 1.0f - (target.position - light.transform.position).magnitude / light.range;//[Adam] TODO: factor in light intensity. Some kind of parabolic function?
+                        if (light_factor > 0) { light_cutoff_view_distance += (enemy.enemyViewRadius * 0.5f) * light_factor; }
+                    }
+
+                    if (!Physics.Raycast(enemy.eyes.transform.position, dirToTarget, light_cutoff_view_distance, enemy.obstacleLayerMasks))
+                    {
+                        if (target.gameObject.GetComponent<DataController>().alive)
+                        {
+                            enemy.setChaseTarget(target.gameObject);
+                            ToChaseState();
+                        }
+                        else
+                        {
+                            ToPatrolState();
+                        }
+                    }
                 }
             }
         }
@@ -89,7 +123,7 @@ public class AlertState : IEnemyState {
     private void Search()
     {
         enemy.meshRendererFlag.material.color = Color.yellow;
-        enemy.navMeshAgent.Stop();
+        enemy.getNavMeshAgent().Stop();
         enemy.transform.Rotate(0, enemy.searchingTurnSpeed * Time.deltaTime, 0);
         searchTimer += Time.deltaTime;
 

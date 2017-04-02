@@ -21,7 +21,7 @@ public class GenerateLobbyList : MonoBehaviour {
         roomArray = NetworkManager.networkManager.getRoomList();
         currentPage = 1;
         maxPage = 1;
-        pageListMax = 10;
+        pageListMax = buttonList.transform.childCount;
         currentPageNumber.text = currentPage.ToString();
         maxPageNumber.text = maxPage.ToString();
 
@@ -32,8 +32,11 @@ public class GenerateLobbyList : MonoBehaviour {
         _Previous.onClick.AddListener(PreviousPage);
         Button _Next = Next.GetComponent<Button>();
         _Next.onClick.AddListener(NextPage);
+        RoomCheck();
 
     }
+
+
     void SetMaxPage()
     {
         roomArray = NetworkManager.networkManager.getRoomList();
@@ -64,7 +67,6 @@ public class GenerateLobbyList : MonoBehaviour {
     void GenerateList()
     {
         roomArray = NetworkManager.networkManager.getRoomList();
-        Debug.Log(roomArray.Length);
         for (int i = 0; i < pageListMax; i++)
         {
             string buttonName = buttonList.transform.GetChild(i).name;
@@ -75,7 +77,6 @@ public class GenerateLobbyList : MonoBehaviour {
                 int maxP = roomArray[i].MaxPlayers;
                 int curP = roomArray[i].PlayerCount;
                 buttonList.transform.GetChild(i).GetChild(1).GetComponent<Text>().text = curP.ToString() + " / " + maxP.ToString();
-                Debug.Log(roomArray[i].Name);
             }
             else
             {
@@ -102,11 +103,11 @@ public class GenerateLobbyList : MonoBehaviour {
     {
         SetMaxPage();
         GenerateList();
-        Debug.Log("roomCheck");
+
     }
     void Awake()
     {
-
+        RoomCheck();
         Invoke("RoomCheck", 2);
         InvokeRepeating("RoomCheck", 0f, 10.0f);
     }

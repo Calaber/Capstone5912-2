@@ -41,9 +41,15 @@ public class NetworkManager : MonoBehaviour
         PhotonNetwork.JoinLobby();
     }
 
+    public bool isInLobby()
+    {
+        return PhotonNetwork.insideLobby;
+    }
+
     public void leaveLobby()
     {
-        PhotonNetwork.LeaveLobby();
+        if (isInLobby())
+            PhotonNetwork.LeaveLobby();
     }
 
     public RoomInfo[] getRoomList()
@@ -105,6 +111,11 @@ public class NetworkManager : MonoBehaviour
         PhotonNetwork.JoinOrCreateRoom(gameName, ro, TypedLobby.Default);
     }
 
+    public GameObject spawnSceneObject(string objectName, Object[] data)
+    {
+        return spawnSceneObject(objectName, transform, data);
+    }
+
     public GameObject spawnSceneObject(string objectName, Transform trans, Object[] data)
     {
         return spawnSceneObject(objectName, trans.position, trans.rotation, data);
@@ -152,5 +163,10 @@ public class NetworkManager : MonoBehaviour
     public bool isMaster()
     {
         return PhotonNetwork.isMasterClient;
+    }
+
+    public int getPlayerCount()
+    {
+        return PhotonNetwork.playerList.Length;
     }
 }

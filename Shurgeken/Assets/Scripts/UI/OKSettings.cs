@@ -7,9 +7,16 @@ public class OKSettings : MonoBehaviour {
 
     public PlayerSettings pSet;
     public Dropdown ScreenStyle;
+    public Dropdown Res;
     public MenuLogic menu;
+    public Slider Brightness;
+    public Slider Contrast;
 
-    
+    void Start()
+    {
+        pSet = GameObject.FindObjectOfType<PlayerSettings>(); 
+    }
+
     void setScreenStyle()
     {
 
@@ -24,20 +31,38 @@ public class OKSettings : MonoBehaviour {
         }
     }
 
+    void setRes()
+    {
+        Resolution [] newRes = Screen.resolutions;
+        pSet.screenHeight = newRes[(Screen.resolutions.Length - 1) - Res.value].height;
+        pSet.screenWidth =newRes[(Screen.resolutions.Length - 1) - Res.value].width;
+    }
+
+    void setBrightContrast()
+    {
+        pSet.brightness = Brightness.value;
+        pSet.contrast = Contrast.value;
+    }
+
 
     public void okClick()
     {
 
         setScreenStyle();
-
-        Screen.SetResolution(Screen.width, Screen.height, pSet.fullscreen);
+        setRes();
+        Screen.SetResolution(pSet.screenWidth, pSet.screenHeight, pSet.fullscreen);
+        setBrightContrast();
         menu.toMainMenu();
     }
 
     public void applyClick()
     {
         setScreenStyle();
-
-        Screen.SetResolution(Screen.width, Screen.height, pSet.fullscreen);
+        setRes();
+        setBrightContrast();
+        Screen.SetResolution(pSet.screenWidth, pSet.screenHeight, pSet.fullscreen);
+        
     }
+
+
 }

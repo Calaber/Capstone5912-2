@@ -15,11 +15,11 @@ public class LightToggler : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.E))
         {
-            GameObject light = LightManager.nearestLightManager(this.gameObject);
+            GameObject light = LightManager.nearestLightSource(this.gameObject,false);
             if (light != null) {
                 Vector3 displacement = light.transform.position - this.transform.position;
                 if(displacement.magnitude < light_toggle_range)
-                    light.GetComponent<LightManager>().toggleLight();
+                    light.GetComponent<PhotonView>().RPC("switchLight", PhotonTargets.All);
             }
         }
     }

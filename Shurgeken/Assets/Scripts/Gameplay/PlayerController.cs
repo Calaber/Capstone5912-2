@@ -1,21 +1,20 @@
 ﻿using UnityEngine;
-using System.Collections;
 
 
 public class PlayerController : MonoBehaviour 
 {
 
     DataController  data;
+    PhotonView      pv;
     new Rigidbody   rigidbody;
     public Camera   FPCamera;
+    HealthScript HealthBar;
 
-
+    public static bool invert_y_axis;
     bool            midair = false;
     bool            falling = false;
     bool            can_jump = true;
     bool            crouching = false;
-    bool            dead = false;
-    public bool     attack_enabled = true;
     bool            busy = false;
     int             busy_frames = 0;
     public int      respawn_timer;
@@ -29,12 +28,19 @@ public class PlayerController : MonoBehaviour
     public float    crouched_speed = 1.0f;
     public float    airstrafe_speed = 5.0f;
     public float    mouse_sensitivity = 1.0f;
+    //[HideInInspector]
+    public bool can_release_from_jail = false;
+    public int time_to_release = 200;
+    [SerializeField]
+    private bool released;
+    private int jail_release_frames;
+
 
     void Start()
     {
         data = GetComponent<DataController>();
         rigidbody = GetComponent<Rigidbody>();
-
+        pv  = GetComponent<PhotonView>();
         //Set Damage handlers
         HealthController hp = GetComponent<HealthController>();
         hp.onHit = this.OnDamage;
@@ -42,15 +48,33 @@ public class PlayerController : MonoBehaviour
 
         Cursor.lockState = CursorLockMode.Locked;
         respawn_timer = -1;
+        HealthBar = GameObject.FindObjectOfType<HealthScript>();
+        HealthBar._hp = data;
+        jail_release_frames = 0;
+        released = false;
     }
 
     void Update() {
         //Handle respawning after death
         if (respawn_timer > 0) { respawn_timer--;
             if (respawn_timer == 0) {
-                GameInitScript.gis.StartSpawnProcess(0);
-                PhotonNetwork.Destroy(gameObject);
+                GameInitScript.gis.StartCoroutine("SpawnPlayerInJail", 0);
+                NetworkManager.networkManager.Destroy(gameObject);
             }
+        }
+        //handle jail release
+        if (can_release_from_jail && Input.GetKey(KeyCode.F))
+        {
+            jail_release_frames++;
+            if (jail_release_frames > time_to_release && !released) {
+                released = true;
+                GameObject.Find("UI Popup").transform.FindChild("Jailbreak").GetComponent<PopupFadeout>().StartPopup();
+                GameInitScript.gis.playerTracker.RPC("respawnAllJail", PhotonTargets.All);
+            }
+        }
+        else {
+            jail_release_frames = 0;
+            released = false;
         }
     }
 
@@ -81,10 +105,7 @@ public class PlayerController : MonoBehaviour
             if (!midair && !busy) { UpdateMovement(); }
             if (midair) { AirControl(); }
         }
-        else if (!dead) {
-            data.SetAnimation(Player_Animation.DYING);
-            dead = true;
-        }
+
         //check if falling (midair w/negative velocity)
         if (rigidbody.velocity.y < falling_velocity)
         {
@@ -94,6 +115,12 @@ public class PlayerController : MonoBehaviour
             data.SetAnimation(Player_Animation.FALLING);
         }
         else { falling = false; }
+
+        //Jitter fix. Remove very small velocities from colliding with uneven terrain.
+        if (rigidbody.velocity.magnitude < 0.01f/*some very small number*/) {
+            rigidbody.velocity = Vector3.zero;
+        }
+
     }
 
     void UpdateMovement()
@@ -149,7 +176,7 @@ public class PlayerController : MonoBehaviour
     }
 
     void UpdateActions() {
-        if (Input.GetMouseButtonDown(0) && attack_enabled && !busy && !midair){
+        if (Input.GetMouseButtonDown(0) && data.attachEnabled && !busy && !midair){
             if (busy || midair) return;//Dont perform if we're doing something else.
             data.SetAnimation(Player_Animation.MELEE_1);
             busy = true;
@@ -157,12 +184,11 @@ public class PlayerController : MonoBehaviour
         }
         if (Input.GetMouseButtonDown(1))
         {
-            
+            GameInitScript.gis.redFlag.GetComponent<PhotonView>().RPC("ThrowFlag", PhotonTargets.All, GetComponent<PhotonView>().viewID);
         }
-        if (Input.GetKeyDown(KeyCode.M)&& !busy && !dead)
+        if (Input.GetKeyDown(KeyCode.M)&& !busy && data.alive)
         {
             GetComponent<HealthController>().TakeDamage(1);
-
         }
     }
 
@@ -181,7 +207,7 @@ public class PlayerController : MonoBehaviour
 
     void FirstPersonCamera()
     {
-        cam_pitch += Input.GetAxis("Mouse Y") * mouse_sensitivity;
+        cam_pitch += Input.GetAxis("Mouse Y") * mouse_sensitivity * ((invert_y_axis)? -1:1);
         cam_turn += Input.GetAxis("Mouse X") * mouse_sensitivity;
 
         cam_pitch = Mathf.Clamp(cam_pitch, -70, 90);
@@ -216,11 +242,12 @@ public class PlayerController : MonoBehaviour
         {
             GameObject obj = hit.transform.gameObject;
             while(obj.transform.parent != null) { obj = obj.transform.parent.gameObject; }
-            HealthController hp_controller = obj.GetComponent<HealthController>();
-            if (hp_controller && hp_controller.enabled) {
-                hp_controller.TakeDamage(damage);
-                //print("Bang!");
+            //hp_controller.TakeDamage(damage);
+            PhotonView target = obj.GetComponent<PhotonView>();
+            if (target!=null && obj.GetComponent<HealthController>() != null) {
+                target.RPC("TakeDamage", PhotonTargets.All, 1);
             }
+            //print("Bang!");
         }
     }
 
@@ -242,7 +269,11 @@ public class PlayerController : MonoBehaviour
     }
 
     public void OnDie() {
-        respawn_timer = 200;
+        data.SetAnimation(Player_Animation.DYING);
+        if (respawn_timer < 0)
+        {
+            respawn_timer = 200;
+        }
     }
 
 

@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class FlagNetworkController : Photon.MonoBehaviour
@@ -39,14 +38,6 @@ public class FlagNetworkController : Photon.MonoBehaviour
 
     void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {
-        if (NetworkManager.networkManager.isMaster())
-        {
-            flagController.enabled = true;
-        }
-        else
-        {
-            flagController.enabled = false;
-        }
         if (stream.isWriting)
         {
             stream.SendNext(data.position);
@@ -62,8 +53,15 @@ public class FlagNetworkController : Photon.MonoBehaviour
     }
 
     [PunRPC]
-    public void ThrowFlag()
+    public void ThrowFlag(int id)
     {
-        flagController.HandleFlagPass();
+        flagController.HandleFlagPass(id);
+    }
+
+    [PunRPC]
+    public void ResetFlag()
+    {
+        GameInitScript.gis.StartCoroutine("SpawnFlag");
+        NetworkManager.networkManager.Destroy(this.gameObject);
     }
 }

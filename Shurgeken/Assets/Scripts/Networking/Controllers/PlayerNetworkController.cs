@@ -8,6 +8,7 @@ public class PlayerNetworkController  : Photon.MonoBehaviour
     public event Respawn RespawnMe;
 
     DataController data;
+    HealthController health;
     new Rigidbody rigidbody;
     float smoothing = 10f;
 
@@ -15,14 +16,24 @@ public class PlayerNetworkController  : Photon.MonoBehaviour
     void Start()
     {
         data = GetComponent<DataController>();
+        health = GetComponent<HealthController>();
         rigidbody = GetComponent<Rigidbody>();
         if (photonView.isMine)
         {
-            GetComponent<Rigidbody>().useGravity = true;
-            GetComponent<DataController>().local = true;
+            rigidbody.useGravity = true;
+            data.local = true;
+            data.team = "red";
+            GetComponent<LightToggler>().enabled = true;
             GetComponent<PlayerController>().enabled = true;
-            GetComponent<HealthController>().enabled = true;
-            foreach (Camera cam in GetComponentsInChildren<Camera>()) { cam.enabled = true; }
+            health.enabled = true;
+            foreach (Camera cam in GetComponentsInChildren<Camera>()) {
+                cam.enabled = true;
+                cam.gameObject.AddComponent<BrightnessEffect>();
+                BrightnessEffect brights = cam.GetComponent<BrightnessEffect>();
+                brights.enabled=true;
+
+
+            }
 
             foreach (AudioListener audio in GetComponentsInChildren<AudioListener>())
                 audio.enabled = true;
@@ -72,7 +83,28 @@ public class PlayerNetworkController  : Photon.MonoBehaviour
     [PunRPC]
     public void TakeDamage(int damage)
     {
-        data.hp -= damage;
+        health.TakeDamage(damage);
+    }
+
+    [PunRPC]
+    public void EnableAttack (bool able)
+    {
+        data.attachEnabled = able;
+    }
+
+    [PunRPC]
+    public void RespawnAtBase(int viewid)
+    {
+        if (GetComponent<PhotonView>().viewID == viewid && data.isInJail)
+        {
+            // Try to be safe
+            foreach (Camera cam in GetComponentsInChildren<Camera>()) { cam.enabled = false; }
+            foreach (AudioListener audio in GetComponentsInChildren<AudioListener>()) { audio.enabled = false; }
+
+            GameInitScript.gis.StartCoroutine("SpawnPlayer", 0);
+            Debug.Log("Destroying this gameobject");
+            NetworkManager.networkManager.Destroy(gameObject);
+        }
     }
 
 }
