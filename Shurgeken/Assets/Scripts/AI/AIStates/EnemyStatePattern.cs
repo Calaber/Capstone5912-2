@@ -32,14 +32,13 @@ public class EnemyStatePattern : MonoBehaviour {
     [HideInInspector] private IEnemyState currentState;
     
     //Pathing
-    public Transform[] wayPoints;
     [HideInInspector] private IPatrolPath patrolPath;
     [HideInInspector] private NavMeshAgent navMeshAgent;
     [HideInInspector] private GameObject chaseTarget;
 
     private void Awake()
     {
-        patrolPath = new TestPath(wayPoints);
+        patrolPath = new TestPath(PathManager.pathMan.getPath());
 
         //Set Damage handlers
         HealthController hp = GetComponent<HealthController>();
