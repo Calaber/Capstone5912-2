@@ -77,7 +77,7 @@ public class PlayerController : MonoBehaviour
             released = false;
         }
 
-        if (Input.GetKeyDown(KeyCode.P))
+        if (Input.GetKeyDown(KeyCode.O))
         {
             GameInitScript.gis.doorController.RPC("OpenDoorRPC", PhotonTargets.All);
         }

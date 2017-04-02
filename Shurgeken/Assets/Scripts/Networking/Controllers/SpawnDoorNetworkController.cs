@@ -12,9 +12,6 @@ public class SpawnDoorNetworkController : Photon.MonoBehaviour {
         if (photonView.isMine)
         {
             open = false;
-        }
-        else
-        {
             StartCoroutine("OpenDoor");
         }
     }
@@ -23,7 +20,7 @@ public class SpawnDoorNetworkController : Photon.MonoBehaviour {
     {
         while (true)
         {
-            door.SetActive(!open);
+            door.active = !open;
             yield return null;
         }
     }

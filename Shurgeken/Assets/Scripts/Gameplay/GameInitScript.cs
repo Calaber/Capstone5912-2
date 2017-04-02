@@ -168,7 +168,7 @@ public class GameInitScript : MonoBehaviour
 
     public IEnumerator SpawnDoor()
     {
-        SpawnDoorNetworkController sdnc = networkManager.spawnSceneObject("", null).GetComponent<SpawnDoorNetworkController>();
+        SpawnDoorNetworkController sdnc = networkManager.spawnSceneObject("DoorSpawn", null).GetComponent<SpawnDoorNetworkController>();
         sdnc.door = door;
         doorController = sdnc.gameObject.GetComponent<PhotonView>();
         yield return null;
