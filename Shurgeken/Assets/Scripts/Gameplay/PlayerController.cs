@@ -16,8 +16,8 @@ public class PlayerController : MonoBehaviour
     bool            falling = false;
     bool            can_jump = true;
     bool            crouching = false;
-    bool            attacking = false;
-    public int             attack_frames = 0;
+    public bool     attacking = false;
+    public int      attack_frames = 0;
     bool            being_damaged = false;
     int             damage_frames = 0;
     public int      respawn_timer;
@@ -59,48 +59,7 @@ public class PlayerController : MonoBehaviour
         released = false;
     }
 
-    void Update() {
-        //Handle respawning after death
-        if (respawn_timer > 0)
-        {
-            respawn_timer--;
-            if (respawn_timer == 0)
-            {
-                GameInitScript.gis.StartCoroutine("SpawnPlayerInJail", 0);
-                NetworkManager.networkManager.Destroy(gameObject);
-            }
-        }
-        //handle jail release
-        if (can_release_from_jail && Input.GetKey(KeyCode.F))
-        {
-            jail_release_frames++;
-            if (jail_release_frames > time_to_release && !released) {
-                released = true;
-                GameObject.Find("UI Popup").transform.FindChild("Jailbreak").GetComponent<PopupFadeout>().StartPopup();
-                GameInitScript.gis.playerTracker.RPC("respawnAllJail", PhotonTargets.All);
-            }
-        }
-        else {
-            jail_release_frames = 0;
-            released = false;
-        }
-        //Handle attack timing
-        if (attack_frames > 0)
-        {
-            attack_frames--;
-            if (attack_frames == 10)
-            {
-                attack_hitbox.DoSwing(1);
-            }
-        }
-        else {
-            attacking = false;
-        }
-
-        //Handle timing for being damaged
-        if (damage_frames > 0) { damage_frames--; }
-        else { being_damaged = false; }
-    }
+    void Update() {}
 
 
     private int my_anim_id = 0;
@@ -108,6 +67,7 @@ public class PlayerController : MonoBehaviour
 
     void FixedUpdate()
     {
+        UpdateTimers();
         UpdateMenu();
         //apply gravity
         rigidbody.AddForce(0, gravity, 0, ForceMode.Acceleration);
@@ -139,12 +99,59 @@ public class PlayerController : MonoBehaviour
         }
         
         if (my_anim_id != -1) {
+            if (attack_frames == 20 && my_anim_id != (int)Player_Animation.MELEE_1) {
+                Debug.Log("Attack overwritten by:" + my_anim_id);
+            }
             data.SetAnimation((Player_Animation)my_anim_id);
             my_anim_id = -1;
             my_anim_priority = 0;
         }
 
     }
+
+    void UpdateTimers() {
+        //Handle respawn timer after death
+        if (respawn_timer > 0)
+        {
+            respawn_timer--;
+            if (respawn_timer == 0)
+            {
+                GameInitScript.gis.StartCoroutine("SpawnPlayerInJail", 0);
+                NetworkManager.networkManager.Destroy(gameObject);
+            }
+        }
+        //handle jail release timer
+        if (can_release_from_jail && Input.GetKey(KeyCode.F))
+        {
+            jail_release_frames++;
+            if (jail_release_frames > time_to_release && !released)
+            {
+                released = true;
+                GameObject.Find("UI Popup").transform.FindChild("Jailbreak").GetComponent<PopupFadeout>().StartPopup();
+                GameInitScript.gis.playerTracker.RPC("respawnAllJail", PhotonTargets.All);
+            }
+        }
+        else {
+            jail_release_frames = 0;
+            released = false;
+        }
+        //Handle attack timing
+        if (attack_frames > 0)
+        {
+            attack_frames--;
+            if (attack_frames == 10)
+            {
+                attack_hitbox.DoSwing(1);
+            }
+            if (attack_frames == 0) {
+                attacking = false;
+            }
+        }
+        //Handle timing for being damaged
+        if (damage_frames > 0) { damage_frames--; }
+        else { being_damaged = false; }
+    }
+
 
     void UpdateMovement()
     {
@@ -205,9 +212,10 @@ public class PlayerController : MonoBehaviour
     }
 
     void UpdateActions() {
-        if (Input.GetMouseButtonDown(0) &&!attacking && !being_damaged && data.attackEnabled)
+        if (Input.GetMouseButtonDown(0) && !attacking && !being_damaged && data.attackEnabled)
         {
             SetAnimationWithPriority(Player_Animation.MELEE_1, 8);
+            Debug.Log("Swing");
             attacking = true;
             attack_frames = 20;
         }
