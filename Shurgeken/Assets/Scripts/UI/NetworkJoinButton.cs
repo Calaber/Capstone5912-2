@@ -19,7 +19,5 @@ public class NetworkJoinButton : MonoBehaviour {
     void TaskOnClick()
     {
         NetworkManager.networkManager.joinRoom(joinRoom.transform.GetChild(0).GetComponent<Text>().text);
-
-
     }
 }
