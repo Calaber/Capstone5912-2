@@ -12,6 +12,9 @@ public class PlayerSettings : MonoBehaviour {
     private float _contrast;
     private float _brightness;
     public static bool Y_Invert;
+    public static string PlayerRoomName;
+    public static NetworkManager.GameType PlayGame;
+    public static bool JoiningRoom;
 
     public float volume
     {
@@ -62,6 +65,9 @@ public class PlayerSettings : MonoBehaviour {
         _brightness = 0.5f;
         _contrast = 0.5f;
         Y_Invert = false;
+        PlayGame = NetworkManager.GameType.SINGLE;
+        PlayerRoomName = "Single";
+        JoiningRoom = false;
     }
 	
 	// Update is called once per frame

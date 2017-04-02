@@ -20,7 +20,7 @@ public class LoadSoloPlay : MonoBehaviour {
         if (!once)
         {
             once = true;
-            NetworkManager.networkManager.createRoom("myRoom", NetworkManager.GameType.SINGLE);
+            NetworkManager.networkManager.createRoom(PlayerSettings.PlayerRoomName, PlayerSettings.PlayGame);
             NetworkManager.networkManager.loadLevel("Demo 6");
         }
     }
