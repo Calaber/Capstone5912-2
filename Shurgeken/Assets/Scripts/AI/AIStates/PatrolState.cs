@@ -5,7 +5,6 @@ using UnityEngine;
 
 public class PatrolState : IEnemyState {
     private readonly EnemyStatePattern enemy;
-    private int nextWayPoint;
 
     public PatrolState(EnemyStatePattern enemyStatePattern)
     {
@@ -124,12 +123,12 @@ public class PatrolState : IEnemyState {
     private void Patrol()
     {
         enemy.meshRendererFlag.material.color = Color.green;
-        enemy.getNavMeshAgent().destination = enemy.getPatrolPath().getPath()[nextWayPoint].position;
+        enemy.getNavMeshAgent().destination = enemy.getPatrolPath().getCurrentWaypoint().position;
         enemy.getNavMeshAgent().Resume();
         
         if (enemy.getNavMeshAgent().remainingDistance <= enemy.getNavMeshAgent().stoppingDistance && !enemy.getNavMeshAgent().pathPending)
         {
-            nextWayPoint = (nextWayPoint + 1) % enemy.getPatrolPath().getPath().Length;
+            enemy.getPatrolPath().advanceWaypoint();
         }
     }
 

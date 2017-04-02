@@ -6,6 +6,10 @@ public interface IPatrolPath {
 
     Transform[] getPath();
 
+    Transform getCurrentWaypoint();
+
+    void advanceWaypoint();
+
     void setNumberOfWayPoints(int waypoints);
 
     void randamizePath();
