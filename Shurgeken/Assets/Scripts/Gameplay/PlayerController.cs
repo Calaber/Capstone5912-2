@@ -223,6 +223,9 @@ public class PlayerController : MonoBehaviour
         {
             GameInitScript.gis.redFlag.GetComponent<PhotonView>().RPC("ThrowFlag", PhotonTargets.All, GetComponent<PhotonView>().viewID);
         }
+        if (Input.GetKeyDown(KeyCode.O)) {
+            GameInitScript.gis.doorController.RPC("OpenDoorRPC", PhotonTargets.All);
+        }
     }
 
     Vector3 WorldspaceInput()
