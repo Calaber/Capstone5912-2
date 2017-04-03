@@ -25,16 +25,35 @@ public class AttackHitboxManager : MonoBehaviour {
     public void DoSwing(int dmg)
     {
         GameObject obj;
-        foreach (GameObject g in colliders)
+        int shift = 0;
+
+        for (int i = 0; (i - shift) < colliders.Count; i++)
         {
-            obj = g;
-            while (obj.transform.parent != null) { obj = obj.transform.parent.gameObject; }
-            PhotonView target = obj.GetComponent<PhotonView>();
-            if (target != null && obj.GetComponent<HealthController>() != null)
+            obj = colliders[(i - shift)];
+            if (obj == null)
             {
-                target.RPC("TakeDamage", PhotonTargets.All, 1);
+                colliders.RemoveAt(i-shift);
+                shift++;
+                continue;
             }
-        }   
+            try
+            {
+                while (obj.transform.parent != null) { obj = obj.transform.parent.gameObject; }
+                PhotonView target = obj.GetComponent<PhotonView>();
+                if (target != null && obj.GetComponent<HealthController>() != null)
+                {
+                    target.RPC("TakeDamage", PhotonTargets.All, 1);
+                }
+            }
+            catch (MissingReferenceException mre)
+            {
+                Debug.Log("MissingReferenceException in LightManager nearestLightSource()");
+                colliders.RemoveAt(i - shift);
+                shift++;
+            }
+        }
+
+
     }
 
 

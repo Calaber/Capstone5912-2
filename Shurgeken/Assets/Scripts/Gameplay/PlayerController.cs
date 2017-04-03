@@ -63,7 +63,7 @@ public class PlayerController : MonoBehaviour
 
     private int my_anim_id = 0;
     private int my_anim_priority = 0;
-    void Update() { }
+    void Update() {}
 
     void FixedUpdate()
     {
@@ -143,10 +143,12 @@ public class PlayerController : MonoBehaviour
             {
                 attack_hitbox.DoSwing(1);
             }
-            if (attack_frames == 0) {
+            if (attack_frames == 0)
+            {
                 attacking = false;
             }
         }
+        
         //Handle timing for being damaged
         if (damage_frames > 0) { damage_frames--; }
         else { being_damaged = false; }
@@ -175,7 +177,7 @@ public class PlayerController : MonoBehaviour
                 else { SetAnimationWithPriority(Player_Animation.RUN_BACKWARDS, 7); }
             }
         }
-        else { SetAnimationWithPriority(Player_Animation.IDLE, 1); }
+        else if(data.animation_id != (int)Player_Animation.IDLE) { SetAnimationWithPriority(Player_Animation.IDLE, 1); }
         velocity = motion * ((crouching)?crouched_speed:run_speed);
         velocity.y = rigidbody.velocity.y;
         rigidbody.velocity = velocity;
@@ -212,12 +214,13 @@ public class PlayerController : MonoBehaviour
     }
 
     void UpdateActions() {
-        if (Input.GetMouseButtonDown(0) && !attacking && !being_damaged && data.attackEnabled)
+        if (Input.GetMouseButtonDown(0) && !being_damaged && data.attackEnabled)
         {
             SetAnimationWithPriority(Player_Animation.MELEE_1, 8);
-            Debug.Log("Swing");
-            attacking = true;
-            attack_frames = 20;
+            if (!attacking) {
+                attacking = true;
+                attack_frames = 20;
+            }
         }
         if (Input.GetMouseButtonDown(1))
         {
@@ -226,6 +229,11 @@ public class PlayerController : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.O)) {
             GameInitScript.gis.doorController.RPC("OpenDoorRPC", PhotonTargets.All);
         }
+        if (Input.GetKeyDown(KeyCode.H))//Hide cursor, temp for recording
+        {
+            Cursor.visible = !Cursor.visible;
+        }
+       
     }
 
     Vector3 WorldspaceInput()
@@ -299,7 +307,7 @@ public class PlayerController : MonoBehaviour
 
     //bugfix: Multiple player aimations can be set on the same frame, with only one actually being sent to the animator.
     public void SetAnimationWithPriority(Player_Animation anim, int priority) {
-        if (my_anim_priority < priority) {
+        if (priority > my_anim_priority) {
             my_anim_priority = priority;
             my_anim_id = (int)anim;
         }
