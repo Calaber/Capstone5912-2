@@ -13,14 +13,18 @@ public class AnimationController : MonoBehaviour {
         data = GetComponent<DataController>();
         animator = GetComponent<Animator>();	
 	}
-	
+
+    public string[] animation_state_names = {"Idle","Run Forward","Run Backwards","Run Left","Run Right","Crouch","Jumping","Falling","Landing", "Damaged", "Death","Attack"};	
 	// Update is called once per frame
 	void Update () {
         if (data.animation_id != last_animation_id) {
             //print("Set animation " + data.animation_id);
-            animator.SetInteger("animation_id", data.animation_id);
-            animator.SetTrigger("transition_trigger");
+            //animator.SetInteger("animation_id", data.animation_id);
+            //animator.SetTrigger("transition_trigger");
+            Debug.Log("Anim code:" + data.animation_id);
+            animator.Play(animation_state_names[data.animation_id]);
             last_animation_id = data.animation_id;
+            
 
             //playing audio for animations
             AudioManager audioManager = GetComponent<AudioManager>();

@@ -11,7 +11,7 @@ public class EnemyStatePattern : MonoBehaviour {
     public float searchingDuration = 4f;
 
     //Attack Settings
-    public float attackDistance = 2f;
+    public float attackDistance = 1f;
 
     //Fov settings
     public float sightRange = 20f;

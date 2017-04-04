@@ -12,7 +12,7 @@ public class AttackState : IEnemyState {
     {
         enemy = statePatternEnemy;
         enemy.GetComponent<DataController>().SetAnimation(Player_Animation.MELEE_1);
-        attackTimer = 0.0f;
+        attackTimer = 1.5f;
         enemy.meshRendererFlag.material.color = Color.magenta;
     }
 
