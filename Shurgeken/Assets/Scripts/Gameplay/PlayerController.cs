@@ -9,16 +9,19 @@ public class PlayerController : MonoBehaviour
     new Rigidbody   rigidbody;
     public Camera   FPCamera;
     HealthScript HealthBar;
+    public Animator anim;
 
     public static bool invert_y_axis;
     bool            midair = false;
     bool            falling = false;
     bool            can_jump = true;
     bool            crouching = false;
-    bool            busy = false;
-    int             busy_frames = 0;
+    public bool     attacking = false;
+    public int      attack_frames = 0;
+    bool            being_damaged = false;
+    int             damage_frames = 0;
     public int      respawn_timer;
-    float           falling_velocity = -1f;
+    float           falling_velocity = -2f;
     float           max_airstrafe_velocity = 10.0f;
     float           jump_speed = 12.0f;
     float           gravity = -9.81f;
@@ -28,6 +31,7 @@ public class PlayerController : MonoBehaviour
     public float    crouched_speed = 1.0f;
     public float    airstrafe_speed = 5.0f;
     public float    mouse_sensitivity = 1.0f;
+    public AttackHitboxManager attack_hitbox;
     //[HideInInspector]
     public bool can_release_from_jail = false;
     public int time_to_release = 200;
@@ -41,6 +45,7 @@ public class PlayerController : MonoBehaviour
         data = GetComponent<DataController>();
         rigidbody = GetComponent<Rigidbody>();
         pv  = GetComponent<PhotonView>();
+        anim = GetComponent<Animator>();
         //Set Damage handlers
         HealthController hp = GetComponent<HealthController>();
         hp.onHit = this.OnDamage;
@@ -54,19 +59,73 @@ public class PlayerController : MonoBehaviour
         released = false;
     }
 
-    void Update() {
-        //Handle respawning after death
-        if (respawn_timer > 0) { respawn_timer--;
-            if (respawn_timer == 0) {
+
+
+    private int my_anim_id = 0;
+    private int my_anim_priority = 0;
+    void Update() {}
+
+    void FixedUpdate()
+    {
+        UpdateTimers();
+        UpdateMenu();
+        //apply gravity
+        rigidbody.AddForce(0, gravity, 0, ForceMode.Acceleration);
+        //align camera
+        FirstPersonCamera();
+
+        if (data.alive)
+        {
+            CheckIfGrounded();
+            UpdateJumping();
+            if (!midair && !being_damaged) { UpdateMovement(); }
+            if (midair) { AirControl(); }
+            UpdateActions();
+        }
+
+        //check if falling (midair w/negative velocity)
+        if (rigidbody.velocity.y < falling_velocity)
+        {
+            midair = true;
+            falling = true;
+            can_jump = false;
+            SetAnimationWithPriority(Player_Animation.FALLING, 4);
+        }
+        else { falling = false; }
+
+
+        if (!data.alive || rigidbody.velocity.magnitude < 0.02f/*some very small number*/) {
+            rigidbody.velocity = new Vector3(0, rigidbody.velocity.y, 0);
+        }
+        
+        if (my_anim_id != -1) {
+            if (attack_frames == 20 && my_anim_id != (int)Player_Animation.MELEE_1) {
+                Debug.Log("Attack overwritten by:" + my_anim_id);
+            }
+            data.SetAnimation((Player_Animation)my_anim_id);
+            my_anim_id = -1;
+            my_anim_priority = 0;
+        }
+
+    }
+
+    void UpdateTimers() {
+        //Handle respawn timer after death
+        if (respawn_timer > 0)
+        {
+            respawn_timer--;
+            if (respawn_timer == 0)
+            {
                 GameInitScript.gis.StartCoroutine("SpawnPlayerInJail", 0);
                 NetworkManager.networkManager.Destroy(gameObject);
             }
         }
-        //handle jail release
+        //handle jail release timer
         if (can_release_from_jail && Input.GetKey(KeyCode.F))
         {
             jail_release_frames++;
-            if (jail_release_frames > time_to_release && !released) {
+            if (jail_release_frames > time_to_release && !released)
+            {
                 released = true;
                 GameObject.Find("UI Popup").transform.FindChild("Jailbreak").GetComponent<PopupFadeout>().StartPopup();
                 GameInitScript.gis.playerTracker.RPC("respawnAllJail", PhotonTargets.All);
@@ -76,57 +135,25 @@ public class PlayerController : MonoBehaviour
             jail_release_frames = 0;
             released = false;
         }
-
-        if (Input.GetKeyDown(KeyCode.O))
+        //Handle attack timing
+        if (attack_frames > 0)
         {
-            GameInitScript.gis.doorController.RPC("OpenDoorRPC", PhotonTargets.All);
-        }
-    }
-
-    void FixedUpdate()
-    {
-        UpdateMenu();
-        UpdateActions();
-        //apply gravity
-        rigidbody.AddForce(0, gravity, 0, ForceMode.Acceleration);
-        //align camera
-        FirstPersonCamera();
-        CheckIfGrounded();
-        //Attack logic: Stand still and cast a damage ray in the middle of the animation.
-        if (busy_frames > 0)
-        {
-            busy_frames--;
-            rigidbody.velocity = Vector3.zero;
-            if (busy_frames == 30) {
-                CastDamageRay(1.0f, 1);
+            attack_frames--;
+            if (attack_frames == 10)
+            {
+                attack_hitbox.DoSwing(1);
+            }
+            if (attack_frames == 0)
+            {
+                attacking = false;
             }
         }
-        else {
-            busy = false;
-        }
-        if (data.alive)
-        {
-            UpdateJumping();
-            if (!midair && !busy) { UpdateMovement(); }
-            if (midair) { AirControl(); }
-        }
-
-        //check if falling (midair w/negative velocity)
-        if (rigidbody.velocity.y < falling_velocity)
-        {
-            midair = true;
-            falling = true;
-            can_jump = false;
-            data.SetAnimation(Player_Animation.FALLING);
-        }
-        else { falling = false; }
-
-        //Jitter fix. Remove very small velocities from colliding with uneven terrain.
-        if (rigidbody.velocity.magnitude < 0.01f/*some very small number*/) {
-            rigidbody.velocity = Vector3.zero;
-        }
-
+        
+        //Handle timing for being damaged
+        if (damage_frames > 0) { damage_frames--; }
+        else { being_damaged = false; }
     }
+
 
     void UpdateMovement()
     {
@@ -138,17 +165,19 @@ public class PlayerController : MonoBehaviour
         {
             float inputHorizontal = Input.GetAxisRaw("Horizontal");
             float inputVertical = Input.GetAxisRaw("Vertical");
+            anim.SetFloat("x_velocity", inputHorizontal);
+            anim.SetFloat("y_velocity", inputVertical);
             if (Mathf.Abs(inputHorizontal) > Mathf.Abs(inputVertical))
             {
-                if (inputHorizontal > 0) { data.SetAnimation(Player_Animation.RUN_RIGHT); }
-                else { data.SetAnimation(Player_Animation.RUN_LEFT); }
+                if (inputHorizontal > 0) { SetAnimationWithPriority(Player_Animation.RUN_RIGHT, 7); }
+                else { SetAnimationWithPriority(Player_Animation.RUN_LEFT, 7); }
             }
             else {
-                if (inputVertical > 0) { data.SetAnimation(Player_Animation.RUN_FORWARDS); }
-                else { data.SetAnimation(Player_Animation.RUN_BACKWARDS); }
+                if (inputVertical > 0) { SetAnimationWithPriority(Player_Animation.RUN_FORWARDS, 7); }
+                else { SetAnimationWithPriority(Player_Animation.RUN_BACKWARDS, 7); }
             }
         }
-        else { data.SetAnimation(Player_Animation.IDLE); }
+        else if(data.animation_id != (int)Player_Animation.IDLE) { SetAnimationWithPriority(Player_Animation.IDLE, 1); }
         velocity = motion * ((crouching)?crouched_speed:run_speed);
         velocity.y = rigidbody.velocity.y;
         rigidbody.velocity = velocity;
@@ -156,18 +185,22 @@ public class PlayerController : MonoBehaviour
 
     void UpdateJumping()
     {
-        if (!busy && can_jump && Input.GetButtonDown("Jump"))
+        if (!being_damaged && can_jump && Input.GetButtonDown("Jump"))
         {
+            //cancel attack
+            attacking = false;
+            attack_frames = 0;
+            //jump
             midair = true;
-            rigidbody.velocity += jump_speed * Vector3.up;
-            data.SetAnimation(Player_Animation.JUMPING);
+            rigidbody.velocity = new Vector3(rigidbody.velocity.x, jump_speed, rigidbody.velocity.z);
+            SetAnimationWithPriority(Player_Animation.JUMPING, 9);
         }
         if (midair)
         {
             can_jump = false;
             if (falling)
             {
-                data.SetAnimation(Player_Animation.FALLING);
+                SetAnimationWithPriority(Player_Animation.LANDING, 3);
             }
         }
     }
@@ -181,20 +214,26 @@ public class PlayerController : MonoBehaviour
     }
 
     void UpdateActions() {
-        if (Input.GetMouseButtonDown(0) && data.attachEnabled && !busy && !midair){
-            if (busy || midair) return;//Dont perform if we're doing something else.
-            data.SetAnimation(Player_Animation.MELEE_1);
-            busy = true;
-            busy_frames = 40;
+        if (Input.GetMouseButtonDown(0) && !being_damaged && data.attackEnabled)
+        {
+            SetAnimationWithPriority(Player_Animation.MELEE_1, 8);
+            if (!attacking) {
+                attacking = true;
+                attack_frames = 20;
+            }
         }
         if (Input.GetMouseButtonDown(1))
         {
             GameInitScript.gis.redFlag.GetComponent<PhotonView>().RPC("ThrowFlag", PhotonTargets.All, GetComponent<PhotonView>().viewID);
         }
-        if (Input.GetKeyDown(KeyCode.M)&& !busy && data.alive)
-        {
-            GetComponent<HealthController>().TakeDamage(1);
+        if (Input.GetKeyDown(KeyCode.O)) {
+            GameInitScript.gis.doorController.RPC("OpenDoorRPC", PhotonTargets.All);
         }
+        if (Input.GetKeyDown(KeyCode.H))//Hide cursor, temp for recording
+        {
+            Cursor.visible = !Cursor.visible;
+        }
+       
     }
 
     Vector3 WorldspaceInput()
@@ -218,41 +257,26 @@ public class PlayerController : MonoBehaviour
         cam_pitch = Mathf.Clamp(cam_pitch, -70, 90);
 
         transform.eulerAngles = new Vector3(0, cam_turn, 0);
-        FPCamera.gameObject.transform.eulerAngles = new Vector3(-cam_pitch, cam_turn, 0);
+        FPCamera.gameObject.transform.parent.eulerAngles = new Vector3(-cam_pitch, cam_turn, 0);
+        
     }
 
     void CheckIfGrounded()
     {
         float distanceToGround;
-        float threshold = .45f;
+        float threshold = 0.45f;
         RaycastHit hit;
-        Vector3 offset = new Vector3(0, .4f, 0);
-        if (Physics.Raycast((transform.position + offset), -Vector3.up, out hit, 100f))
+        Vector3 offset = new Vector3(0, 0.4f, 0);
+        if (Physics.Raycast((transform.position + offset), -Vector3.up, out hit, threshold+0.1f))
         {
             distanceToGround = hit.distance;
-            if (distanceToGround < threshold)
+            if (distanceToGround < threshold)//if we are close to the ground, and are about to hit it.
             {
-                if (falling) {data.SetAnimation(Player_Animation.LANDING);}
+                if (falling && data.alive) { SetAnimationWithPriority(Player_Animation.LANDING, 1); }
                 midair = false;
                 falling = false;
                 can_jump = true;
             }
-        }
-    }
-
-    void CastDamageRay(float distance,int damage) {
-        Vector3 offset = Vector3.zero;
-        RaycastHit hit;
-        if (Physics.Raycast((FPCamera.transform.position + offset),FPCamera.transform.TransformDirection(Vector3.forward), out hit, distance))
-        {
-            GameObject obj = hit.transform.gameObject;
-            while(obj.transform.parent != null) { obj = obj.transform.parent.gameObject; }
-            //hp_controller.TakeDamage(damage);
-            PhotonView target = obj.GetComponent<PhotonView>();
-            if (target!=null && obj.GetComponent<HealthController>() != null) {
-                target.RPC("TakeDamage", PhotonTargets.All, 1);
-            }
-            //print("Bang!");
         }
     }
 
@@ -267,19 +291,26 @@ public class PlayerController : MonoBehaviour
     }
 
     public void OnDamage(int dmg) {
-        data.SetAnimation(Player_Animation.DAMAGED);
+        SetAnimationWithPriority(Player_Animation.DAMAGED, 9);
         if (data.local) { DamageIndicator.DamageFlash(); }
-        busy = true;
-        busy_frames = 30;
+        being_damaged = true;
+        damage_frames = 30;
     }
 
     public void OnDie() {
-        data.SetAnimation(Player_Animation.DYING);
+        SetAnimationWithPriority(Player_Animation.DYING, 10);
         if (respawn_timer < 0)
         {
             respawn_timer = 200;
         }
     }
 
+    //bugfix: Multiple player aimations can be set on the same frame, with only one actually being sent to the animator.
+    public void SetAnimationWithPriority(Player_Animation anim, int priority) {
+        if (priority > my_anim_priority) {
+            my_anim_priority = priority;
+            my_anim_id = (int)anim;
+        }
+    }
 
 }
