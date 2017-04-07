@@ -38,7 +38,7 @@ public class DataController : MonoBehaviour {
     public int hp = 100;
     public int max_hp = 100;
     public bool alive = true;
-    public bool attachEnabled = true;
+    public bool attackEnabled = true;
     public bool isInJail;
 
     public string team;
