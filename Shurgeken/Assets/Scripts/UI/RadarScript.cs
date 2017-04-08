@@ -6,17 +6,21 @@ public class RadarScript : MonoBehaviour {
 
     public GameObject[] trackedObjects;
     List<GameObject> radarObjects;
+    List<GameObject> borderObjects;
+
     GameObject Player;
     public GameObject Radar;
     public GameObject JailPrefab;
     public GameObject BlueFlagPrefab;
     GameObject Flag;
     Quaternion rotation = Quaternion.identity;
+    float listswitchDistance;
     
     // Use this for initialization
     void Start () {
         rotation.eulerAngles = new Vector3(90, 0, 0);
         radarObjects = new List<GameObject>();
+        borderObjects = new List<GameObject>();
         attachJailPrefab();
 	}
 	
@@ -30,10 +34,23 @@ public class RadarScript : MonoBehaviour {
                 if (looking.GetComponent<PlayerController>().isActiveAndEnabled)
                 {
                     Player = looking;
+                    foreach (Transform t in Player.transform)
+                    {
+                        if (t.name == "FriendlyIcon")
+                        {
+                            t.gameObject.SetActive(false);
+                        }
+                    }
                 }
                 else
                 {
-                    
+                    foreach (Transform t in looking.transform)
+                    {
+                        if (t.name == "PlayerIcon")
+                        {
+                            t.gameObject.SetActive(false);
+                        }
+                    }
                 }
             }
         }
@@ -68,10 +85,13 @@ public class RadarScript : MonoBehaviour {
         {
             foreach (GameObject looking in flags)
             {
-                Quaternion rotation = Quaternion.identity;
-                rotation.eulerAngles = new Vector3(90, 0, 0);
+                
                 GameObject rad = Instantiate(BlueFlagPrefab, new Vector3(looking.transform.position.x, looking.transform.position.y - 30, looking.transform.position.z),rotation);
+                rad.transform.parent = looking.transform;
                 radarObjects.Add(rad);
+                GameObject bord = Instantiate(BlueFlagPrefab, new Vector3(looking.transform.position.x, looking.transform.position.y - 30, looking.transform.position.z), rotation);
+                borderObjects.Add(bord);
+                bord.transform.parent = looking.transform;
             }
         }
         
@@ -86,6 +106,9 @@ public class RadarScript : MonoBehaviour {
             {
                 GameObject rad = Instantiate(JailPrefab, new Vector3(looking.transform.position.x, looking.transform.position.y - 30, looking.transform.position.z),rotation);
                 radarObjects.Add(rad);
+                
+                GameObject bord = Instantiate(BlueFlagPrefab, new Vector3(looking.transform.position.x, looking.transform.position.y - 30, looking.transform.position.z), rotation);
+                borderObjects.Add(bord);
             }
         }
     }
