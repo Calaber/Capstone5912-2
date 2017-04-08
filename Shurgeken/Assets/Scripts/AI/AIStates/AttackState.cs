@@ -7,13 +7,20 @@ public class AttackState : IEnemyState {
 
     private readonly EnemyStatePattern enemy;
     private float attackTimer;
+    private float cachedAcceleration;
 
     public AttackState(EnemyStatePattern statePatternEnemy)
     {
         enemy = statePatternEnemy;
+        enemy.meshRendererFlag.material.color = Color.magenta;
+
+        enemy.getNavMeshAgent().Stop();
+        cachedAcceleration = enemy.getNavMeshAgent().acceleration;
+        enemy.getNavMeshAgent().acceleration = 0.0f;
+        enemy.getNavMeshAgent().velocity = Vector3.zero;
+        
         enemy.GetComponent<DataController>().SetAnimation(Player_Animation.MELEE_1);
         attackTimer = 1.5f;
-        enemy.meshRendererFlag.material.color = Color.magenta;
     }
 
     public void UpdateState()
@@ -35,16 +42,22 @@ public class AttackState : IEnemyState {
 
     public void ToAlertState()
     {
+
+        enemy.getNavMeshAgent().acceleration = cachedAcceleration;
         enemy.setCurrentState(new AlertState(enemy));
     }
 
     public void ToChaseState()
     {
+
+        enemy.getNavMeshAgent().acceleration = cachedAcceleration;
         enemy.setCurrentState(new ChaseState(enemy));
     }
 
     public void ToFlagPickUpState()
     {
+
+        enemy.getNavMeshAgent().acceleration = cachedAcceleration;
         enemy.setCurrentState(new FlagPickUp(enemy));
     }
     
@@ -140,7 +153,7 @@ public class AttackState : IEnemyState {
                 {
                     PhotonView target = enemy.getChaseTarget().GetComponent<PhotonView>();
                     target.RPC("TakeDamage", PhotonTargets.All, 1);
-                    attackTimer = 5.5f;
+                    attackTimer = enemy.attackRate;
                 }
                 attackTimer -= Time.deltaTime;
             }else
