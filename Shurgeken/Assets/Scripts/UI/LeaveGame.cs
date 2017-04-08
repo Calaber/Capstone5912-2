@@ -19,12 +19,15 @@ public class LeaveGame : MonoBehaviour {
     {
         NetworkManager.networkManager.leaveRoom();
         NetworkManager.networkManager.leaveLobby();
+        NetworkManager.networkManager.disconnectServer();
         Application.Quit();
     }
 
     public void BackToMenuScene()
     {
         NetworkManager.networkManager.leaveRoom();
+        NetworkManager.networkManager.leaveLobby();
+        NetworkManager.networkManager.disconnectServer();
         SceneManager.LoadScene("MainMenu");
     }
 }

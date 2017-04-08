@@ -44,7 +44,6 @@ public class PopupFadeout : MonoBehaviour {
         popup_image.color = current_color;
         AudioManager am = this.GetComponent<AudioManager>();
         if (am != null) {
-            //Debug.Log("Playing sound for banner");
             AudioClip clip = am.audioClips[0];
             aud.clip = clip;
             aud.loop = false;
