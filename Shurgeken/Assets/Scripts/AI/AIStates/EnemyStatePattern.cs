@@ -11,8 +11,9 @@ public class EnemyStatePattern : MonoBehaviour {
     public float searchingDuration = 4f;
 
     //Attack Settings
-    public float attackDistance = 1.5f;
+    public float attackDistance = 2.5f;
     public float attackRate = 5.5f;
+    public float enemyDamageFrames = 0.0f;
 
     //Fov settings
     public float sightRange = 20f;
@@ -55,16 +56,16 @@ public class EnemyStatePattern : MonoBehaviour {
 
     private void setUpAttacking()
     {
-        attackDistance = 1.5f;
+        attackDistance = 2.5f;
         attackRate = 5.5f;
     }
 
     private void setUpNavMeshAgest()
     {
-        navMeshAgent.speed = 2.0f;
-        navMeshAgent.angularSpeed = 180f;
+        navMeshAgent.speed = 1.0f;
+        navMeshAgent.angularSpeed = 120f;
         navMeshAgent.acceleration = 1f;
-        navMeshAgent.stoppingDistance = 0.3f;
+        navMeshAgent.stoppingDistance = 0.5f;
     }
 
     void Start () {
@@ -94,7 +95,10 @@ public class EnemyStatePattern : MonoBehaviour {
 
     private void OnDamage(int dmg)
     {
-        currentState = new DamageState(this);
+        if (enemyDamageFrames < 0.5f)
+        {
+            currentState = new DamageState(this);
+        }
     }
 
     //Method for conversion
