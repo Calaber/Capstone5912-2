@@ -49,18 +49,24 @@ public class GameInitScript : MonoBehaviour
 
     public PhotonView doorController;
 
+    private bool init = false;
+
     // Use this for initialization
     void Start()
     {
         gis = this;
         networkManager = NetworkManager.networkManager;
-        StartSpawnProcess(0);
     }
 
 
 
     void Update()
     {
+        if (!init && NetworkManager.networkManager.offlineMode())
+        {
+            StartSpawnProcess(0);
+            init = true;
+        }
         if (connectionText)
             connectionText.text = PhotonNetwork.connectionStateDetailed.ToString();
 
@@ -98,35 +104,32 @@ public class GameInitScript : MonoBehaviour
         }
     }
 
-    /*void OnJoinedRoom()
+    void OnJoinedRoom()
     {
         StartSpawnProcess(0);
-    }*/
+    }
 
     public IEnumerator SpawnPlayer(float respawnTime)
     {
         yield return new WaitForSeconds(respawnTime);
 
-        int index = Random.Range(0, spawnPoints.Length);
+        int index = UnityEngine.Random.Range(0, spawnPoints.Length);
         player = networkManager.spawnObject("Player", spawnPoints[index], null);
         player.GetComponent<DataController>().isInJail = false;
         player.GetComponent<PlayerNetworkController>().RespawnMe += StartSpawnProcess;
         sceneCamera.enabled = false;
         sceneListener.enabled = false;
-        // --target--.GetComponent<PhotonView>().RPC("asdf", PhotonTargets.All,params);
     }
 
     public IEnumerator SpawnPlayerInJail(float respawnTime)
     {
         yield return new WaitForSeconds(respawnTime);
 
-        int index = Random.Range(0, jailSpawnPoints.Length);
+        int index = UnityEngine.Random.Range(0, jailSpawnPoints.Length);
         player = networkManager.spawnObject("Player", jailSpawnPoints[index], null);
         DataController playerDataController = player.GetComponent<DataController>();
         playerDataController.isInJail = true;
-        // This should be modified to the player's appropriate team, we can probably replace the respawn time variable, no one uses it
         playerDataController.team = "red";
-        // Mark that player is in jail
         playerTracker.RPC("AddPlayerToJail", PhotonTargets.All, player.GetComponent<PhotonView>().viewID, playerDataController.team);
 
         //Start spawn process and switch to the new camera and listener
@@ -139,14 +142,14 @@ public class GameInitScript : MonoBehaviour
     {
 
         GameObject guard;
-        int index = Random.Range(0, aiSpawnPoints.Length);
+        int index = UnityEngine.Random.Range(0, aiSpawnPoints.Length);
         guard = networkManager.spawnSceneObject("Guard", aiSpawnPoints[index], null);
         yield return null;
     }
 
     public IEnumerator SpawnFlag()
     {
-        int index = Random.Range(0, flagSpawns.Length);
+        int index = UnityEngine.Random.Range(0, flagSpawns.Length);
         redFlag = networkManager.spawnSceneObject("Red Flag 1", flagSpawns[index], null);
         redFlag.GetComponent<FlagController>().spawnPoint = flagSpawns[index];
         redFlag.transform.gameObject.layer = 11;
