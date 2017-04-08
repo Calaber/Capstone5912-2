@@ -39,11 +39,12 @@ public class MenuLogic : MonoBehaviour {
         mainMenu.SetActive(true);
         network.SetActive(false);
         createRoom.SetActive(false);
-        
-        NetworkManager.networkManager.leaveLobby();
+
+        NetworkManager.networkManager.disconnectServer();
     }
     public void toNetwork()
     {
+        NetworkManager.networkManager.connectServer();
         NetworkManager.networkManager.joinLobby();
         settings.SetActive(false);
         mainMenu.SetActive(false);

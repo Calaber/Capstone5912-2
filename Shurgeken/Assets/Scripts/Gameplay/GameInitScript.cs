@@ -54,6 +54,7 @@ public class GameInitScript : MonoBehaviour
     {
         gis = this;
         networkManager = NetworkManager.networkManager;
+        StartSpawnProcess(0);
     }
 
 
@@ -97,10 +98,10 @@ public class GameInitScript : MonoBehaviour
         }
     }
 
-    void OnJoinedRoom()
+    /*void OnJoinedRoom()
     {
         StartSpawnProcess(0);
-    }
+    }*/
 
     public IEnumerator SpawnPlayer(float respawnTime)
     {
@@ -172,10 +173,21 @@ public class GameInitScript : MonoBehaviour
         yield return null;
     }
 
+    public PhotonView getPlayerPhotonView()
+    {
+        if (player != null && player.GetComponent<PhotonView>() != null)
+        {
+            return player.GetComponent<PhotonView>();
+        } else
+        {
+            return null;
+        }
+    }
+
     public void StartSpawnProcess(float respawnTime)
     {
         sceneCamera.enabled = true;
-        if (NetworkManager.networkManager.isMaster())
+        if (NetworkManager.networkManager.isMaster() || NetworkManager.networkManager.offlineMode())
         {
             StartCoroutine("SpawnDoor");
             StartCoroutine("SpawnPlayerTracker");

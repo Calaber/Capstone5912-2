@@ -32,8 +32,22 @@ public class NetworkManager : MonoBehaviour
     void Start()
     {
         PhotonNetwork.logLevel = PhotonLogLevel.Full;
-        PhotonNetwork.ConnectUsingSettings("0.2");
         PhotonNetwork.automaticallySyncScene = true;
+    }
+
+    public bool offlineMode()
+    {
+        return PhotonNetwork.offlineMode;
+    }
+
+    public void connectServer()
+    {
+        PhotonNetwork.ConnectUsingSettings("0.2");
+    }
+
+    public void disconnectServer()
+    {
+        PhotonNetwork.Disconnect();
     }
 
     public void joinLobby()
