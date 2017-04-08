@@ -62,7 +62,6 @@ public class GameMaster : Photon.MonoBehaviour {
         redTeamScore++;
         if (redTeamScore >= scoreToWin)
         {
-            //Debug.Log("Red wins. Handle it please.");
 
             GameObject.Find("UI Popup").transform.FindChild("Win").GetComponent<PopupFadeout>().StartPopup();
             round_reset_timer = 100;
