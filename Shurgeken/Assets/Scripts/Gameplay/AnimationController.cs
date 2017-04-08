@@ -18,10 +18,6 @@ public class AnimationController : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
         if (data.animation_id != last_animation_id) {
-            //print("Set animation " + data.animation_id);
-            //animator.SetInteger("animation_id", data.animation_id);
-            //animator.SetTrigger("transition_trigger");
-            Debug.Log("Anim code:" + data.animation_id);
             animator.Play(animation_state_names[data.animation_id]);
             last_animation_id = data.animation_id;
             

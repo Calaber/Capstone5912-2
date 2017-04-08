@@ -10,6 +10,7 @@ public class DeathState : IEnemyState
     public DeathState(EnemyStatePattern enemyStatePattern)
     {
         enemy = enemyStatePattern;
+        enemy.getNavMeshAgent().Stop();
         enemy.GetComponent<DataController>().SetAnimation(Player_Animation.DYING);
         timer = 0.0f;
         enemy.meshRendererFlag.material.color = Color.black;

@@ -6,15 +6,16 @@ using UnityEngine;
 public class DamageState : IEnemyState
 {
     private EnemyStatePattern enemy;
-
     public DamageState(EnemyStatePattern enemyStatePattern)
     {
         enemy = enemyStatePattern;
+        enemy.getNavMeshAgent().Stop();
         enemy.GetComponent<DataController>().SetAnimation(Player_Animation.DAMAGED);
+        enemy.meshRendererFlag.material.color = Color.red;
+        enemy.enemyDamageFrames = 1.5f;
     }
     public void OnTriggerEnter(Collider other)
     {
-        Debug.Log("I'm hit");
     }
 
     public void ToAlertState()
@@ -44,6 +45,13 @@ public class DamageState : IEnemyState
 
     public void UpdateState()
     {
-        ToAlertState();
+        if (enemy.enemyDamageFrames < 0.5f)
+        {
+            ToAlertState();
+        }
+        else
+        {
+            enemy.enemyDamageFrames -= Time.deltaTime;
+        }
     }
 }

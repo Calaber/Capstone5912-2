@@ -102,7 +102,6 @@ public class PlayerNetworkController  : Photon.MonoBehaviour
             foreach (AudioListener audio in GetComponentsInChildren<AudioListener>()) { audio.enabled = false; }
 
             GameInitScript.gis.StartCoroutine("SpawnPlayer", 0);
-            Debug.Log("Destroying this gameobject");
             NetworkManager.networkManager.Destroy(gameObject);
         }
     }

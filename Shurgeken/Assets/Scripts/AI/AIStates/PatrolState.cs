@@ -9,6 +9,7 @@ public class PatrolState : IEnemyState {
     public PatrolState(EnemyStatePattern enemyStatePattern)
     {
         enemy = enemyStatePattern;
+        enemy.meshRendererFlag.material.color = Color.green;
         enemy.GetComponent<DataController>().SetAnimation(Player_Animation.RUN_FORWARDS);
     }
 
@@ -70,7 +71,7 @@ public class PatrolState : IEnemyState {
                     Light light = lightObject.GetComponent<LightManager>().LightSource.GetComponent<Light>();
 
                     float light_factor = 1.0f - (target.position - light.transform.position).magnitude / light.range;//[Adam] TODO: factor in light intensity. Some kind of parabolic function?
-                    if (light_factor > 0) { light_cutoff_view_distance += (enemy.enemyViewRadius * 0.5f) * light_factor; }
+                    if (light_factor > 0) { light_cutoff_view_distance += (enemy.enemyViewRadius) * light_factor; }
                 }
 
                 if (!Physics.Raycast(enemy.eyes.transform.position, dirToTarget, light_cutoff_view_distance, enemy.obstacleLayerMasks))
@@ -104,7 +105,7 @@ public class PatrolState : IEnemyState {
                         Light light = lightObject.GetComponent<LightManager>().LightSource.GetComponent<Light>();
 
                         float light_factor = 1.0f - (target.position - light.transform.position).magnitude / light.range;//[Adam] TODO: factor in light intensity. Some kind of parabolic function?
-                        if (light_factor > 0) { light_cutoff_view_distance += (enemy.enemyViewRadius * 0.5f) * light_factor; }
+                        if (light_factor > 0) { light_cutoff_view_distance += (enemy.enemyViewRadius) * light_factor; }
                     }
 
                     if (!Physics.Raycast(enemy.eyes.transform.position, dirToTarget, light_cutoff_view_distance, enemy.obstacleLayerMasks))
@@ -122,7 +123,6 @@ public class PatrolState : IEnemyState {
 
     private void Patrol()
     {
-        enemy.meshRendererFlag.material.color = Color.green;
         enemy.getNavMeshAgent().destination = enemy.getPatrolPath().getCurrentWaypoint().position;
         enemy.getNavMeshAgent().Resume();
         
