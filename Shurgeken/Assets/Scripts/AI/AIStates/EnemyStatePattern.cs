@@ -62,9 +62,9 @@ public class EnemyStatePattern : MonoBehaviour {
 
     private void setUpNavMeshAgest()
     {
-        navMeshAgent.speed = 1.0f;
-        navMeshAgent.angularSpeed = 120f;
-        navMeshAgent.acceleration = 1f;
+        navMeshAgent.speed = 1.5f;
+        navMeshAgent.angularSpeed = 360f;
+        navMeshAgent.acceleration = 8f;
         navMeshAgent.stoppingDistance = 0.5f;
     }
 
