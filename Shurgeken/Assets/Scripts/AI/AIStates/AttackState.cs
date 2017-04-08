@@ -12,7 +12,7 @@ public class AttackState : IEnemyState {
     {
         enemy = statePatternEnemy;
         enemy.GetComponent<DataController>().SetAnimation(Player_Animation.MELEE_1);
-        attackTimer = 1.5f;
+        attackTimer = enemy.attackRate;
         enemy.meshRendererFlag.material.color = Color.magenta;
     }
 
@@ -140,7 +140,7 @@ public class AttackState : IEnemyState {
                 {
                     PhotonView target = enemy.getChaseTarget().GetComponent<PhotonView>();
                     target.RPC("TakeDamage", PhotonTargets.All, 1);
-                    attackTimer = 5.5f;
+                    attackTimer = enemy.attackRate;
                 }
                 attackTimer -= Time.deltaTime;
             }else

@@ -11,7 +11,8 @@ public class EnemyStatePattern : MonoBehaviour {
     public float searchingDuration = 4f;
 
     //Attack Settings
-    public float attackDistance = 1f;
+    public float attackDistance = 1.5f;
+    public float attackRate = 5.5f;
 
     //Fov settings
     public float sightRange = 20f;
@@ -46,8 +47,24 @@ public class EnemyStatePattern : MonoBehaviour {
         hp.onDie = this.OnDie;
 
         navMeshAgent = GetComponent<NavMeshAgent>();
-        navMeshAgent.stoppingDistance = 0.5f;
+        setUpNavMeshAgest();
+        setUpAttacking();
+        InvokeRepeating("getNewPath", 360, 360);
         InvokeRepeating("randomizePath", 180, 180);
+    }
+
+    private void setUpAttacking()
+    {
+        attackDistance = 1.5f;
+        attackRate = 5.5f;
+    }
+
+    private void setUpNavMeshAgest()
+    {
+        navMeshAgent.speed = 2.0f;
+        navMeshAgent.angularSpeed = 180f;
+        navMeshAgent.acceleration = 1f;
+        navMeshAgent.stoppingDistance = 0.3f;
     }
 
     void Start () {
@@ -124,5 +141,10 @@ public class EnemyStatePattern : MonoBehaviour {
     public void setPatrolPath(IPatrolPath path)
     {
         patrolPath= path;
+    }
+
+    private void getNewPath()
+    {
+        patrolPath = new TestPath(PathManager.pathMan.getPath());
     }
 }
