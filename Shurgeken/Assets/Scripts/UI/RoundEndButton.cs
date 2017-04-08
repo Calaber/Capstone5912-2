@@ -15,7 +15,6 @@ public class RoundEndButton : MonoBehaviour {
 
     public void TaskOnClick()
     {
-        //Debug.Log("leaving...");
         NetworkManager.networkManager.leaveRoom();
         SceneManager.LoadScene("MainMenu");
     }

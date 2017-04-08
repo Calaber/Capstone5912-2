@@ -10,6 +10,7 @@ public class FlagPickUp : IEnemyState
     public FlagPickUp(EnemyStatePattern enemyStatePattern)
     {
         enemy = enemyStatePattern;
+        enemy.meshRendererFlag.material.color = Color.blue;
         enemy.GetComponent<DataController>().SetAnimation(Player_Animation.RUN_FORWARDS);
     }
 
@@ -62,7 +63,7 @@ public class FlagPickUp : IEnemyState
                     Light light = lightObject.GetComponent<LightManager>().LightSource.GetComponent<Light>();
 
                     float light_factor = 1.0f - (target.position - light.transform.position).magnitude / light.range;//[Adam] TODO: factor in light intensity. Some kind of parabolic function?
-                    if (light_factor > 0) { light_cutoff_view_distance += (enemy.enemyViewRadius * 0.5f) * light_factor; }
+                    if (light_factor > 0) { light_cutoff_view_distance += (enemy.enemyViewRadius * 1f) * light_factor; }
                 }
 
                 if (!Physics.Raycast(enemy.eyes.transform.position, dirToTarget, light_cutoff_view_distance, enemy.obstacleLayerMasks))
@@ -73,12 +74,14 @@ public class FlagPickUp : IEnemyState
                     if (isOwned && isFlagNotInSpawn)
                     {
                         flagInView = true;
-                        enemy.setChaseTarget(target.gameObject);
                         if (checkDistanceToFlag())
                         {
                             NetworkManager.networkManager.Destroy(enemy.getChaseTarget().gameObject);
                             GameInitScript.gis.StartCoroutine("SpawnFlag");
                             ToAlertState();
+                        }else
+                        {
+                            enemy.setChaseTarget(target.gameObject);
                         }
                     }
                 }
@@ -96,7 +99,6 @@ public class FlagPickUp : IEnemyState
 
     private void Chase()
     {
-        enemy.meshRendererFlag.material.color = Color.blue;
         enemy.getNavMeshAgent().destination = enemy.getChaseTarget().transform.position;
         enemy.getNavMeshAgent().Resume();
     }
@@ -110,8 +112,7 @@ public class FlagPickUp : IEnemyState
     {
         bool inReturnDis = false;
         float disToFlag = Vector3.Distance(enemy.transform.position, enemy.getChaseTarget().transform.position);
-        Debug.Log(disToFlag);
-        if(disToFlag < 2.5f)
+        if(disToFlag < 3.5f)
         {
             inReturnDis = true;
         }

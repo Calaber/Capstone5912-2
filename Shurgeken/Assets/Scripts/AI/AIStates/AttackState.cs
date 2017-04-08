@@ -12,8 +12,7 @@ public class AttackState : IEnemyState {
     public AttackState(EnemyStatePattern statePatternEnemy)
     {
         enemy = statePatternEnemy;
-        enemy.meshRendererFlag.material.color = Color.magenta;
-
+        enemy.meshRendererFlag.material.color = Color.red;
         enemy.getNavMeshAgent().Stop();
         cachedAcceleration = enemy.getNavMeshAgent().acceleration;
         enemy.getNavMeshAgent().acceleration = 0.0f;

@@ -10,6 +10,7 @@ public class ChaseState : IEnemyState {
     {
         enemy = statePatternEnemy;
         enemy.GetComponent<DataController>().SetAnimation(Player_Animation.RUN_FORWARDS);
+        enemy.meshRendererFlag.material.color = Color.magenta;
     }
 
     public void UpdateState()
@@ -64,7 +65,7 @@ public class ChaseState : IEnemyState {
                     Light light = lightObject.GetComponent<LightManager>().LightSource.GetComponent<Light>();
 
                     float light_factor = 1.0f - (target.position - light.transform.position).magnitude / light.range;//[Adam] TODO: factor in light intensity. Some kind of parabolic function?
-                    if (light_factor > 0) { light_cutoff_view_distance += (enemy.enemyViewRadius * 0.5f) * light_factor; }
+                    if (light_factor > 0) { light_cutoff_view_distance += (enemy.enemyViewRadius) * light_factor; }
                 }
 
                 if (!Physics.Raycast(enemy.eyes.transform.position, dirToTarget, light_cutoff_view_distance, enemy.obstacleLayerMasks))
@@ -100,7 +101,7 @@ public class ChaseState : IEnemyState {
                         Light light = lightObject.GetComponent<LightManager>().LightSource.GetComponent<Light>();
 
                         float light_factor = 1.0f - (target.position - light.transform.position).magnitude / light.range;//[Adam] TODO: factor in light intensity. Some kind of parabolic function?
-                        if (light_factor > 0) { light_cutoff_view_distance += (enemy.enemyViewRadius * 0.5f) * light_factor; }
+                        if (light_factor > 0) { light_cutoff_view_distance += (enemy.enemyViewRadius) * light_factor; }
                     }
 
                     if (!Physics.Raycast(enemy.eyes.transform.position, dirToTarget, light_cutoff_view_distance, enemy.obstacleLayerMasks))
@@ -128,10 +129,9 @@ public class ChaseState : IEnemyState {
 
     private void Chase()
     {
-        enemy.meshRendererFlag.material.color = Color.magenta;
         if (enemy.getChaseTarget() != null)
         {
-            if (enemy.getChaseTarget().GetComponent<DataController>().alive)
+            if (enemy.getChaseTarget().GetComponent<DataController>() !=null && enemy.getChaseTarget().GetComponent<DataController>().alive)
             {
                 enemy.getNavMeshAgent().destination = enemy.getChaseTarget().transform.position;
                 enemy.getNavMeshAgent().Resume();
