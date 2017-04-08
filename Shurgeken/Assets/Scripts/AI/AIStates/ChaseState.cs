@@ -9,7 +9,9 @@ public class ChaseState : IEnemyState {
     public ChaseState(EnemyStatePattern statePatternEnemy)
     {
         enemy = statePatternEnemy;
+        enemy.meshRendererFlag.material.color = Color.red;
         enemy.GetComponent<DataController>().SetAnimation(Player_Animation.RUN_FORWARDS);
+        Debug.Log("Red");
     }
 
     public void UpdateState()
@@ -132,7 +134,7 @@ public class ChaseState : IEnemyState {
         {
             if (enemy.getChaseTarget().GetComponent<DataController>().alive)
             {
-                enemy.meshRendererFlag.material.color = Color.red;
+                Debug.Log("YO");
                 enemy.getNavMeshAgent().destination = enemy.getChaseTarget().transform.position;
                 enemy.getNavMeshAgent().Resume();
             }
