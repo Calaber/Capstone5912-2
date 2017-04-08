@@ -10,6 +10,7 @@ public class AlertState : IEnemyState {
     public AlertState(EnemyStatePattern statePatternEnemy)
     {
         enemy = statePatternEnemy;
+        enemy.GetComponent<DataController>().SetAnimation(Player_Animation.IDLE);
     }
 
     public void UpdateState()

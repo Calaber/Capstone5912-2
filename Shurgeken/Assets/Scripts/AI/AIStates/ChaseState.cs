@@ -128,11 +128,11 @@ public class ChaseState : IEnemyState {
 
     private void Chase()
     {
+        enemy.meshRendererFlag.material.color = Color.magenta;
         if (enemy.getChaseTarget() != null)
         {
             if (enemy.getChaseTarget().GetComponent<DataController>().alive)
             {
-                enemy.meshRendererFlag.material.color = Color.red;
                 enemy.getNavMeshAgent().destination = enemy.getChaseTarget().transform.position;
                 enemy.getNavMeshAgent().Resume();
             }
