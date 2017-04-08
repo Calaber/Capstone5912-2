@@ -11,7 +11,7 @@ public class AttackState : IEnemyState {
     public AttackState(EnemyStatePattern statePatternEnemy)
     {
         enemy = statePatternEnemy;
-        enemy.meshRendererFlag.material.color = Color.red;
+        enemy.meshRendererFlag.material.color = Color.magenta;
         enemy.getNavMeshAgent().Stop();
         enemy.GetComponent<DataController>().SetAnimation(Player_Animation.MELEE_1);
         attackTimer = 1.5f;
