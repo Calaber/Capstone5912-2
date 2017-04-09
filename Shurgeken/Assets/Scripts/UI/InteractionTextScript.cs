@@ -12,18 +12,26 @@ public class InteractionTextScript : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		interaction = GetComponent<Text>();
-
+        InteractionText();
     }
 
-    public void InteractionText(string Button, string action)
+    public void InteractionText()
     {
         textBox.SetActive(true);
-        interaction.text = "Push " + Button + " to " + action;
+        interaction.text = "Push O to open the door and start the game";
     }
 
     public void DeactivateActionText()
     {
         textBox.SetActive(false);
+    }
+
+    void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.O))
+        {
+            DeactivateActionText();
+        }
     }
 
 }
