@@ -23,16 +23,18 @@ public class GameMenuLogic : MenuLogic {
     {
         Settings.SetActive(false);
         Options.SetActive(!Options.activeSelf);
-        Score.SetActive(!Score.activeSelf);
+        
         if (!Options.activeSelf)
         {
             Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false;
+            Score.SetActive(true);
         }
         else
         {
             Cursor.lockState = CursorLockMode.None;
             Cursor.visible = true;
+            Score.SetActive(false);
         }
     }
 
