@@ -122,6 +122,19 @@ public class PlayerTrackerScript : Photon.MonoBehaviour
         respawnRedTeam();
     }
 
+    [PunRPC]
+    public void removeFromJail(int id)
+    {
+        for (int i = 0; i < redPlayersInJail.Count; i++)
+        {
+            if (redPlayersInJail[i] == id)
+            {
+                redPlayersInJail.RemoveAt(i);
+                break;
+            }
+        }
+    }
+
     public void respawnAtBase(int id)
     {
         if (NetworkManager.networkManager.isMaster())

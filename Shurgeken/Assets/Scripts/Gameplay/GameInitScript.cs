@@ -51,6 +51,8 @@ public class GameInitScript : MonoBehaviour
 
     private bool init = false;
 
+    private bool escape = false;
+
     // Use this for initialization
     void Start()
     {
@@ -62,11 +64,20 @@ public class GameInitScript : MonoBehaviour
 
     void Update()
     {
-        if (!init && NetworkManager.networkManager.offlineMode())
+        try
         {
-            StartSpawnProcess(0);
-            init = true;
+            if (!escape && (!init && NetworkManager.networkManager.offlineMode()))
+            {
+                StartSpawnProcess(0);
+                init = true;
+            }
         }
+        catch (System.NullReferenceException nre)
+        {
+            escape = true;
+            Debug.Log("Null reference exception hit, fuck this shit");
+        }
+
         if (connectionText)
             connectionText.text = PhotonNetwork.connectionStateDetailed.ToString();
 
