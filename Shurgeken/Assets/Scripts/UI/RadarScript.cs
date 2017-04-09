@@ -74,30 +74,37 @@ public class RadarScript : MonoBehaviour {
         }
    
         attachFlagPrefabs();
-        
-        for(int i =0; i < radarObjects.Count; i++)
+        if (Flag)
         {
-            if(Mathf.Sqrt(Mathf.Pow(radarObjects[i].transform.position.x-transform.position.x,2)+Mathf.Pow(radarObjects[i].transform.position.z-transform.position.z,2))+4>listswitchDistance&&Player)
+            for (int i = 0; i < radarObjects.Count; i++)
             {
-                //switch to border object
-                
-                helpTransform.transform.position = Player.transform.position;
-                helpTransform.transform.LookAt(radarObjects[i].transform);
-                float jailAdjust = listswitchDistance;
-                if (borderObjects[i].tag != "flagIcon") { jailAdjust += 4; }
-                borderObjects[i].transform.position = transform.position + listswitchDistance * helpTransform.transform.forward;
-                borderObjects[i].transform.position = new Vector3(borderObjects[i].transform.position.x, -30, borderObjects[i].transform.position.z);
-                borderObjects[i].layer = LayerMask.NameToLayer("Radar");
-                
-                radarObjects[i].layer = LayerMask.NameToLayer("InvisRadar");
-                
-            }
-            else
-            {
-                //switch to radar objects
-                borderObjects[i].layer = LayerMask.NameToLayer("InvisRadar");
-                radarObjects[i].layer = LayerMask.NameToLayer("Radar");
-               
+                if (radarObjects[i] && Mathf.Sqrt(Mathf.Pow(radarObjects[i].transform.position.x - transform.position.x, 2) + Mathf.Pow(radarObjects[i].transform.position.z - transform.position.z, 2)) + 4 > listswitchDistance && Player)
+                {
+                    //switch to border object
+
+                    helpTransform.transform.position = Player.transform.position;
+                    helpTransform.transform.LookAt(radarObjects[i].transform);
+                    float jailAdjust = listswitchDistance;
+                    if (borderObjects[i])
+                    {
+                        if (borderObjects[i].tag != "flagIcon") { jailAdjust += 4; }
+                        borderObjects[i].transform.position = transform.position + listswitchDistance * helpTransform.transform.forward;
+                        borderObjects[i].transform.position = new Vector3(borderObjects[i].transform.position.x, -30, borderObjects[i].transform.position.z);
+                        borderObjects[i].layer = LayerMask.NameToLayer("Radar");
+
+                        radarObjects[i].layer = LayerMask.NameToLayer("InvisRadar");
+                    }
+                }
+                else
+                {
+                    //switch to radar objects
+                    if (borderObjects[i])
+                    {
+                        borderObjects[i].layer = LayerMask.NameToLayer("InvisRadar");
+                        radarObjects[i].layer = LayerMask.NameToLayer("Radar");
+                    }
+
+                }
             }
         }
         playersOffRadar();
@@ -113,7 +120,7 @@ public class RadarScript : MonoBehaviour {
         {
             foreach (GameObject looking in players)
             {
-                if (Mathf.Sqrt(Mathf.Pow(looking.transform.position.x - transform.position.x, 2) + Mathf.Pow(looking.transform.position.z - transform.position.z, 2))+4 > listswitchDistance)
+                if (Mathf.Sqrt(Mathf.Pow(looking.transform.position.x - transform.position.x, 2) + Mathf.Pow(looking.transform.position.z - transform.position.z, 2)) > listswitchDistance)
                 {
                     foreach (Transform t in looking.transform)
                     {
@@ -147,7 +154,7 @@ public class RadarScript : MonoBehaviour {
         {
             foreach (GameObject looking in guards)
             {
-                if (Mathf.Sqrt(Mathf.Pow(looking.transform.position.x - transform.position.x, 2) + Mathf.Pow(looking.transform.position.z - transform.position.z, 2))+4 > listswitchDistance)
+                if (Mathf.Sqrt(Mathf.Pow(looking.transform.position.x - transform.position.x, 2) + Mathf.Pow(looking.transform.position.z - transform.position.z, 2)) > listswitchDistance)
                 {
                     foreach (Transform t in looking.transform)
                     {
@@ -178,38 +185,67 @@ public class RadarScript : MonoBehaviour {
     }
     void attachFlagPrefabs()
     {
+
         if (Flag == null)
         {
-           
             Flag = GameObject.FindGameObjectWithTag("RedFlag");
+
             if (Flag)
             {
                 GameObject rad = Instantiate(BlueFlagPrefab, new Vector3(Flag.transform.position.x, Flag.transform.position.y - 30, Flag.transform.position.z), rotation);
                 rad.transform.parent = Flag.transform;
                 rad.tag = "flagIcon";
-      
+
                 radarObjects.Add(rad);
                 GameObject bord = Instantiate(BlueFlagPrefab, new Vector3(Flag.transform.position.x, Flag.transform.position.y - 30, Flag.transform.position.z), rotation);
                 bord.tag = "flagIcon";
-     
-                //bord.transform.parent = Flag.transform;
+
+                bord.transform.parent = rad.transform;
                 borderObjects.Add(bord);
             }
-        }else
+        } else
         {
-            foreach(GameObject k in radarObjects)
-            {
-                if (k.tag == "flagIcon")
+            try {
+                for (int k=0; k<radarObjects.Count;k++)
                 {
-                    k.transform.position = new Vector3(Flag.transform.position.x, Flag.transform.position.y - 30, Flag.transform.position.z);
+                    if (radarObjects[k])
+                    {
+                        if (radarObjects[k] != null && radarObjects[k].tag == "flagIcon")
+                        {
+                            radarObjects[k].transform.position = new Vector3(Flag.transform.position.x, Flag.transform.position.y - 30, Flag.transform.position.z);
+                        }
+                    }
+                    else
+                    {
+                        radarObjects.Remove(radarObjects[k]);
+                        Flag = null;
+                    }
                 }
             }
-            foreach (GameObject k in borderObjects)
+            catch(System.NullReferenceException nre)
             {
-                if (k.tag == "flagIcon")
+
+            }
+            try {
+                for (int k = 0; k < borderObjects.Count; k++)
                 {
-                    k.transform.position = new Vector3(Flag.transform.position.x, Flag.transform.position.y - 30, Flag.transform.position.z);
+                    if (borderObjects[k])
+                    {
+                        if (borderObjects[k] != null && borderObjects[k].tag == "flagIcon")
+                        {
+                            borderObjects[k].transform.position = new Vector3(Flag.transform.position.x, Flag.transform.position.y - 30, Flag.transform.position.z);
+                        }
+                    }
+                    else
+                    {
+                        borderObjects.Remove(borderObjects[k]);
+                        Flag = null;
+                    }
                 }
+            }
+            catch (System.NullReferenceException nre)
+            {
+
             }
         }
 
@@ -256,7 +292,7 @@ public class RadarScript : MonoBehaviour {
     }
     void attachBlueBasePrefab()
     {
-        GameObject BlueBase = GameObject.Find("RedTeamFlag");
+        GameObject BlueBase = GameObject.Find("BlueTeamFlag");
         if (BlueBase)
         {
 
