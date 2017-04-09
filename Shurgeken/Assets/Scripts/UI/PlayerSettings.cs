@@ -11,6 +11,7 @@ public class PlayerSettings : MonoBehaviour {
     private bool _inGame;
     private float _contrast;
     private float _brightness;
+    private static int _difficulty;
     public static bool Y_Invert;
     public static string PlayerRoomName;
     public static NetworkManager.GameType PlayGame;
@@ -54,6 +55,12 @@ public class PlayerSettings : MonoBehaviour {
         set { _brightness = value; }
     }
 
+    public static int difficulty
+    {
+        get { return _difficulty; }
+        set { _difficulty = value; }
+    }
+
     // Use this for initialization
     void Start () {
         DontDestroyOnLoad(this);
@@ -64,6 +71,7 @@ public class PlayerSettings : MonoBehaviour {
         _inGame = false;
         _brightness = 0.5f;
         _contrast = 0.5f;
+        _difficulty = 1;
         Y_Invert = false;
         PlayGame = NetworkManager.GameType.SINGLE;
         PlayerRoomName = "Single";
@@ -73,6 +81,5 @@ public class PlayerSettings : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
         AudioListener.volume = _volume;
-
     }
 }
