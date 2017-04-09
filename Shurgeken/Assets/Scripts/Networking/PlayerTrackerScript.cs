@@ -125,19 +125,14 @@ public class PlayerTrackerScript : Photon.MonoBehaviour
     [PunRPC]
     public void removeFromJail(int id)
     {
-        Debug.Log("Id removing: " + id);
-        Debug.Log("The list: " + redPlayersInJail.ToString());
-        Debug.Log("The count is: " + redPlayersInJail.Count);
         for (int i = 0; i < redPlayersInJail.Count; i++)
         {
-            Debug.Log("The entry at i = " + i + " the entry: " + redPlayersInJail[i]);
             if (redPlayersInJail[i] == id)
             {
                 redPlayersInJail.RemoveAt(i);
                 break;
             }
         }
-        Debug.Log("The list after: " + redPlayersInJail.ToString());
     }
 
     public void respawnAtBase(int id)

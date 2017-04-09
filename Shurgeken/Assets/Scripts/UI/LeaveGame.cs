@@ -18,7 +18,6 @@ public class LeaveGame : MonoBehaviour {
     public void QuitGame()
     {
         PhotonView pv = GameInitScript.gis.getPlayerPhotonView();
-        Debug.Log("Player view id: " + pv.viewID);
         if (pv != null)
         {
             GameInitScript.gis.playerTracker.RPC("removeFromJail", PhotonTargets.All, pv.viewID);
@@ -29,7 +28,6 @@ public class LeaveGame : MonoBehaviour {
     public void BackToMenuScene()
     {
         PhotonView pv = GameInitScript.gis.getPlayerPhotonView();
-        Debug.Log("Player view id: " + pv.viewID);
         if (pv != null)
         {
             GameInitScript.gis.playerTracker.RPC("removeFromJail", PhotonTargets.All, pv.viewID);
@@ -55,8 +53,6 @@ public class LeaveGame : MonoBehaviour {
         NetworkManager.networkManager.leaveLobby();
         NetworkManager.networkManager.disconnectServer();
         Application.Quit();
-
-        SceneManager.LoadScene("MainMenu");
     }
 
 }
