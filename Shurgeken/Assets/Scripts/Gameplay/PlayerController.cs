@@ -78,7 +78,7 @@ public class PlayerController : MonoBehaviour
         {
             CheckIfGrounded();
             UpdateJumping();
-            if (!midair && !being_damaged) { UpdateMovement(); }
+            if (!midair) { UpdateMovement(); }
             if (midair) { AirControl(); }
             UpdateActions();
         }
@@ -94,7 +94,7 @@ public class PlayerController : MonoBehaviour
         else { falling = false; }
 
 
-        if (!data.alive || rigidbody.velocity.magnitude < 0.02f/*some very small number*/) {
+        if (!data.alive || rigidbody.velocity.magnitude < 0.05f/*some very small number*/) {
             rigidbody.velocity = new Vector3(0, rigidbody.velocity.y, 0);
         }
         
@@ -162,24 +162,30 @@ public class PlayerController : MonoBehaviour
         Vector3 velocity = rigidbody.velocity;
         Vector3 motion = WorldspaceInput();
         if (motion.magnitude > 1){motion.Normalize();}
-        if (motion.magnitude > 0.05f)
+        if (!being_damaged)
         {
-            float inputHorizontal = Input.GetAxisRaw("Horizontal");
-            float inputVertical = Input.GetAxisRaw("Vertical");
-            anim.SetFloat("x_velocity", inputHorizontal);
-            anim.SetFloat("y_velocity", inputVertical);
-            if (Mathf.Abs(inputHorizontal) > Mathf.Abs(inputVertical))
+            if (motion.magnitude > 0.05f)
             {
-                if (inputHorizontal > 0) { SetAnimationWithPriority(Player_Animation.RUN_RIGHT, 7); }
-                else { SetAnimationWithPriority(Player_Animation.RUN_LEFT, 7); }
+                float inputHorizontal = Input.GetAxisRaw("Horizontal");
+                float inputVertical = Input.GetAxisRaw("Vertical");
+                anim.SetFloat("x_velocity", inputHorizontal);
+                anim.SetFloat("y_velocity", inputVertical);
+                if (Mathf.Abs(inputHorizontal) > Mathf.Abs(inputVertical))
+                {
+                    if (inputHorizontal > 0) { SetAnimationWithPriority(Player_Animation.RUN_RIGHT, 7); }
+                    else { SetAnimationWithPriority(Player_Animation.RUN_LEFT, 7); }
+                }
+                else {
+                    if (inputVertical > 0) { SetAnimationWithPriority(Player_Animation.RUN_FORWARDS, 7); }
+                    else { SetAnimationWithPriority(Player_Animation.RUN_BACKWARDS, 7); }
+                }
             }
-            else {
-                if (inputVertical > 0) { SetAnimationWithPriority(Player_Animation.RUN_FORWARDS, 7); }
-                else { SetAnimationWithPriority(Player_Animation.RUN_BACKWARDS, 7); }
-            }
+            else if (data.animation_id != (int)Player_Animation.IDLE) { SetAnimationWithPriority(Player_Animation.IDLE, 1); }
+            velocity = motion * ((crouching) ? crouched_speed : run_speed);
         }
-        else if(data.animation_id != (int)Player_Animation.IDLE) { SetAnimationWithPriority(Player_Animation.IDLE, 1); }
-        velocity = motion * ((crouching)?crouched_speed:run_speed);
+        else {
+            velocity = Vector3.zero;
+        }
         velocity.y = rigidbody.velocity.y;
         rigidbody.velocity = velocity;
     }

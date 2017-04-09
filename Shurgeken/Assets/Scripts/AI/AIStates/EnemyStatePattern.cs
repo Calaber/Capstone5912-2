@@ -95,6 +95,7 @@ public class EnemyStatePattern : MonoBehaviour {
 
     private void OnDamage(int dmg)
     {
+        setUpNavMeshAgest();
         if (enemyDamageFrames < 0.5f)
         {
             currentState = new DamageState(this);
