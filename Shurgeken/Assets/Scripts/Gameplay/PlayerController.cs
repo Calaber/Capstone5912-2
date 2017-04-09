@@ -116,6 +116,7 @@ public class PlayerController : MonoBehaviour
             respawn_timer--;
             if (respawn_timer == 0)
             {
+                GameInitScript.gis.playerTracker.RPC("removeFromJail", PhotonTargets.All, this.gameObject.GetComponent<PhotonView>().viewID);
                 GameInitScript.gis.StartCoroutine("SpawnPlayerInJail", 0);
                 NetworkManager.networkManager.Destroy(gameObject);
             }

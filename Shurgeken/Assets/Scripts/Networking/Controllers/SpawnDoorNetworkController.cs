@@ -12,17 +12,13 @@ public class SpawnDoorNetworkController : Photon.MonoBehaviour {
         if (photonView.isMine)
         {
             open = false;
-            StartCoroutine("OpenDoor");
         }
     }
 
     IEnumerator OpenDoor()
     {
-        while (true)
-        {
-            door.active = !open;
-            yield return null;
-        }
+        door.SetActive(!open);
+        yield return null;
     }
 
     void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
@@ -34,6 +30,7 @@ public class SpawnDoorNetworkController : Photon.MonoBehaviour {
         else
         {
             open = (bool)stream.ReceiveNext();
+            StartCoroutine("OpenDoor");
         }
     }
 
@@ -41,5 +38,6 @@ public class SpawnDoorNetworkController : Photon.MonoBehaviour {
     public void OpenDoorRPC()
     {
         open = true;
+        StartCoroutine("OpenDoor");
     }
 }
