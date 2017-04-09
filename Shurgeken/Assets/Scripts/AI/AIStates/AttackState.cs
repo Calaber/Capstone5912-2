@@ -7,12 +7,17 @@ public class AttackState : IEnemyState {
 
     private readonly EnemyStatePattern enemy;
     private float attackTimer;
+    private float cachedAcceleration;
 
     public AttackState(EnemyStatePattern statePatternEnemy)
     {
         enemy = statePatternEnemy;
         enemy.meshRendererFlag.material.color = Color.red;
         enemy.getNavMeshAgent().Stop();
+        cachedAcceleration = enemy.getNavMeshAgent().acceleration;
+        enemy.getNavMeshAgent().acceleration = 0.0f;
+        enemy.getNavMeshAgent().velocity = Vector3.zero;
+        
         enemy.GetComponent<DataController>().SetAnimation(Player_Animation.MELEE_1);
         attackTimer = 1.5f;
     }
@@ -36,16 +41,22 @@ public class AttackState : IEnemyState {
 
     public void ToAlertState()
     {
+
+        enemy.getNavMeshAgent().acceleration = cachedAcceleration;
         enemy.setCurrentState(new AlertState(enemy));
     }
 
     public void ToChaseState()
     {
+
+        enemy.getNavMeshAgent().acceleration = cachedAcceleration;
         enemy.setCurrentState(new ChaseState(enemy));
     }
 
     public void ToFlagPickUpState()
     {
+
+        enemy.getNavMeshAgent().acceleration = cachedAcceleration;
         enemy.setCurrentState(new FlagPickUp(enemy));
     }
     

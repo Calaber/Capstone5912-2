@@ -70,13 +70,20 @@ public class PlayerNetworkController  : Photon.MonoBehaviour
         }
         else
         {
-            data.animation_id = (int)stream.ReceiveNext();//TODO: Fix NullPtr occasionally popping up here. [Adam]
-            data.position = (Vector3)stream.ReceiveNext();
-            data.rotation = (Quaternion)stream.ReceiveNext();
-            data.velocity = (Vector3)stream.ReceiveNext();
-            data.hp = (int)stream.ReceiveNext();
-            data.max_hp = (int)stream.ReceiveNext();
-            data.alive = (bool)stream.ReceiveNext();
+            try
+            {
+                data.animation_id = (int)stream.ReceiveNext();//TODO: Fix NullPtr occasionally popping up here. [Adam]
+                data.position = (Vector3)stream.ReceiveNext();
+                data.rotation = (Quaternion)stream.ReceiveNext();
+                data.velocity = (Vector3)stream.ReceiveNext();
+                data.hp = (int)stream.ReceiveNext();
+                data.max_hp = (int)stream.ReceiveNext();
+                data.alive = (bool)stream.ReceiveNext();
+            }
+            catch (System.NullReferenceException nre)
+            {
+                Debug.Log("Null reference exception occured, idgaf");
+            }
         }
     }
 
