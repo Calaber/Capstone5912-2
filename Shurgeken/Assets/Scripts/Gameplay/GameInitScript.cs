@@ -200,6 +200,23 @@ public class GameInitScript : MonoBehaviour
     public void StartSpawnProcess(float respawnTime)
     {
         sceneCamera.enabled = true;
+        int diffSettings = PlayerSettings.difficulty;
+        if(diffSettings == 0)
+        {
+            enemyAiCount = 5;
+        }
+        else if(diffSettings == 1)
+        {
+            enemyAiCount = 15;
+        }
+        else if (diffSettings == 2)
+        {
+            enemyAiCount = 25;
+        }
+        else if (diffSettings == 3)
+        {
+            enemyAiCount = 35;
+        }
         if (NetworkManager.networkManager.isMaster() || NetworkManager.networkManager.offlineMode())
         {
             StartCoroutine("SpawnDoor");

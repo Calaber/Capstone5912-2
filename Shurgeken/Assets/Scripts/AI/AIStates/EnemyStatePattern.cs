@@ -29,8 +29,6 @@ public class EnemyStatePattern : MonoBehaviour {
 
     //Indicator
     public MeshRenderer meshRendererFlag;
-    
-    //
     [HideInInspector] private IEnemyState currentState;
     
     //Pathing
@@ -57,15 +55,47 @@ public class EnemyStatePattern : MonoBehaviour {
     private void setUpAttacking()
     {
         attackDistance = 2.5f;
-        attackRate = 5.5f;
+        int diffSetting = PlayerSettings.difficulty;
+        if (diffSetting == 0)//Easy
+        {
+            attackRate = 5.5f;
+        }
+        else if (diffSetting == 1)//Normal
+        {
+            attackRate = 3.5f;
+        }
+        else if(diffSetting == 2)//Hard
+        {
+            attackRate = 3.5f;
+        }
+        else if(diffSetting == 3)//Hardcore
+        {
+            attackRate = 1.5f;
+        }
     }
 
     private void setUpNavMeshAgest()
     {
-        navMeshAgent.speed = 1.5f;
         navMeshAgent.angularSpeed = 360f;
         navMeshAgent.acceleration = 8f;
         navMeshAgent.stoppingDistance = 0.5f;
+        int diffSetting = PlayerSettings.difficulty;
+        if (diffSetting == 0)//Easy
+        {
+            navMeshAgent.speed = 1.5f;
+        }
+        else if (diffSetting == 1)//Normal
+        {
+            navMeshAgent.speed = 1.5f;
+        }
+        else if (diffSetting == 2)//Hard
+        {
+            navMeshAgent.speed = 2.5f;
+        }
+        else if (diffSetting == 3)//Hardcore
+        {
+            navMeshAgent.speed = 3.5f;
+        }
     }
 
     void Start () {
@@ -95,6 +125,7 @@ public class EnemyStatePattern : MonoBehaviour {
 
     private void OnDamage(int dmg)
     {
+        setUpNavMeshAgest();
         if (enemyDamageFrames < 0.5f)
         {
             currentState = new DamageState(this);

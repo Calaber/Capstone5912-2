@@ -12,6 +12,8 @@ public class AudioManager : MonoBehaviour {
     {
         aud = gameObject.AddComponent<AudioSource>();
         aud.spatialBlend = 1;
+        aud.maxDistance = 50;
+        aud.rolloffMode = AudioRolloffMode.Linear;
     }
 
     public void PlaySound (int clipV)

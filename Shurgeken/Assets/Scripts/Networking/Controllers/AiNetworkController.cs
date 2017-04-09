@@ -52,7 +52,7 @@ public class AiNetworkController : Photon.MonoBehaviour
 
         if (stream.isWriting)
         {
-            //stream.SendNext(data.animation_id);
+            stream.SendNext(data.animation_id);
             stream.SendNext(data.position);
             stream.SendNext(data.rotation);
             stream.SendNext(data.hp);
@@ -61,7 +61,7 @@ public class AiNetworkController : Photon.MonoBehaviour
         }
         else
         {
-            //data.animation_id = (int)stream.ReceiveNext();//TODO: Fix NullPtr occasionally popping up here. [Adam]
+            data.animation_id = (int)stream.ReceiveNext();//TODO: Fix NullPtr occasionally popping up here. [Adam]
             data.position = (Vector3)stream.ReceiveNext();
             data.rotation = (Quaternion)stream.ReceiveNext();
             data.hp = (int)stream.ReceiveNext();
