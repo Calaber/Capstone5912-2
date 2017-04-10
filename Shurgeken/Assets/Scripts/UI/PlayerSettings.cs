@@ -82,4 +82,16 @@ public class PlayerSettings : MonoBehaviour {
 	void Update () {
         AudioListener.volume = _volume;
     }
+
+    void OnApplicationQuit()
+    {
+        GameObject exitConf = GameObject.FindGameObjectWithTag("ExitConfirmation");
+        if (!exitConf.activeSelf)
+        {
+            exitConf.SetActive(true);
+            Application.CancelQuit();
+        }
+
+    
+    }
 }
