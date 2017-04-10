@@ -10,6 +10,7 @@ public class MenuLogic : MonoBehaviour {
     public GameObject settings;
     public GameObject network;
     public GameObject createRoom;
+    public GameObject credits;
     public ResolutionScript resDrop;
     public Dropdown ScreenStyle;
 
@@ -39,6 +40,7 @@ public class MenuLogic : MonoBehaviour {
         mainMenu.SetActive(true);
         network.SetActive(false);
         createRoom.SetActive(false);
+        credits.SetActive(false);
 
         NetworkManager.networkManager.disconnectServer();
     }
@@ -58,6 +60,14 @@ public class MenuLogic : MonoBehaviour {
         mainMenu.SetActive(false);
         network.SetActive(false);
         createRoom.SetActive(true);
+    }
+    public void toCredits()
+    {
+        settings.SetActive(false);
+        mainMenu.SetActive(false);
+        network.SetActive(false);
+        createRoom.SetActive(false);
+        credits.SetActive(true);
     }
 
 }

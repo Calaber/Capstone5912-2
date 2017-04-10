@@ -1,0 +1,8 @@
+Image Hue:
+FF8EF7FF
+
+Highlighted:
+C9C9C9FF
+
+Pressed:
+D01818FF
