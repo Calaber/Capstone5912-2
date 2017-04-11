@@ -45,7 +45,7 @@ public class GameMenuLogic : MenuLogic {
     }
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.P)&&!Settings.activeSelf)
+        if ((Input.GetKeyDown(KeyCode.P)||Input.GetKeyDown(KeyCode.Escape))&&!Settings.activeSelf)
         {
             toMainMenu();
         }
