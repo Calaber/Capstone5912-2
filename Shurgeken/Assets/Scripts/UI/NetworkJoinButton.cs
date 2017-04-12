@@ -21,7 +21,7 @@ public class NetworkJoinButton : MonoBehaviour {
     {
         PlayerSettings.PlayerRoomName = joinRoom.transform.GetChild(0).GetComponent<Text>().text;
         PlayerSettings.JoiningRoom = true;
-        SceneManager.LoadScene(1);
+        SceneManager.LoadScene("LoadingSoloPlay");
         //NetworkManager.networkManager.joinRoom(joinRoom.transform.GetChild(0).GetComponent<Text>().text);
     }
 }
