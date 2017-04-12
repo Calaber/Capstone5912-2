@@ -16,7 +16,7 @@ public class AnimationController : MonoBehaviour {
 
     public string[] animation_state_names = {"Idle","Run Forward","Run Backwards","Run Left","Run Right","Crouch","Jumping","Falling","Landing", "Damaged", "Death","Attack"};	
 	// Update is called once per frame
-	void Update () {
+	void LateUpdate () {
         if (data.animation_id != last_animation_id) {
             animator.Play(animation_state_names[data.animation_id]);
             last_animation_id = data.animation_id;

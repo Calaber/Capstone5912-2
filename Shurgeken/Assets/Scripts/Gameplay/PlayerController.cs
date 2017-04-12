@@ -169,7 +169,7 @@ public class PlayerController : MonoBehaviour
         if (motion.magnitude > 1){motion.Normalize();}
         if (!being_damaged)
         {
-            if (motion.magnitude > 0.05f)
+            if (attack_frames < 16 && motion.magnitude > 0.05f)
             {
                 float inputHorizontal = Input.GetAxisRaw("Horizontal");
                 float inputVertical = Input.GetAxisRaw("Vertical");
@@ -180,12 +180,13 @@ public class PlayerController : MonoBehaviour
                     if (inputHorizontal > 0) { SetAnimationWithPriority(Player_Animation.RUN_RIGHT, 7); }
                     else { SetAnimationWithPriority(Player_Animation.RUN_LEFT, 7); }
                 }
-                else {
+                else
+                {
                     if (inputVertical > 0) { SetAnimationWithPriority(Player_Animation.RUN_FORWARDS, 7); }
                     else { SetAnimationWithPriority(Player_Animation.RUN_BACKWARDS, 7); }
                 }
             }
-            else if (data.animation_id != (int)Player_Animation.IDLE) { SetAnimationWithPriority(Player_Animation.IDLE, 1); }
+            else if (!attacking && data.animation_id != (int)Player_Animation.IDLE) { SetAnimationWithPriority(Player_Animation.IDLE, 1); }
             velocity = motion * ((crouching) ? crouched_speed : run_speed);
         }
         else {
@@ -218,7 +219,7 @@ public class PlayerController : MonoBehaviour
     }
 
     void UpdateActions() {
-        if (Input.GetMouseButtonDown(0) && !being_damaged && data.attackEnabled && attackTimer <= 0.5f)
+        if (Input.GetMouseButton(0) && !being_damaged && data.attackEnabled && attackTimer <= 0.5f)
         {
             attackTimer = 1.5f;
             SetAnimationWithPriority(Player_Animation.MELEE_1, 8);
