@@ -18,7 +18,8 @@ public class CameraZoom : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
         RaycastHit hit = new RaycastHit();
-        if (Physics.SphereCast(zoom_point.transform.position, spherecast_rad, zoom_point.transform.rotation * camera_angle, out hit, default_dist)) {
+        int layerMask = (1 << 10)|1;
+        if (Physics.SphereCast(zoom_point.transform.position, spherecast_rad, zoom_point.transform.rotation * camera_angle, out hit,default_dist,layerMask)) {
             this.transform.localPosition = camera_angle * Mathf.Min(default_dist, hit.distance-(default_dist*0.1f));
         }
         else
