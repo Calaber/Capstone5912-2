@@ -220,7 +220,7 @@ public class PlayerController : MonoBehaviour
     void UpdateActions() {
         if (Input.GetMouseButtonDown(0) && !being_damaged && data.attackEnabled && attackTimer <= 0.5f)
         {
-            attackTimer = 2.5f;
+            attackTimer = 1.5f;
             SetAnimationWithPriority(Player_Animation.MELEE_1, 8);
             if (!attacking) {
                 attacking = true;
