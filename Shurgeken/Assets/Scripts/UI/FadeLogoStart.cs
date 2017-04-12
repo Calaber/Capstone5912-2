@@ -8,7 +8,9 @@ public class FadeLogoStart : MonoBehaviour {
 
     public float FadeRate;
     public Image logo;
+    public GameObject Sound;
     private float targetAlpha;
+    
     float timer;
     bool loading;
     // Use this for initialization
@@ -35,8 +37,13 @@ public class FadeLogoStart : MonoBehaviour {
             curColor.a = Mathf.Lerp(curColor.a, targetAlpha, this.FadeRate * Time.deltaTime);
             logo.color = curColor;
         }
+        if (logo.color.a >= .88)
+        {
+            Sound.SetActive(true);
+        }
         if (logo.color.a >= .9998 && !loading)
         {
+            
             SceneManager.LoadScene("MainMenu");
             loading = true;
         }

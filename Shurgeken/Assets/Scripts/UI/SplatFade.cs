@@ -7,6 +7,8 @@ public class SplatFade : MonoBehaviour {
 
     public Image firstSplat;
     public GameObject SecondSplat;
+    public GameObject Splat1Sound;
+    public GameObject Splat2Sound;
 	// Use this for initialization
 	void Start () {
         StartCoroutine(Splat());
@@ -19,10 +21,13 @@ public class SplatFade : MonoBehaviour {
     IEnumerator Splat()
     {
         yield return new WaitForSeconds(2.0f);
+        Splat1Sound.SetActive(true);
         Color curColor = firstSplat.color;
         curColor.a = 1.0f;
         firstSplat.color = curColor;
-        yield return new WaitForSeconds(.1f);
+        
+        yield return new WaitForSeconds(.2f);
         SecondSplat.SetActive(true);
+        Splat2Sound.SetActive(true);
     }
 }
