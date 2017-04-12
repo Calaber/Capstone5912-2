@@ -22,8 +22,8 @@ public class PlayerController : MonoBehaviour
     int             damage_frames = 0;
     public int      respawn_timer;
     float           falling_velocity = -2f;
-    float           max_airstrafe_velocity = 10.0f;
-    float           jump_speed = 12.0f;
+    float           max_airstrafe_velocity = 6.0f;
+    float           jump_speed = 10.0f;
     float           gravity = -9.81f;
     float           cam_pitch = 0;
     float           cam_turn = 0;
