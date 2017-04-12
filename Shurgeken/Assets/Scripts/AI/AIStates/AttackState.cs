@@ -167,6 +167,6 @@ public class AttackState : IEnemyState {
 
     public void ToAttackState()
     {
-        enemy.setCurrentState(new AttackState(enemy));
+
     }
 }
