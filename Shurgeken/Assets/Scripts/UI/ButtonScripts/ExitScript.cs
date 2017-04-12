@@ -24,7 +24,7 @@ public class ExitScript : MonoBehaviour {
     /// </summary>
     void TaskOnClick()
     {
-        Debug.Log("Exit application");
+       
         Application.Quit();
     }
 }
