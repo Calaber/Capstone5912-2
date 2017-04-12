@@ -31,6 +31,7 @@ public class PlayerController : MonoBehaviour
     public float    crouched_speed = 1.0f;
     public float    airstrafe_speed = 5.0f;
     public float    mouse_sensitivity = 1.0f;
+    public float    attackTimer = 0;
     public AttackHitboxManager attack_hitbox;
     //[HideInInspector]
     public bool can_release_from_jail = false;
@@ -67,6 +68,10 @@ public class PlayerController : MonoBehaviour
 
     void FixedUpdate()
     {
+        if (attackTimer >= 0.5f)
+        {
+            attackTimer -= Time.deltaTime;
+        }
         UpdateTimers();
         
         //apply gravity
@@ -213,8 +218,9 @@ public class PlayerController : MonoBehaviour
     }
 
     void UpdateActions() {
-        if (Input.GetMouseButtonDown(0) && !being_damaged && data.attackEnabled)
+        if (Input.GetMouseButtonDown(0) && !being_damaged && data.attackEnabled && attackTimer <= 0.5f)
         {
+            attackTimer = 1.5f;
             SetAnimationWithPriority(Player_Animation.MELEE_1, 8);
             if (!attacking) {
                 attacking = true;
