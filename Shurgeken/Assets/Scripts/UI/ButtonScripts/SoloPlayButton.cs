@@ -27,6 +27,6 @@ public class SoloPlayButton : MonoBehaviour {
         PlayerSettings.PlayerRoomName = "Single";
         PlayerSettings.PlayGame = NetworkManager.GameType.SINGLE;
         PlayerSettings.JoiningRoom = false;
-        SceneManager.LoadScene(1);
+        SceneManager.LoadScene("LoadingSoloPlay");
     }
 }
