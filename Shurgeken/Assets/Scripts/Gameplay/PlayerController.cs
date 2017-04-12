@@ -68,7 +68,7 @@ public class PlayerController : MonoBehaviour
     void FixedUpdate()
     {
         UpdateTimers();
-        UpdateMenu();
+        
         //apply gravity
         rigidbody.AddForce(0, gravity, 0, ForceMode.Acceleration);
         //align camera
@@ -209,14 +209,6 @@ public class PlayerController : MonoBehaviour
             {
                 SetAnimationWithPriority(Player_Animation.LANDING, 3);
             }
-        }
-    }
-
-    void UpdateMenu()
-    {
-        if (Input.GetKeyDown(KeyCode.Escape))
-        {
-            Application.Quit();
         }
     }
 
