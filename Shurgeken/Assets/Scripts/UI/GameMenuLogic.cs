@@ -10,6 +10,8 @@ public class GameMenuLogic : MenuLogic {
     public GameObject Score;
     private GameObject WinScreen;
     private GameObject LoseScreen;
+    public GameObject KeyboardInfo;
+    public GameObject InfoReminder;
     private bool _win;
     private bool gameEnd;
 
@@ -23,6 +25,7 @@ public class GameMenuLogic : MenuLogic {
     {
         Settings.SetActive(false);
         Options.SetActive(!Options.activeSelf);
+        KeyboardInfo.SetActive(false);
         
         if (!Options.activeSelf)
         {
@@ -45,9 +48,14 @@ public class GameMenuLogic : MenuLogic {
     }
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.P)&&!Settings.activeSelf)
+        if ((Input.GetKeyDown(KeyCode.P)||Input.GetKeyDown(KeyCode.Escape))&&!Settings.activeSelf)
         {
             toMainMenu();
+        }
+        if (Input.GetKeyDown(KeyCode.I) && !Options.activeSelf && !Settings.activeSelf)
+        {
+            InfoReminder.SetActive(false);
+            KeyboardInfo.SetActive(!KeyboardInfo.activeSelf);
         }
     }
     void toEnd()

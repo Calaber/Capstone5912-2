@@ -22,8 +22,8 @@ public class PlayerController : MonoBehaviour
     int             damage_frames = 0;
     public int      respawn_timer;
     float           falling_velocity = -2f;
-    float           max_airstrafe_velocity = 10.0f;
-    float           jump_speed = 12.0f;
+    float           max_airstrafe_velocity = 6.0f;
+    float           jump_speed = 10.0f;
     float           gravity = -9.81f;
     float           cam_pitch = 0;
     float           cam_turn = 0;
@@ -73,7 +73,7 @@ public class PlayerController : MonoBehaviour
             attackTimer -= Time.deltaTime;
         }
         UpdateTimers();
-        UpdateMenu();
+        
         //apply gravity
         rigidbody.AddForce(0, gravity, 0, ForceMode.Acceleration);
         //align camera
@@ -214,14 +214,6 @@ public class PlayerController : MonoBehaviour
             {
                 SetAnimationWithPriority(Player_Animation.LANDING, 3);
             }
-        }
-    }
-
-    void UpdateMenu()
-    {
-        if (Input.GetKeyDown(KeyCode.Escape))
-        {
-            Application.Quit();
         }
     }
 
