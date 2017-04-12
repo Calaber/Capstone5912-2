@@ -31,7 +31,6 @@ public class NetworkManager : MonoBehaviour
 
     void Start()
     {
-        PhotonNetwork.logLevel = PhotonLogLevel.Full;
         PhotonNetwork.automaticallySyncScene = true;
     }
 
