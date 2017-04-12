@@ -23,13 +23,13 @@ public class CreateMultiplayerRoomButton : MonoBehaviour {
         PlayerSettings.PlayerRoomName = roomName.text;
         PlayerSettings.PlayGame = NetworkManager.GameType.PVP;
         PlayerSettings.JoiningRoom = false;
-        SceneManager.LoadScene(1);
+        SceneManager.LoadScene("LoadingSoloPlay");
     }
     public void CreatePvERoom()
     {
         PlayerSettings.PlayerRoomName = roomName.text;
         PlayerSettings.JoiningRoom = false;
         PlayerSettings.PlayGame = NetworkManager.GameType.PVE;
-        SceneManager.LoadScene(1);
+        SceneManager.LoadScene("LoadingSoloPlay");
     }
 }
