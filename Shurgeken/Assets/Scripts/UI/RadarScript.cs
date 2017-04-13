@@ -43,7 +43,7 @@ public class RadarScript : MonoBehaviour {
                 if (looking.GetComponent<PlayerController>().isActiveAndEnabled)
                 {
                     Player = looking;
-                    transform.parent = Player.transform;
+                    //transform.parent = Player.transform;
                     setCameraToPlayer();
                     foreach (Transform t in Player.transform)
                     {
@@ -72,7 +72,8 @@ public class RadarScript : MonoBehaviour {
         {
             findPlayer();
         }
-   
+        else { setCameraToPlayer(); }
+        
         attachFlagPrefabs();
         if (Flag)
         {
@@ -120,6 +121,16 @@ public class RadarScript : MonoBehaviour {
         {
             foreach (GameObject looking in players)
             {
+                if (!looking.GetComponent<PlayerController>().isActiveAndEnabled)
+                {
+                    foreach (Transform t in looking.transform)
+                    {
+                        if (t.name == "PlayerIcon")
+                        {
+                            t.gameObject.SetActive(false);
+                        }
+                    }
+                }
                 if (Mathf.Sqrt(Mathf.Pow(looking.transform.position.x - transform.position.x, 2) + Mathf.Pow(looking.transform.position.z - transform.position.z, 2)) > listswitchDistance)
                 {
                     foreach (Transform t in looking.transform)

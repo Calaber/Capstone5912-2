@@ -31,6 +31,7 @@ public class PlayerNetworkController  : Photon.MonoBehaviour
                 cam.gameObject.AddComponent<BrightnessEffect>();
                 BrightnessEffect brights = cam.GetComponent<BrightnessEffect>();
                 brights.enabled=true;
+                cam.gameObject.GetComponent<AVProMovieCaptureFromScene>().enabled = true;
 
 
             }

@@ -31,6 +31,7 @@ public class PlayerController : MonoBehaviour
     public float    crouched_speed = 1.0f;
     public float    airstrafe_speed = 5.0f;
     public float    mouse_sensitivity = 1.0f;
+    public float    attackTimer = 0;
     public AttackHitboxManager attack_hitbox;
     //[HideInInspector]
     public bool can_release_from_jail = false;
@@ -67,8 +68,12 @@ public class PlayerController : MonoBehaviour
 
     void FixedUpdate()
     {
+        if (attackTimer >= 0.5f)
+        {
+            attackTimer -= Time.deltaTime;
+        }
         UpdateTimers();
-        UpdateMenu();
+        
         //apply gravity
         rigidbody.AddForce(0, gravity, 0, ForceMode.Acceleration);
         //align camera
@@ -164,7 +169,7 @@ public class PlayerController : MonoBehaviour
         if (motion.magnitude > 1){motion.Normalize();}
         if (!being_damaged)
         {
-            if (motion.magnitude > 0.05f)
+            if (attack_frames < 16 && motion.magnitude > 0.05f)
             {
                 float inputHorizontal = Input.GetAxisRaw("Horizontal");
                 float inputVertical = Input.GetAxisRaw("Vertical");
@@ -175,12 +180,13 @@ public class PlayerController : MonoBehaviour
                     if (inputHorizontal > 0) { SetAnimationWithPriority(Player_Animation.RUN_RIGHT, 7); }
                     else { SetAnimationWithPriority(Player_Animation.RUN_LEFT, 7); }
                 }
-                else {
+                else
+                {
                     if (inputVertical > 0) { SetAnimationWithPriority(Player_Animation.RUN_FORWARDS, 7); }
                     else { SetAnimationWithPriority(Player_Animation.RUN_BACKWARDS, 7); }
                 }
             }
-            else if (data.animation_id != (int)Player_Animation.IDLE) { SetAnimationWithPriority(Player_Animation.IDLE, 1); }
+            else if (!attacking && data.animation_id != (int)Player_Animation.IDLE) { SetAnimationWithPriority(Player_Animation.IDLE, 1); }
             velocity = motion * ((crouching) ? crouched_speed : run_speed);
         }
         else {
@@ -212,17 +218,10 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    void UpdateMenu()
-    {
-        if (Input.GetKeyDown(KeyCode.Escape))
-        {
-            Application.Quit();
-        }
-    }
-
     void UpdateActions() {
-        if (Input.GetMouseButtonDown(0) && !being_damaged && data.attackEnabled)
+        if (Input.GetMouseButton(0) && !being_damaged && data.attackEnabled && attackTimer <= 0.5f)
         {
+            attackTimer = 1.5f;
             SetAnimationWithPriority(Player_Animation.MELEE_1, 8);
             if (!attacking) {
                 attacking = true;
