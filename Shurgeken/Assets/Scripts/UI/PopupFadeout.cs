@@ -6,8 +6,8 @@ using UnityEngine.UI;
 public class PopupFadeout : MonoBehaviour {
 
 
-    public int frames_to_last = 200;
-    public int frames_to_fade = 100;
+    public int frames_to_last = 100;
+    public int frames_to_fade = 50;
     private int frames_lasted, frames_faded;
 
     private Color current_color;
