@@ -10,7 +10,6 @@ public class ChaseState : IEnemyState {
     {
         enemy = statePatternEnemy;
         enemy.GetComponent<DataController>().SetAnimation(Player_Animation.RUN_FORWARDS);
-        enemy.meshRendererFlag.material.color = Color.magenta;
     }
 
     public void UpdateState()
