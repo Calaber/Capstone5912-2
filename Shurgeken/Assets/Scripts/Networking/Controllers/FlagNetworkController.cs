@@ -40,6 +40,7 @@ public class FlagNetworkController : Photon.MonoBehaviour
 
     void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {
+        
         if (stream.isWriting)
         {
             stream.SendNext(data.position);
@@ -48,9 +49,28 @@ public class FlagNetworkController : Photon.MonoBehaviour
         }
         else
         {
-            data.position = (Vector3)stream.ReceiveNext();
-            data.rotation = (Quaternion)stream.ReceiveNext();
-            data.velocity = (Vector3)stream.ReceiveNext();
+            try
+            {
+                data.position = (Vector3)stream.ReceiveNext();
+                data.rotation = (Quaternion)stream.ReceiveNext();
+                data.velocity = (Vector3)stream.ReceiveNext();
+            }
+            catch (System.NullReferenceException nre)
+            {
+                Debug.Log("nre on flag, this is prolly what is causing the flag to fuck up.");
+                stream.ResetWriteStream();
+                OnPhotonSerializeView(stream, info);
+            }
+            catch (System.InvalidCastException ice)
+            {
+                Debug.Log("Invalid cast exception, this is because the stream is out of sync, just give up and try again");
+                stream.ResetWriteStream();
+                OnPhotonSerializeView(stream, info);
+            }
+            catch (System.IndexOutOfRangeException ioore)
+            {
+                Debug.Log("Catching invalid index, just wait for next set of packets");
+            }
         }
     }
 
