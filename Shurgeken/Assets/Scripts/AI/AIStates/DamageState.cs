@@ -11,8 +11,7 @@ public class DamageState : IEnemyState
         enemy = enemyStatePattern;
         enemy.getNavMeshAgent().Stop();
         enemy.GetComponent<DataController>().SetAnimation(Player_Animation.DAMAGED);
-        enemy.meshRendererFlag.material.color = Color.red;
-        enemy.enemyDamageFrames = 1.5f;
+        enemy.enemyDamageFrames = 1.0f;
     }
     public void OnTriggerEnter(Collider other)
     {

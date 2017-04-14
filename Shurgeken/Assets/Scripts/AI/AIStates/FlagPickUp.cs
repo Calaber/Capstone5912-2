@@ -10,7 +10,6 @@ public class FlagPickUp : IEnemyState
     public FlagPickUp(EnemyStatePattern enemyStatePattern)
     {
         enemy = enemyStatePattern;
-        enemy.meshRendererFlag.material.color = Color.blue;
         enemy.GetComponent<DataController>().SetAnimation(Player_Animation.RUN_FORWARDS);
     }
 

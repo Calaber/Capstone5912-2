@@ -9,7 +9,6 @@ public class PatrolState : IEnemyState {
     public PatrolState(EnemyStatePattern enemyStatePattern)
     {
         enemy = enemyStatePattern;
-        enemy.meshRendererFlag.material.color = Color.green;
         enemy.GetComponent<DataController>().SetAnimation(Player_Animation.RUN_FORWARDS);
     }
 
