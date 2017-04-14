@@ -46,7 +46,7 @@ public class FadeLogoStart : MonoBehaviour {
         }
         if (logo.color.a >= .68)
         {
-            Sound.SetActive(true);
+            //Sound.SetActive(true);
         }
         if (logo.color.a >= .9998 && !loading)
         {
