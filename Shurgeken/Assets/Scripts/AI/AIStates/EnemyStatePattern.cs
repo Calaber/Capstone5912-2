@@ -108,7 +108,8 @@ public class EnemyStatePattern : MonoBehaviour {
     }
 
     private void OnTriggerEnter(Collider other) {
-        currentState.OnTriggerEnter(other);
+        if (currentState != null)
+            currentState.OnTriggerEnter(other);
     }
 
 

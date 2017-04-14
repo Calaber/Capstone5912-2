@@ -17,9 +17,10 @@ public class FlagNetworkController : Photon.MonoBehaviour
         rb = GetComponent<Rigidbody>();
         if (photonView.isMine)
         {
+            flagController.enabled = true;
             data.local = true;
         }
-        else
+        if (!NetworkManager.networkManager.isMaster())
         {
             StartCoroutine("UpdateData");
         }
