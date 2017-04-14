@@ -17,7 +17,10 @@ public class SpawnDoorNetworkController : Photon.MonoBehaviour {
 
     IEnumerator OpenDoor()
     {
-        door.SetActive(!open);
+        if (door != null)
+        {
+            door.SetActive(!open);
+        }
         yield return null;
     }
 

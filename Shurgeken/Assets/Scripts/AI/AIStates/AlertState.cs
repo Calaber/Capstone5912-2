@@ -10,7 +10,6 @@ public class AlertState : IEnemyState {
     public AlertState(EnemyStatePattern statePatternEnemy)
     {
         enemy = statePatternEnemy;
-        enemy.meshRendererFlag.material.color = Color.yellow;
         enemy.GetComponent<DataController>().SetAnimation(Player_Animation.IDLE);
     }
 

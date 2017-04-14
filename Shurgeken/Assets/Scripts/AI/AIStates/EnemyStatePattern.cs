@@ -28,7 +28,6 @@ public class EnemyStatePattern : MonoBehaviour {
     public Vector3 offset = new Vector3(0, .5f, 0);
 
     //Indicator
-    public MeshRenderer meshRendererFlag;
     [HideInInspector] private IEnemyState currentState;
     
     //Pathing
@@ -54,19 +53,20 @@ public class EnemyStatePattern : MonoBehaviour {
 
     private void setUpAttacking()
     {
-        attackDistance = 2.5f;
+        attackDistance = 3.5f;
         int diffSetting = PlayerSettings.difficulty;
         if (diffSetting == 0)//Easy
         {
-            attackRate = 5.5f;
+            attackDistance = 2.5f;
+            attackRate = 4.5f;
         }
         else if (diffSetting == 1)//Normal
         {
-            attackRate = 3.5f;
+            attackRate = 2.5f;
         }
         else if(diffSetting == 2)//Hard
         {
-            attackRate = 3.5f;
+            attackRate = 2.5f;
         }
         else if(diffSetting == 3)//Hardcore
         {
@@ -77,7 +77,7 @@ public class EnemyStatePattern : MonoBehaviour {
     private void setUpNavMeshAgest()
     {
         navMeshAgent.angularSpeed = 360f;
-        navMeshAgent.acceleration = 8f;
+        navMeshAgent.acceleration = 10f;
         navMeshAgent.stoppingDistance = 0.5f;
         int diffSetting = PlayerSettings.difficulty;
         if (diffSetting == 0)//Easy
@@ -94,7 +94,8 @@ public class EnemyStatePattern : MonoBehaviour {
         }
         else if (diffSetting == 3)//Hardcore
         {
-            navMeshAgent.speed = 3.5f;
+            navMeshAgent.acceleration = 12;
+            navMeshAgent.speed = 4.5f;
         }
     }
 
@@ -108,7 +109,8 @@ public class EnemyStatePattern : MonoBehaviour {
     }
 
     private void OnTriggerEnter(Collider other) {
-        currentState.OnTriggerEnter(other);
+        if (currentState != null)
+            currentState.OnTriggerEnter(other);
     }
 
 

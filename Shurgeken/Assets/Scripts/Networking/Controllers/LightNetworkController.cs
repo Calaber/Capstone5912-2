@@ -22,7 +22,13 @@ public class LightNetworkController : Photon.MonoBehaviour
         }
         else
         {
-            lm.LightSource.SetActive((bool)stream.ReceiveNext());
+            try
+            {
+                lm.LightSource.SetActive((bool)stream.ReceiveNext());
+            } catch (System.NullReferenceException nre)
+            {
+                Debug.Log("NRE in Light network controller idgaf");
+            }
         }
     }
 
