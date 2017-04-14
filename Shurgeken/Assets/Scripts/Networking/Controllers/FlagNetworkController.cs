@@ -22,6 +22,7 @@ public class FlagNetworkController : Photon.MonoBehaviour
         }
         if (!NetworkManager.networkManager.isMaster())
         {
+            Debug.Log("Start bullshit co-routine");
             StartCoroutine("UpdateData");
         }
     }
