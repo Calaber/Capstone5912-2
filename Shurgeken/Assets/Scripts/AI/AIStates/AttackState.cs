@@ -12,14 +12,13 @@ public class AttackState : IEnemyState {
     public AttackState(EnemyStatePattern statePatternEnemy)
     {
         enemy = statePatternEnemy;
-        enemy.meshRendererFlag.material.color = Color.red;
         enemy.getNavMeshAgent().Stop();
         cachedAcceleration = enemy.getNavMeshAgent().acceleration;
         enemy.getNavMeshAgent().acceleration = 0.0f;
         enemy.getNavMeshAgent().velocity = Vector3.zero;
         
         enemy.GetComponent<DataController>().SetAnimation(Player_Animation.MELEE_1);
-        attackTimer = 1.5f;
+        attackTimer = 0.65f;
     }
 
     public void UpdateState()
@@ -122,7 +121,7 @@ public class AttackState : IEnemyState {
 
                     if (!Physics.Raycast(enemy.eyes.transform.position, dirToTarget, light_cutoff_view_distance, enemy.obstacleLayerMasks))
                     {
-                        if (dstToTarget > enemy.attackDistance)
+                        if (dstToTarget > enemy.attackDistance+0.5f)
                         {
                             enemy.setChaseTarget(target.gameObject);
                             ToChaseState();
