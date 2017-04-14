@@ -10,7 +10,9 @@ public class FadeLogoStart : MonoBehaviour {
     public Image logo;
     public GameObject Sound;
     private float targetAlpha;
-    
+    private AsyncOperation async;
+
+    private bool timeStop;
     float timer;
     bool loading;
     // Use this for initialization
@@ -18,13 +20,18 @@ public class FadeLogoStart : MonoBehaviour {
         targetAlpha = logo.color.a;
         timer = 0;
         loading = false;
-	}
+        timeStop = false;
+        StartCoroutine(LoadLevelAsync("MainMenu"));
+    }
 	
 	// Update is called once per frame
 	void Update () {
-        if (timer == 50)
+        if (timer == 50&&!timeStop)
         {
             FadeIn();
+            
+
+            timeStop=true;
         }
         else
         {
@@ -37,15 +44,16 @@ public class FadeLogoStart : MonoBehaviour {
             curColor.a = Mathf.Lerp(curColor.a, targetAlpha, this.FadeRate * Time.deltaTime);
             logo.color = curColor;
         }
-        if (logo.color.a >= .88)
+        if (logo.color.a >= .68)
         {
             Sound.SetActive(true);
         }
         if (logo.color.a >= .9998 && !loading)
         {
             
-            SceneManager.LoadScene("MainMenu");
+            //SceneManager.LoadScene("MainMenu");
             loading = true;
+            ActivateScene();
         }
     }
     public void FadeOut()
@@ -58,4 +66,17 @@ public class FadeLogoStart : MonoBehaviour {
         targetAlpha = 1.0f;
     }
 
+    IEnumerator LoadLevelAsync(string level)
+    {
+        async = SceneManager.LoadSceneAsync(level);
+        async.allowSceneActivation = false;
+        yield return async;
+        
+        
+    }
+    public void ActivateScene()
+    {
+        
+        async.allowSceneActivation = true;
+    }
 }
