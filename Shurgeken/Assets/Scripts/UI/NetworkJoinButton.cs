@@ -20,6 +20,7 @@ public class NetworkJoinButton : MonoBehaviour {
     void TaskOnClick()
     {
         PlayerSettings.PlayerRoomName = joinRoom.transform.GetChild(0).GetComponent<Text>().text;
+        PlayerSettings.PlayGame = NetworkManager.GameType.PVE;
         PlayerSettings.JoiningRoom = true;
         SceneManager.LoadScene("LoadingSoloPlay");
         //NetworkManager.networkManager.joinRoom(joinRoom.transform.GetChild(0).GetComponent<Text>().text);

@@ -36,15 +36,8 @@ public class LoadRotaion : MonoBehaviour {
         if (!once)
         {
             once = true;
-            if (!PlayerSettings.JoiningRoom)
-            {
-                NetworkManager.networkManager.createRoom(PlayerSettings.PlayerRoomName, PlayerSettings.PlayGame);
-                NetworkManager.networkManager.loadLevel("Demo 6");
-            }
-            else
-            {
-                NetworkManager.networkManager.joinRoom(PlayerSettings.PlayerRoomName);
-            }
+            NetworkManager.networkManager.createRoom(PlayerSettings.PlayerRoomName, PlayerSettings.PlayGame);
+            NetworkManager.networkManager.loadLevel("Demo 6");
         }
         yield return null; 
     }
